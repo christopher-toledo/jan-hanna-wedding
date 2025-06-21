@@ -6,6 +6,8 @@
   --font-montserrat: "Montserrat", sans-serif;
   --font-pinyon: "Pinyon Script", cursive;
   --font-cormorant: "Cormorant Garamond", serif;
+  --font-the_seasons: "the-seasons", sans-serif;
+  --font-league-spartan: "League Spartan", sans-serif;
 }
 
 @layer base {
@@ -17,7 +19,7 @@
   }
 
   .font-serif {
-    font-family: var(--font-cormorant);
+    font-family: var(--font-the_seasons);
   }
 
   .font-cursive {
