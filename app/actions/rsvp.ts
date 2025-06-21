@@ -92,50 +92,29 @@ export async function submitRSVP(prevState: any, formData: FormData) {
       }
     }
 
-    // Update additional guests (only if primary guest is attending)
-    if (attending === "yes") {
-      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-      if (existsSync(additionalGuestsFile)) {
-        const additionalContent = await readFile(additionalGuestsFile, "utf-8")
-        const additionalGuests: AdditionalGuest[] = JSON.parse(additionalContent)
+    // Update additional guests - they can attend independently of primary guest
+    const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
+    if (existsSync(additionalGuestsFile)) {
+      const additionalContent = await readFile(additionalGuestsFile, "utf-8")
+      const additionalGuests: AdditionalGuest[] = JSON.parse(additionalContent)
 
-        // Update all additional guests for this primary guest
-        const updatedAdditionalGuests = additionalGuests.map((guest) => {
-          if (guest.primaryGuestId === guestId) {
-            const isSelected = selectedAdditionalGuests.includes(guest.id)
-            const guestDetails = additionalGuestDetails.find((d: any) => d.id === guest.id)
+      // Update all additional guests for this primary guest based on selection
+      const updatedAdditionalGuests = additionalGuests.map((guest) => {
+        if (guest.primaryGuestId === guestId) {
+          const isSelected = selectedAdditionalGuests.includes(guest.id)
+          const guestDetails = additionalGuestDetails.find((d: any) => d.id === guest.id)
 
-            return {
-              ...guest,
-              rsvpStatus: isSelected ? "attending" : "not-attending",
-              email: guestDetails?.email || guest.email || "",
-              phone: guestDetails?.phone || guest.phone || "",
-            }
+          return {
+            ...guest,
+            rsvpStatus: isSelected ? "attending" : "not-attending",
+            email: guestDetails?.email || guest.email || "",
+            phone: guestDetails?.phone || guest.phone || "",
           }
-          return guest
-        })
+        }
+        return guest
+      })
 
-        await writeFile(additionalGuestsFile, JSON.stringify(updatedAdditionalGuests, null, 2))
-      }
-    } else {
-      // If primary guest is not attending, mark all their additional guests as not attending
-      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-      if (existsSync(additionalGuestsFile)) {
-        const additionalContent = await readFile(additionalGuestsFile, "utf-8")
-        const additionalGuests: AdditionalGuest[] = JSON.parse(additionalContent)
-
-        const updatedAdditionalGuests = additionalGuests.map((guest) => {
-          if (guest.primaryGuestId === guestId) {
-            return {
-              ...guest,
-              rsvpStatus: "not-attending" as const,
-            }
-          }
-          return guest
-        })
-
-        await writeFile(additionalGuestsFile, JSON.stringify(updatedAdditionalGuests, null, 2))
-      }
+      await writeFile(additionalGuestsFile, JSON.stringify(updatedAdditionalGuests, null, 2))
     }
 
     // Save RSVP response
@@ -150,20 +129,18 @@ export async function submitRSVP(prevState: any, formData: FormData) {
     // Remove existing RSVP for this guest if it exists
     rsvps = rsvps.filter((rsvp) => rsvp.guestId !== guestId)
 
-    // Add new RSVP
+    // Add new RSVP - include additional guest details regardless of primary attendance
     const newRSVP: RSVPResponse = {
       id: uuidv4(),
       guestId,
       guestName,
       attending: attending as "yes" | "no",
-      additionalGuests:
-        attending === "yes"
-          ? additionalGuestDetails.map((guest: any) => ({
-              name: guest.name || "",
-              email: guest.email || "",
-            }))
-          : [],
-      dietaryRestrictions: attending === "yes" ? dietaryRestrictions || undefined : undefined,
+      additionalGuests: additionalGuestDetails.map((guest: any) => ({
+        name: guest.name || "",
+        email: guest.email || "",
+      })),
+      dietaryRestrictions:
+        attending === "yes" || selectedAdditionalGuests.length > 0 ? dietaryRestrictions || undefined : undefined,
       message: message || undefined,
       submittedAt: new Date().toISOString(),
     }

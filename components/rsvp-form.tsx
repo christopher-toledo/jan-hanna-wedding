@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { submitRSVP } from "@/app/actions/rsvp";
 import { useActionState } from "react";
-import { Heart, Users, Mail, AlertCircle } from "lucide-react";
+import { Heart, Users, Mail, AlertCircle, Info } from "lucide-react";
 
 interface RSVPFormProps {
   guestId: string;
@@ -423,18 +423,37 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         </CardContent>
       </Card>
 
-      {/* Additional Guests - Only show if attending */}
-      {attending === "yes" && additionalGuests.length > 0 && (
+      {/* Additional Guests - Always show if they exist */}
+      {additionalGuests.length > 0 && (
         <Card className="bg-muted/30 elegant-border">
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <Users className="h-5 w-5 text-primary" />
               <Label className="text-base font-medium">Additional Guests</Label>
             </div>
+
+            {/* Show different messaging based on primary guest attendance */}
+            {attending === "no" && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-amber-800">
+                    <p className="font-medium">Independent Guest Selection</p>
+                    <p>
+                      Even though you can't attend, your additional guests can
+                      still choose to attend independently.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <p className="text-sm text-muted-foreground mb-4">
-              Please select which of your additional guests will be attending
-              and update their contact information:
+              {attending === "yes"
+                ? "Please select which of your additional guests will be attending and update their contact information:"
+                : "Please select which of your additional guests will be attending (they can attend even if you cannot):"}
             </p>
+
             <div className="space-y-4">
               {additionalGuests.map((guest) => (
                 <div
@@ -507,58 +526,46 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         </Card>
       )}
 
-      {/* Only show dietary restrictions and message if attending */}
-      {attending === "yes" && (
-        <>
-          <div>
-            <Label
-              htmlFor="dietaryRestrictions"
-              className="text-base font-medium"
-            >
-              Dietary Restrictions or Special Requests
-            </Label>
-            <Textarea
-              id="dietaryRestrictions"
-              name="dietaryRestrictions"
-              value={dietaryRestrictions}
-              onChange={(e) => setDietaryRestrictions(e.target.value)}
-              placeholder="Please let us know about any dietary restrictions or special requests"
-              className="mt-2 min-h-[100px]"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="message" className="text-base font-medium">
-              Message for the Couple (optional)
-            </Label>
-            <Textarea
-              id="message"
-              name="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Share your excitement or well wishes!"
-              className="mt-2 min-h-[100px]"
-            />
-          </div>
-        </>
-      )}
-
-      {/* Show message field for non-attending guests */}
-      {attending === "no" && (
+      {/* Show dietary restrictions only if primary guest OR any additional guest is attending */}
+      {(attending === "yes" || selectedAdditionalGuests.length > 0) && (
         <div>
-          <Label htmlFor="message" className="text-base font-medium">
-            Message for the Couple (optional)
+          <Label
+            htmlFor="dietaryRestrictions"
+            className="text-base font-medium"
+          >
+            Dietary Restrictions or Special Requests
           </Label>
           <Textarea
-            id="message"
-            name="message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="We'd love to hear from you even though you can't make it!"
+            id="dietaryRestrictions"
+            name="dietaryRestrictions"
+            value={dietaryRestrictions}
+            onChange={(e) => setDietaryRestrictions(e.target.value)}
+            placeholder="Please let us know about any dietary restrictions or special requests for attending guests"
             className="mt-2 min-h-[100px]"
           />
         </div>
       )}
+
+      {/* Message field - always show */}
+      <div>
+        <Label htmlFor="message" className="text-base font-medium">
+          Message for the Couple (optional)
+        </Label>
+        <Textarea
+          id="message"
+          name="message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder={
+            attending === "yes"
+              ? "Share your excitement or well wishes!"
+              : attending === "no"
+              ? "We'd love to hear from you even though you can't make it!"
+              : "Share your thoughts with us!"
+          }
+          className="mt-2 min-h-[100px]"
+        />
+      </div>
 
       {/* Required fields notice */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -569,7 +576,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
             <p className="text-blue-600">
               {attending === "yes"
                 ? "Phone number is required for attending guests so we can contact you about the event."
-                : "Only your attendance response is required."}
+                : "Only your attendance response is required. Additional guests can attend independently."}
             </p>
           </div>
         </div>
