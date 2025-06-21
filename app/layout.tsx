@@ -1,19 +1,27 @@
-import type React from "react";
-import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
-import "./globals.css";
 import { Navigation } from "@/components/navigation";
+import type { Metadata } from "next";
+import { Cormorant_Garamond, Montserrat, Pinyon_Script } from "next/font/google";
+import type React from "react";
+import "./globals.css";
 
-const playfair = Playfair_Display({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-montserrat",
   display: "swap",
 });
 
-const inter = Inter({
+const pinyon = Pinyon_Script({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-pinyon-script",
   display: "swap",
+  weight: "400",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant-garamond",
+  display: "swap",
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="en" className={`${montserrat.variable} ${pinyon.variable} ${cormorant.variable}`}>
       <body className="font-sans antialiased">
         <Navigation />
         <main>{children}</main>

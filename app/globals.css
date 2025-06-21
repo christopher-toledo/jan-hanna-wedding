@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --font-playfair: "Playfair Display", serif;
-  --font-inter: "Inter", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-pinyon: "Pinyon Script", cursive;
+  --font-cormorant: "Cormorant Garamond", serif;
 }
 
 @layer base {
@@ -16,11 +17,15 @@
   }
 
   .font-serif {
-    font-family: var(--font-playfair);
+    font-family: var(--font-cormorant);
+  }
+
+  .font-cursive {
+    font-family: var(--font-pinyon);
   }
 
   .font-sans {
-    font-family: var(--font-inter);
+    font-family: var(--font-montserrat);
   }
 }
 
