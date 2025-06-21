@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 interface CountdownTime {
   days: number;
@@ -22,7 +23,9 @@ function getTimeRemaining(target: Date): CountdownTime {
 }
 
 export default function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState<CountdownTime>(() => getTimeRemaining(WEDDING_DATE));
+  const [timeLeft, setTimeLeft] = useState<CountdownTime>(() =>
+    getTimeRemaining(WEDDING_DATE)
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -38,26 +41,53 @@ export default function CountdownTimer() {
     timeLeft.seconds === 0;
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      {isOver ? (
-        <div className="text-3xl font-serif text-white font-bold py-8">The celebration has begun!</div>
-      ) : (
-        <div className="flex gap-6 md:gap-12 text-white">
-          <CountdownUnit value={timeLeft.days} label="Days" />
-          <CountdownUnit value={timeLeft.hours} label="Hours" />
-          <CountdownUnit value={timeLeft.minutes} label="Minutes" />
-          <CountdownUnit value={timeLeft.seconds} label="Seconds" />
-        </div>
-      )}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      viewport={{ once: true }}
+    >
+      <h2 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-medium text-midnightBlue mb-4 text-center px-2">
+        DAYS LEFT BEFORE WE SAY I DO
+      </h2>
+      <div className="w-16 xs:w-20 sm:w-24 h-px bg-white/30 mx-auto"></div>
+
+      <div className="flex flex-col items-center justify-center w-full">
+        {isOver ? (
+          <div className="text-2xl xs:text-3xl sm:text-4xl font-serif text-midnightBlue font-bold py-8 text-center">
+            The celebration has begun!
+          </div>
+        ) : (
+          <div className="flex flex-nowrap gap-2 xs:gap-3 sm:gap-4 md:gap-8 text-midnightBlue items-start w-full justify-center overflow-x-auto">
+            <CountdownUnit value={timeLeft.days} label="Days" />
+            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2">
+              :
+            </span>
+            <CountdownUnit value={timeLeft.hours} label="Hours" />
+            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2">
+              :
+            </span>
+            <CountdownUnit value={timeLeft.minutes} label="Minutes" />
+            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2">
+              :
+            </span>
+            <CountdownUnit value={timeLeft.seconds} label="Seconds" />
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 }
 
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col items-center">
-      <span className="text-5xl md:text-6xl font-bold font-mono drop-shadow-lg">{value.toString().padStart(2, "0")}</span>
-      <span className="text-base md:text-lg font-medium mt-2 tracking-wide uppercase opacity-80">{label}</span>
+    <div className="flex flex-col items-center min-w-[60px] xs:min-w-[70px] sm:min-w-[80px] md:min-w-[90px]">
+      <span className="font-bold font-spartan drop-shadow-lg text-[48px] xs:text-[60px] sm:text-[80px] md:text-[100px] text-midnightBlue leading-none">
+        {value.toString().padStart(2, "0")}
+      </span>
+      <span className="font-montserrat text-[18px] xs:text-[22px] sm:text-[28px] md:text-[40px] font-medium mt-2 tracking-wide uppercase text-midnightBlue leading-tight">
+        {label}
+      </span>
     </div>
   );
 }
