@@ -57,6 +57,8 @@ const config: Config = {
         peach: "#f3ad86",
         blushPink: "#f1a49a",
         slateBlue: "#67839c",
+        linen: "#f2efeb",
+        midnightBlue: "#393f4a",
       },
       fontFamily: {
         serif: ["var(--font-cormorant)"],
