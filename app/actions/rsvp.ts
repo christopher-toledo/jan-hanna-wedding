@@ -1,10 +1,30 @@
 "use server"
 
-import { readFile, writeFile, mkdir } from "fs/promises"
+import { writeFile, readFile, mkdir } from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
+import { v4 as uuidv4 } from "uuid"
 
-interface RSVPData {
+interface Guest {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  rsvpStatus: "pending" | "attending" | "not-attending"
+  createdAt: string
+}
+
+interface AdditionalGuest {
+  id: string
+  primaryGuestId: string
+  name: string
+  email?: string
+  phone?: string
+  rsvpStatus: "pending" | "attending" | "not-attending"
+  createdAt: string
+}
+
+interface RSVPResponse {
   id: string
   guestId: string
   guestName: string
@@ -22,76 +42,136 @@ export async function submitRSVP(prevState: any, formData: FormData) {
   try {
     const guestId = formData.get("guestId") as string
     const guestName = formData.get("guestName") as string
-    const attending = formData.get("attending") as "yes" | "no"
-    const additionalGuestsJson = formData.get("additionalGuests") as string
+    const attending = formData.get("attending") as string
+    const primaryGuestEmail = formData.get("primaryGuestEmail") as string
+    const primaryGuestPhone = formData.get("primaryGuestPhone") as string
+    const selectedAdditionalGuests = JSON.parse((formData.get("selectedAdditionalGuests") as string) || "[]")
+    const additionalGuestDetails = JSON.parse((formData.get("additionalGuestDetails") as string) || "[]")
     const dietaryRestrictions = formData.get("dietaryRestrictions") as string
     const message = formData.get("message") as string
 
-    if (!guestId || !guestName || !attending) {
-      return { error: "Missing required fields" }
+    // Server-side validation
+    if (!guestId || !guestName) {
+      return { error: "Missing guest information" }
     }
 
-    let additionalGuests = []
-    try {
-      additionalGuests = additionalGuestsJson ? JSON.parse(additionalGuestsJson) : []
-    } catch (e) {
-      additionalGuests = []
+    if (!attending) {
+      return { error: "Please select whether you will be attending" }
     }
 
-    // Filter out empty guests
-    additionalGuests = additionalGuests.filter((guest: any) => guest.name && guest.name.trim())
+    // Only require phone if attending "yes"
+    if (attending === "yes" && !primaryGuestPhone?.trim()) {
+      return { error: "Phone number is required when attending" }
+    }
+
+    // Email is optional - only validate format if provided
+    if (primaryGuestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(primaryGuestEmail)) {
+      return { error: "Please enter a valid email address" }
+    }
 
     const dataDir = path.join(process.cwd(), "data")
     if (!existsSync(dataDir)) {
       await mkdir(dataDir, { recursive: true })
     }
 
-    // Read existing RSVPs
-    const rsvpFile = path.join(dataDir, "rsvps.json")
-    let rsvps: RSVPData[] = []
-
-    if (existsSync(rsvpFile)) {
-      const fileContent = await readFile(rsvpFile, "utf-8")
-      rsvps = JSON.parse(fileContent)
-    }
-
-    // Check if RSVP already exists
-    const existingIndex = rsvps.findIndex((rsvp) => rsvp.guestId === guestId)
-
-    const rsvpData: RSVPData = {
-      id: existingIndex >= 0 ? rsvps[existingIndex].id : Date.now().toString(),
-      guestId,
-      guestName,
-      attending,
-      additionalGuests,
-      dietaryRestrictions: dietaryRestrictions || undefined,
-      message: message || undefined,
-      submittedAt: new Date().toISOString(),
-    }
-
-    if (existingIndex >= 0) {
-      rsvps[existingIndex] = rsvpData
-    } else {
-      rsvps.push(rsvpData)
-    }
-
-    // Save RSVPs
-    await writeFile(rsvpFile, JSON.stringify(rsvps, null, 2))
-
-    // Update guest status
+    // Update primary guest contact info
     const guestsFile = path.join(dataDir, "guests.json")
     if (existsSync(guestsFile)) {
       const guestsContent = await readFile(guestsFile, "utf-8")
-      const guests = JSON.parse(guestsContent)
+      const guests: Guest[] = JSON.parse(guestsContent)
 
-      const guestIndex = guests.findIndex((g: any) => g.id === guestId)
-      if (guestIndex >= 0) {
-        guests[guestIndex].rsvpStatus = attending === "yes" ? "attending" : "not-attending"
+      const guestIndex = guests.findIndex((g) => g.id === guestId)
+      if (guestIndex !== -1) {
+        guests[guestIndex] = {
+          ...guests[guestIndex],
+          email: primaryGuestEmail || "", // Allow empty email
+          phone: primaryGuestPhone || "", // Allow empty phone for non-attending
+          rsvpStatus: attending === "yes" ? "attending" : "not-attending",
+        }
         await writeFile(guestsFile, JSON.stringify(guests, null, 2))
       }
     }
 
-    return { success: true }
+    // Update additional guests (only if primary guest is attending)
+    if (attending === "yes") {
+      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
+      if (existsSync(additionalGuestsFile)) {
+        const additionalContent = await readFile(additionalGuestsFile, "utf-8")
+        const additionalGuests: AdditionalGuest[] = JSON.parse(additionalContent)
+
+        // Update all additional guests for this primary guest
+        const updatedAdditionalGuests = additionalGuests.map((guest) => {
+          if (guest.primaryGuestId === guestId) {
+            const isSelected = selectedAdditionalGuests.includes(guest.id)
+            const guestDetails = additionalGuestDetails.find((d: any) => d.id === guest.id)
+
+            return {
+              ...guest,
+              rsvpStatus: isSelected ? "attending" : "not-attending",
+              email: guestDetails?.email || guest.email || "",
+              phone: guestDetails?.phone || guest.phone || "",
+            }
+          }
+          return guest
+        })
+
+        await writeFile(additionalGuestsFile, JSON.stringify(updatedAdditionalGuests, null, 2))
+      }
+    } else {
+      // If primary guest is not attending, mark all their additional guests as not attending
+      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
+      if (existsSync(additionalGuestsFile)) {
+        const additionalContent = await readFile(additionalGuestsFile, "utf-8")
+        const additionalGuests: AdditionalGuest[] = JSON.parse(additionalContent)
+
+        const updatedAdditionalGuests = additionalGuests.map((guest) => {
+          if (guest.primaryGuestId === guestId) {
+            return {
+              ...guest,
+              rsvpStatus: "not-attending" as const,
+            }
+          }
+          return guest
+        })
+
+        await writeFile(additionalGuestsFile, JSON.stringify(updatedAdditionalGuests, null, 2))
+      }
+    }
+
+    // Save RSVP response
+    const rsvpsFile = path.join(dataDir, "rsvps.json")
+    let rsvps: RSVPResponse[] = []
+
+    if (existsSync(rsvpsFile)) {
+      const rsvpsContent = await readFile(rsvpsFile, "utf-8")
+      rsvps = JSON.parse(rsvpsContent)
+    }
+
+    // Remove existing RSVP for this guest if it exists
+    rsvps = rsvps.filter((rsvp) => rsvp.guestId !== guestId)
+
+    // Add new RSVP
+    const newRSVP: RSVPResponse = {
+      id: uuidv4(),
+      guestId,
+      guestName,
+      attending: attending as "yes" | "no",
+      additionalGuests:
+        attending === "yes"
+          ? additionalGuestDetails.map((guest: any) => ({
+              name: guest.name || "",
+              email: guest.email || "",
+            }))
+          : [],
+      dietaryRestrictions: attending === "yes" ? dietaryRestrictions || undefined : undefined,
+      message: message || undefined,
+      submittedAt: new Date().toISOString(),
+    }
+
+    rsvps.push(newRSVP)
+    await writeFile(rsvpsFile, JSON.stringify(rsvps, null, 2))
+
+    return { success: true, message: "RSVP submitted successfully!" }
   } catch (error) {
     console.error("Error submitting RSVP:", error)
     return { error: "Failed to submit RSVP. Please try again." }

@@ -40,8 +40,8 @@ export async function POST(request: Request) {
   try {
     const { name, email, phone, additionalGuests } = await request.json()
 
-    if (!name || !email) {
-      return NextResponse.json({ error: "Name and email are required" }, { status: 400 })
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
     const dataDir = path.join(process.cwd(), "data")
@@ -59,9 +59,9 @@ export async function POST(request: Request) {
     }
 
     // Check if guest already exists
-    const existingGuest = guests.find((g) => g.email.toLowerCase() === email.toLowerCase())
+    const existingGuest = guests.find((g) => g.name.toLowerCase() === name.toLowerCase())
     if (existingGuest) {
-      return NextResponse.json({ error: "A guest with this email already exists" }, { status: 400 })
+      return NextResponse.json({ error: "A guest with this name already exists" }, { status: 400 })
     }
 
     // Create new guest
@@ -105,6 +105,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, guest: newGuest })
   } catch (error) {
     console.error("Error adding guest:", error)
-    return NextResponse.json({ error: "Failed to add guest " + error }, { status: 500 })
+    return NextResponse.json({ error: "Failed to add guest" }, { status: 500 })
   }
 }

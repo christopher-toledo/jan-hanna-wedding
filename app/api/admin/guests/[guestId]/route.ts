@@ -2,6 +2,7 @@ import { readFile, writeFile } from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
 import { NextResponse } from "next/server"
+import { v4 as uuidv4 } from "uuid"
 
 export async function DELETE(request: Request, { params }: { params: { guestId: string } }) {
   try {
@@ -56,10 +57,10 @@ export async function PUT(request: Request, { params }: { params: { guestId: str
   try {
     const guestId = params.guestId
     const body = await request.json()
-    const { name, email, phone } = body
+    const { name, email, phone, additionalGuests: newAdditionalGuests } = body
 
-    if (!name || !email) {
-      return NextResponse.json({ error: "Name and email are required" }, { status: 400 })
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
     const dataDir = path.join(process.cwd(), "data")
@@ -78,9 +79,9 @@ export async function PUT(request: Request, { params }: { params: { guestId: str
     }
 
     // Check if email is already used by another guest
-    const existingGuest = guests.find((g: any) => g.email.toLowerCase() === email.toLowerCase() && g.id !== guestId)
+    const existingGuest = guests.find((g: any) => g.name.toLowerCase() === name.toLowerCase() && g.id !== guestId)
     if (existingGuest) {
-      return NextResponse.json({ error: "A guest with this email already exists" }, { status: 400 })
+      return NextResponse.json({ error: "A guest with this name already exists" }, { status: 400 })
     }
 
     // Update guest
@@ -92,6 +93,31 @@ export async function PUT(request: Request, { params }: { params: { guestId: str
     }
 
     await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+
+    // Handle additional guests if provided
+    if (newAdditionalGuests && newAdditionalGuests.length > 0) {
+      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
+      let existingAdditionalGuests: any[] = []
+
+      if (existsSync(additionalGuestsFile)) {
+        const additionalFileContent = await readFile(additionalGuestsFile, "utf-8")
+        existingAdditionalGuests = JSON.parse(additionalFileContent)
+      }
+
+      // Add new additional guests
+      const additionalGuestRecords = newAdditionalGuests.map((guest: any) => ({
+        id: uuidv4(),
+        primaryGuestId: guestId,
+        name: guest.name,
+        email: guest.email || undefined,
+        phone: guest.phone || undefined,
+        rsvpStatus: "pending",
+        createdAt: new Date().toISOString(),
+      }))
+
+      existingAdditionalGuests.push(...additionalGuestRecords)
+      await writeFile(additionalGuestsFile, JSON.stringify(existingAdditionalGuests, null, 2))
+    }
 
     return NextResponse.json({ success: true, guest: guests[guestIndex] })
   } catch (error) {

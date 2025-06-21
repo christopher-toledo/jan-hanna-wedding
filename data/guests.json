@@ -1,10 +1,28 @@
 [
   {
-    "id": "04b2f9ae-13db-4ce1-9849-3ba9c05389de",
-    "name": "Jigs",
-    "email": "johndoe@gmail.com",
-    "rsvpStatus": "attending",
+    "id": "4f8b21e1-94b8-4060-945c-6d479cbbc3e1",
+    "name": "John Doe",
+    "email": "",
+    "phone": "",
+    "rsvpStatus": "not-attending",
     "invitationSent": true,
-    "createdAt": "2025-06-21T14:23:26.856Z"
+    "createdAt": "2025-06-21T16:26:14.934Z"
+  },
+  {
+    "id": "3af1e5a7-e798-42ec-a0d0-085e93c51263",
+    "name": "CHRISTOPHER GABAC TOLEDO",
+    "email": "",
+    "rsvpStatus": "not-attending",
+    "invitationSent": true,
+    "createdAt": "2025-06-21T16:34:30.251Z",
+    "phone": ""
+  },
+  {
+    "id": "0daa6f18-cccb-45fa-82c6-f47c52054ef1",
+    "name": "test",
+    "email": "",
+    "rsvpStatus": "pending",
+    "invitationSent": true,
+    "createdAt": "2025-06-21T16:36:33.945Z"
   }
 ]

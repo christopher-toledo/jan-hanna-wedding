@@ -82,6 +82,7 @@ export function GuestManager() {
   const [qrCodeData, setQrCodeData] = useState<{
     qrCodeUrl: string;
     rsvpUrl: string;
+    guestId?: string;
   } | null>(null);
   const [tempAdditionalGuests, setTempAdditionalGuests] = useState<
     Array<{ name: string; email: string; phone: string }>
@@ -106,8 +107,43 @@ export function GuestManager() {
         fetch("/api/admin/additional-guests"),
       ]);
 
-      const guestsData = await guestsResponse.json();
-      const additionalGuestsData = await additionalGuestsResponse.json();
+      // Check if responses are ok before parsing JSON
+      let guestsData = { guests: [] };
+      let additionalGuestsData = { additionalGuests: [] };
+
+      if (guestsResponse.ok) {
+        const guestsText = await guestsResponse.text();
+        if (guestsText) {
+          try {
+            guestsData = JSON.parse(guestsText);
+          } catch (e) {
+            console.error("Error parsing guests JSON:", e);
+          }
+        }
+      } else {
+        console.error(
+          "Guests API error:",
+          guestsResponse.status,
+          guestsResponse.statusText
+        );
+      }
+
+      if (additionalGuestsResponse.ok) {
+        const additionalText = await additionalGuestsResponse.text();
+        if (additionalText) {
+          try {
+            additionalGuestsData = JSON.parse(additionalText);
+          } catch (e) {
+            console.error("Error parsing additional guests JSON:", e);
+          }
+        }
+      } else {
+        console.error(
+          "Additional guests API error:",
+          additionalGuestsResponse.status,
+          additionalGuestsResponse.statusText
+        );
+      }
 
       setGuests(guestsData.guests || []);
       setAdditionalGuests(additionalGuestsData.additionalGuests || []);
@@ -181,6 +217,13 @@ export function GuestManager() {
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
 
+    // Basic client-side validation
+    if (!name.trim()) {
+      alert("Name is required");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const response = await fetch("/api/admin/guests", {
         method: "POST",
@@ -189,7 +232,7 @@ export function GuestManager() {
         },
         body: JSON.stringify({
           name,
-          email,
+          email: email || "", // Allow empty email
           phone,
           additionalGuests: tempAdditionalGuests,
         }),
@@ -201,7 +244,7 @@ export function GuestManager() {
         setIsAddDialogOpen(false);
         setTempAdditionalGuests([]);
         fetchData();
-        e.currentTarget.reset();
+        //e.currentTarget.reset();
       } else {
         alert(result.error || "Failed to add guest");
       }
@@ -224,19 +267,32 @@ export function GuestManager() {
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
 
+    // Basic client-side validation
+    if (!name.trim()) {
+      alert("Name is required");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const response = await fetch(`/api/admin/guests/${editingGuest.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, phone }),
+        body: JSON.stringify({
+          name,
+          email: email || "", // Allow empty email
+          phone,
+          additionalGuests: tempAdditionalGuests,
+        }),
       });
 
       const result = await response.json();
 
       if (result.success) {
         setEditingGuest(null);
+        setTempAdditionalGuests([]);
         fetchData();
       } else {
         alert(result.error || "Failed to update guest");
@@ -371,7 +427,7 @@ export function GuestManager() {
         `/api/admin/guests/${guestId}/qr?baseUrl=${encodeURIComponent(baseUrl)}`
       );
       const data = await response.json();
-      setQrCodeData(data);
+      setQrCodeData({ ...data, guestId }); // Store guestId for download filename
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
@@ -510,12 +566,12 @@ export function GuestManager() {
                 Add Primary Guest
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
+            <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+              <DialogHeader className="flex-shrink-0">
                 <DialogTitle>Add New Primary Guest</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleAddGuest} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex-1 overflow-y-auto">
+                <form onSubmit={handleAddGuest} className="space-y-4 p-1">
                   <div>
                     <Label htmlFor="name">Full Name *</Label>
                     <Input
@@ -525,120 +581,123 @@ export function GuestManager() {
                       required
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Enter email address"
-                      required
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="email">Email Address (Optional)</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="Enter email address (optional)"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Phone Number (Optional)</Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="Enter phone number"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone Number (Optional)</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="Enter phone number"
-                  />
-                </div>
 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-base font-medium">
-                      Additional Guests
-                    </Label>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-base font-medium">
+                        Additional Guests
+                      </Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addTempAdditionalGuest}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Additional Guest
+                      </Button>
+                    </div>
+
+                    {tempAdditionalGuests.map((guest, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 space-y-3"
+                      >
+                        <div className="flex justify-between items-center">
+                          <Label className="font-medium">
+                            Additional Guest {index + 1}
+                          </Label>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeTempAdditionalGuest(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div>
+                            <Label>Name *</Label>
+                            <Input
+                              value={guest.name}
+                              onChange={(e) =>
+                                updateTempAdditionalGuest(
+                                  index,
+                                  "name",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Guest name"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label>Email</Label>
+                            <Input
+                              type="email"
+                              value={guest.email}
+                              onChange={(e) =>
+                                updateTempAdditionalGuest(
+                                  index,
+                                  "email",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Guest email"
+                            />
+                          </div>
+                          <div>
+                            <Label>Phone</Label>
+                            <Input
+                              value={guest.phone}
+                              onChange={(e) =>
+                                updateTempAdditionalGuest(
+                                  index,
+                                  "phone",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Guest phone"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 border-t">
                     <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addTempAdditionalGuest}
+                      type="submit"
+                      className="w-full"
+                      disabled={isSubmitting}
                     >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Additional Guest
+                      {isSubmitting ? "Adding..." : "Add Guest"}
                     </Button>
                   </div>
-
-                  {tempAdditionalGuests.map((guest, index) => (
-                    <div
-                      key={index}
-                      className="border rounded-lg p-4 space-y-3"
-                    >
-                      <div className="flex justify-between items-center">
-                        <Label className="font-medium">
-                          Additional Guest {index + 1}
-                        </Label>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeTempAdditionalGuest(index)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                          <Label>Name *</Label>
-                          <Input
-                            value={guest.name}
-                            onChange={(e) =>
-                              updateTempAdditionalGuest(
-                                index,
-                                "name",
-                                e.target.value
-                              )
-                            }
-                            placeholder="Guest name"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label>Email</Label>
-                          <Input
-                            type="email"
-                            value={guest.email}
-                            onChange={(e) =>
-                              updateTempAdditionalGuest(
-                                index,
-                                "email",
-                                e.target.value
-                              )
-                            }
-                            placeholder="Guest email"
-                          />
-                        </div>
-                        <div>
-                          <Label>Phone</Label>
-                          <Input
-                            value={guest.phone}
-                            onChange={(e) =>
-                              updateTempAdditionalGuest(
-                                index,
-                                "phone",
-                                e.target.value
-                              )
-                            }
-                            placeholder="Guest phone"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Adding..." : "Add Guest"}
-                </Button>
-              </form>
+                </form>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
@@ -840,7 +899,10 @@ export function GuestManager() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setEditingGuest(guest)}
+                            onClick={() => {
+                              setEditingGuest(guest);
+                              setTempAdditionalGuests([]);
+                            }}
                           >
                             <Edit className="h-3 w-3" />
                           </Button>
@@ -901,13 +963,13 @@ export function GuestManager() {
                     {
                       key: "attending",
                       label: "Attending",
-                      count: getStatusCount("attending", true),
+                      count: getStatusCount("attending"),
                       icon: UserCheck,
                     },
                     {
                       key: "not-attending",
                       label: "Not Attending",
-                      count: getStatusCount("not-attending", true),
+                      count: getStatusCount("not-attending"),
                       icon: UserX,
                     },
                   ].map((filter) => (
@@ -1006,7 +1068,7 @@ export function GuestManager() {
                           }
                           className="text-red-600 hover:text-red-700"
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -1020,60 +1082,183 @@ export function GuestManager() {
 
       {/* Edit Primary Guest Dialog */}
       <Dialog open={!!editingGuest} onOpenChange={() => setEditingGuest(null)}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>Edit Guest Details</DialogTitle>
           </DialogHeader>
           {editingGuest && (
-            <form onSubmit={handleEditGuest} className="space-y-4">
-              <div>
-                <Label htmlFor="edit-name">Full Name</Label>
-                <Input
-                  id="edit-name"
-                  name="name"
-                  defaultValue={editingGuest.name}
-                  placeholder="Enter guest name"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-email">Email Address</Label>
-                <Input
-                  id="edit-email"
-                  name="email"
-                  type="email"
-                  defaultValue={editingGuest.email}
-                  placeholder="Enter email address"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-phone">Phone Number (Optional)</Label>
-                <Input
-                  id="edit-phone"
-                  name="phone"
-                  type="tel"
-                  defaultValue={editingGuest.phone || ""}
-                  placeholder="Enter phone number"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  type="submit"
-                  className="flex-1"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Updating..." : "Update Guest"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setEditingGuest(null)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
+            <div className="flex-1 overflow-y-auto">
+              <form onSubmit={handleEditGuest} className="space-y-4 p-1">
+                <div>
+                  <Label htmlFor="edit-name">Full Name</Label>
+                  <Input
+                    id="edit-name"
+                    name="name"
+                    defaultValue={editingGuest.name}
+                    placeholder="Enter guest name"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-email">Email Address (Optional)</Label>
+                  <Input
+                    id="edit-email"
+                    name="email"
+                    type="email"
+                    defaultValue={editingGuest.email}
+                    placeholder="Enter email address (optional)"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-phone">Phone Number (Optional)</Label>
+                  <Input
+                    id="edit-phone"
+                    name="phone"
+                    type="tel"
+                    defaultValue={editingGuest.phone || ""}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-base font-medium">
+                      Update Additional Guests
+                    </Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addTempAdditionalGuest}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Additional Guest
+                    </Button>
+                  </div>
+
+                  {/* Show existing additional guests */}
+                  {additionalGuests
+                    .filter((guest) => guest.primaryGuestId === editingGuest.id)
+                    .map((guest, index) => (
+                      <div
+                        key={guest.id}
+                        className="border rounded-lg p-4 space-y-3 bg-muted/30"
+                      >
+                        <div className="flex justify-between items-center">
+                          <Label className="font-medium">
+                            Existing Guest: {guest.name}
+                          </Label>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              handleDeleteAdditionalGuest(guest.id, guest.name)
+                            }
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {guest.email && <div>Email: {guest.email}</div>}
+                          {guest.phone && <div>Phone: {guest.phone}</div>}
+                          <div>Status: {getStatusBadge(guest.rsvpStatus)}</div>
+                        </div>
+                      </div>
+                    ))}
+
+                  {/* Add new additional guests */}
+                  {tempAdditionalGuests.map((guest, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <div className="flex justify-between items-center">
+                        <Label className="font-medium">
+                          New Additional Guest {index + 1}
+                        </Label>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeTempAdditionalGuest(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                          <Label>Name *</Label>
+                          <Input
+                            value={guest.name}
+                            onChange={(e) =>
+                              updateTempAdditionalGuest(
+                                index,
+                                "name",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Guest name"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label>Email</Label>
+                          <Input
+                            type="email"
+                            value={guest.email}
+                            onChange={(e) =>
+                              updateTempAdditionalGuest(
+                                index,
+                                "email",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Guest email"
+                          />
+                        </div>
+                        <div>
+                          <Label>Phone</Label>
+                          <Input
+                            value={guest.phone}
+                            onChange={(e) =>
+                              updateTempAdditionalGuest(
+                                index,
+                                "phone",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Guest phone"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2 pt-4 border-t">
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Updating..." : "Update Guest"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setEditingGuest(null);
+                      setTempAdditionalGuests([]);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
           )}
         </DialogContent>
       </Dialog>
@@ -1160,11 +1345,37 @@ export function GuestManager() {
                 {qrCodeData.rsvpUrl}
               </p>
               <Button
-                onClick={() => {
-                  const link = document.createElement("a");
-                  link.href = qrCodeData.qrCodeUrl;
-                  link.download = "rsvp-qr-code.png";
-                  link.click();
+                onClick={async () => {
+                  try {
+                    // Find the guest name for the current QR code
+                    const currentGuestId = qrCodeData.rsvpUrl.split("/").pop();
+                    const currentGuest = guests.find(
+                      (g) => g.id === currentGuestId
+                    );
+                    const guestName = currentGuest?.name || "guest";
+                    const fileName = `${guestName.replace(
+                      /[^a-zA-Z0-9]/g,
+                      "_"
+                    )}_qr_code.png`;
+
+                    // Fetch the QR code image
+                    const response = await fetch(qrCodeData.qrCodeUrl);
+                    const blob = await response.blob();
+
+                    // Create download link
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error("Error downloading QR code:", error);
+                    // Fallback to opening in new tab
+                    window.open(qrCodeData.qrCodeUrl, "_blank");
+                  }
                 }}
               >
                 <Download className="h-4 w-4 mr-2" />

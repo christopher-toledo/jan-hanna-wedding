@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Users,
-  UserCheck,
-  UserX,
-  UserPlus,
-  Calendar,
-  Camera,
-} from "lucide-react";
+import { Users, UserCheck, UserX, Calendar, Camera } from "lucide-react";
 
 interface Stats {
   totalGuests: number;
@@ -54,7 +47,7 @@ export function AdminStats() {
       title: "Total Guests",
       value: stats.totalGuests,
       icon: Users,
-      description: "Invited guests",
+      description: "All invited guests",
       color: "text-blue-600",
     },
     {
@@ -79,13 +72,6 @@ export function AdminStats() {
       color: "text-yellow-600",
     },
     {
-      title: "Additional Guests",
-      value: stats.additionalGuests,
-      icon: UserPlus,
-      description: "Plus ones & extras",
-      color: "text-purple-600",
-    },
-    {
       title: "Gallery Images",
       value: stats.totalImages,
       icon: Camera,
@@ -97,7 +83,7 @@ export function AdminStats() {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <Card key={i}>
             <CardContent className="p-6">
               <div className="animate-pulse">
