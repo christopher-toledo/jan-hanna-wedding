@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { GalleryGrid } from "@/components/gallery-grid";
 import { ImageUpload } from "@/components/image-upload";
+import CountdownTimer from "@/components/countdown-timer";
 
 export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
@@ -217,6 +218,25 @@ export default function HomePage() {
             <ArrowDown className="h-5 w-5" />
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* Countdown Timer Section */}
+      <section className="py-24 bg-primary/90 relative overflow-hidden">
+        <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="mb-10"
+          >
+            <h2 className="font-serif text-4xl md:text-5xl text-white mb-4">
+              DAYS LEFT BEFORE WE SAY I DO
+            </h2>
+            <div className="w-24 h-px bg-white/30 mx-auto"></div>
+          </motion.div>
+          <CountdownTimer />
+        </div>
       </section>
 
       {/* Our Story Section */}
