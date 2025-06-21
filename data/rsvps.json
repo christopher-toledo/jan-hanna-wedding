@@ -1,18 +1,10 @@
 [
   {
-    "id": "1750493249859",
-    "guestId": "4941d69e-df7a-4694-bf29-c37e4c5cccfe",
-    "guestName": "2",
+    "id": "1750515977343",
+    "guestId": "04b2f9ae-13db-4ce1-9849-3ba9c05389de",
+    "guestName": "Jigs",
     "attending": "yes",
-    "additionalGuests": [
-      {
-        "id": "1750493241893",
-        "name": "1",
-        "email": ""
-      }
-    ],
-    "dietaryRestrictions": "nothing",
-    "message": "thank you",
-    "submittedAt": "2025-06-21T08:07:29.859Z"
+    "additionalGuests": [],
+    "submittedAt": "2025-06-21T14:26:17.343Z"
   }
 ]

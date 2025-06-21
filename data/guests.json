@@ -1,9 +1,10 @@
 [
   {
-    "id": "4941d69e-df7a-4694-bf29-c37e4c5cccfe",
-    "name": "2",
-    "email": "56ziolpdfr@wywnxa.com",
+    "id": "04b2f9ae-13db-4ce1-9849-3ba9c05389de",
+    "name": "Jigs",
+    "email": "johndoe@gmail.com",
     "rsvpStatus": "attending",
-    "createdAt": "2025-06-21T07:52:33.676Z"
+    "invitationSent": true,
+    "createdAt": "2025-06-21T14:23:26.856Z"
   }
 ]

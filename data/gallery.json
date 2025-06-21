@@ -6,7 +6,7 @@
     "uploader": "Topher Toledo",
     "uploadedAt": "2025-06-21T08:57:34.643Z",
     "caption": "test",
-    "visible": false
+    "visible": true
   },
   {
     "id": "aeaea577-03fd-4c2c-ae1f-6e39c41d4936",
@@ -52,5 +52,77 @@
     "uploadedAt": "2025-06-21T08:57:34.666Z",
     "caption": "test",
     "visible": true
+  },
+  {
+    "id": "2d403735-1e5e-4a87-8bad-3ed3cfb1821f",
+    "filename": "5b181d45-77f9-4a44-8994-2b111cd82274.jpg",
+    "originalName": "pexels-habib-hosseini-2909515.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:54.973Z",
+    "caption": "sadasdas",
+    "visible": true
+  },
+  {
+    "id": "8cf9586b-4f14-4695-84ae-704fc474c416",
+    "filename": "c17a7f2d-de6f-45c4-bccb-b4986cf9b064.jpg",
+    "originalName": "pexels-obviouslyarthur-1439260.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:54.978Z",
+    "caption": "sadasdas",
+    "visible": true
+  },
+  {
+    "id": "5c034134-55c4-4171-8ceb-8ae177033f90",
+    "filename": "14a48f55-b307-4e7a-8ce9-a5b5db62efe9.jpg",
+    "originalName": "pexels-leeloothefirst-4545092.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:54.984Z",
+    "caption": "sadasdas",
+    "visible": true
+  },
+  {
+    "id": "ce7cbbd0-e058-4587-9955-5911b7fd3381",
+    "filename": "943e91c3-361e-41da-a068-c45b0485ded1.jpg",
+    "originalName": "pexels-mastercowley-1128782.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:54.988Z",
+    "caption": "sadasdas",
+    "visible": true
+  },
+  {
+    "id": "27e85c15-52c7-431f-83d1-c8d595f1bcae",
+    "filename": "e50d145f-eadc-4564-b866-4a013ebab0e2.jpg",
+    "originalName": "pexels-pavel-danilyuk-7178868.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:55.006Z",
+    "caption": "sadasdas",
+    "visible": true
+  },
+  {
+    "id": "2e9c3a0a-9e5f-40e2-9140-8f4a3df2ef7a",
+    "filename": "db3da48a-3590-4a55-9f68-3bd31de7dd36.jpg",
+    "originalName": "pexels-avonnephoto-3916017.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:55.024Z",
+    "caption": "sadasdas",
+    "visible": false
+  },
+  {
+    "id": "534fb636-3a67-481c-baf6-3dd548791b27",
+    "filename": "af89565e-1fd7-4b62-9d7d-c3d8fdadb997.jpg",
+    "originalName": "pexels-tobiasbjorkli-13293704.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:55.044Z",
+    "caption": "sadasdas",
+    "visible": false
+  },
+  {
+    "id": "545204a7-5c04-47c8-840a-6cd47c320b47",
+    "filename": "3ed301bf-0ecd-40cc-a3fd-766d281e7ac7.jpg",
+    "originalName": "pexels-emma-bauso-1183828-2253870.jpg",
+    "uploader": "Topher",
+    "uploadedAt": "2025-06-21T12:24:55.225Z",
+    "caption": "sadasdas",
+    "visible": false
   }
 ]

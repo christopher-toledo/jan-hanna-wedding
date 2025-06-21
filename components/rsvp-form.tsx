@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { submitRSVP } from "@/app/actions/rsvp";
 import { useActionState } from "react";
-import { Heart, Plus, Trash2 } from "lucide-react";
+import { Heart, Users } from "lucide-react";
 
 interface RSVPFormProps {
   guestId: string;
@@ -20,36 +19,45 @@ interface RSVPFormProps {
 interface AdditionalGuest {
   id: string;
   name: string;
-  email: string;
+  email?: string;
+  phone?: string;
+  rsvpStatus: "pending" | "attending" | "not-attending";
 }
 
 export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
   const [state, action, isPending] = useActionState(submitRSVP, null);
   const [attending, setAttending] = useState<string>("");
-  const [bringingGuests, setBringingGuests] = useState(false);
   const [additionalGuests, setAdditionalGuests] = useState<AdditionalGuest[]>(
     []
   );
+  const [selectedAdditionalGuests, setSelectedAdditionalGuests] = useState<
+    string[]
+  >([]);
 
-  const addGuest = () => {
-    const newGuest: AdditionalGuest = {
-      id: Date.now().toString(),
-      name: "",
-      email: "",
-    };
-    setAdditionalGuests([...additionalGuests, newGuest]);
+  useEffect(() => {
+    fetchAdditionalGuests();
+  }, [guestId]);
+
+  const fetchAdditionalGuests = async () => {
+    try {
+      const response = await fetch(
+        `/api/admin/additional-guests?primaryGuestId=${guestId}`
+      );
+      const data = await response.json();
+      setAdditionalGuests(data.additionalGuests || []);
+    } catch (error) {
+      console.error("Error fetching additional guests:", error);
+    }
   };
 
-  const removeGuest = (id: string) => {
-    setAdditionalGuests(additionalGuests.filter((guest) => guest.id !== id));
-  };
-
-  const updateGuest = (id: string, field: "name" | "email", value: string) => {
-    setAdditionalGuests(
-      additionalGuests.map((guest) =>
-        guest.id === id ? { ...guest, [field]: value } : guest
-      )
-    );
+  const handleAdditionalGuestToggle = (guestId: string, attending: boolean) => {
+    if (attending) {
+      setSelectedAdditionalGuests([...selectedAdditionalGuests, guestId]);
+    } else {
+      setSelectedAdditionalGuests(
+        selectedAdditionalGuests.filter((id) => id !== guestId)
+      );
+    }
   };
 
   if (state?.success) {
@@ -75,8 +83,8 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       <input type="hidden" name="guestName" value={guestName} />
       <input
         type="hidden"
-        name="additionalGuests"
-        value={JSON.stringify(additionalGuests)}
+        name="selectedAdditionalGuests"
+        value={JSON.stringify(selectedAdditionalGuests)}
       />
 
       <div className="space-y-4">
@@ -104,132 +112,57 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         </RadioGroup>
       </div>
 
-      {attending === "yes" && (
-        <div className="space-y-6 animate-fade-in">
-          <div className="flex items-center space-x-3 p-4 border rounded-lg">
-            <Checkbox
-              id="bringingGuests"
-              name="bringingGuests"
-              checked={bringingGuests}
-              onCheckedChange={(checked: boolean) => {
-                setBringingGuests(checked as boolean);
-                if (!checked) {
-                  setAdditionalGuests([]);
-                }
-              }}
-            />
-            <Label
-              htmlFor="bringingGuests"
-              className="text-base cursor-pointer"
-            >
-              I'll be bringing additional guests
-            </Label>
-          </div>
-
-          {bringingGuests && (
-            <Card className="bg-muted/30 elegant-border animate-fade-in">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <Label className="text-base font-medium">
-                    Additional Guests
+      {additionalGuests.length > 0 && (
+        <Card className="bg-muted/30 elegant-border">
+          <CardContent className="pt-6 space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Users className="h-5 w-5 text-primary" />
+              <Label className="text-base font-medium">Additional Guests</Label>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Please select which of your additional guests will be attending:
+            </p>
+            <div className="space-y-3">
+              {additionalGuests.map((guest) => (
+                <div
+                  key={guest.id}
+                  className="flex items-center space-x-3 p-3 border rounded-lg bg-white/50"
+                >
+                  <Checkbox
+                    id={`additional-${guest.id}`}
+                    onCheckedChange={(checked) =>
+                      handleAdditionalGuestToggle(guest.id, checked as boolean)
+                    }
+                  />
+                  <Label
+                    htmlFor={`additional-${guest.id}`}
+                    className="flex-1 cursor-pointer"
+                  >
+                    <div className="font-medium">{guest.name}</div>
+                    {guest.email && (
+                      <div className="text-sm text-muted-foreground">
+                        {guest.email}
+                      </div>
+                    )}
                   </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addGuest}
-                    className="flex items-center gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Guest
-                  </Button>
                 </div>
-
-                {additionalGuests.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    Click "Add Guest" to add your additional guests
-                  </p>
-                )}
-
-                {additionalGuests.map((guest, index) => (
-                  <div
-                    key={guest.id}
-                    className="space-y-3 p-4 border rounded-lg bg-white/50"
-                  >
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">
-                        Guest {index + 1}
-                      </Label>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeGuest(guest.id)}
-                        className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <Label
-                          htmlFor={`guest-name-${guest.id}`}
-                          className="text-sm"
-                        >
-                          Full Name *
-                        </Label>
-                        <Input
-                          id={`guest-name-${guest.id}`}
-                          value={guest.name}
-                          onChange={(e) =>
-                            updateGuest(guest.id, "name", e.target.value)
-                          }
-                          placeholder="Enter guest name"
-                          className="mt-1"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label
-                          htmlFor={`guest-email-${guest.id}`}
-                          className="text-sm"
-                        >
-                          Email (optional)
-                        </Label>
-                        <Input
-                          id={`guest-email-${guest.id}`}
-                          type="email"
-                          value={guest.email}
-                          onChange={(e) =>
-                            updateGuest(guest.id, "email", e.target.value)
-                          }
-                          placeholder="Enter guest email"
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
-
-          <div>
-            <Label
-              htmlFor="dietaryRestrictions"
-              className="text-base font-medium"
-            >
-              Dietary Restrictions or Special Requests
-            </Label>
-            <Textarea
-              id="dietaryRestrictions"
-              name="dietaryRestrictions"
-              placeholder="Please let us know about any dietary restrictions or special requests for you and your guests"
-              className="mt-2 min-h-[100px]"
-            />
-          </div>
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
+
+      <div>
+        <Label htmlFor="dietaryRestrictions" className="text-base font-medium">
+          Dietary Restrictions or Special Requests
+        </Label>
+        <Textarea
+          id="dietaryRestrictions"
+          name="dietaryRestrictions"
+          placeholder="Please let us know about any dietary restrictions or special requests"
+          className="mt-2 min-h-[100px]"
+        />
+      </div>
 
       <div>
         <Label htmlFor="message" className="text-base font-medium">
@@ -252,7 +185,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       <Button
         type="submit"
         className="w-full bg-primary hover:bg-primary/90 text-white py-6 text-lg font-medium elegant-shadow"
-        disabled={isPending || !attending}
+        disabled={isPending}
       >
         {isPending ? "Submitting..." : "Submit RSVP"}
       </Button>

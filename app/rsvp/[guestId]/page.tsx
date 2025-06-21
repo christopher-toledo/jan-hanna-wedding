@@ -40,7 +40,7 @@ export default async function RSVPPage({ params }: RSVPPageProps) {
   }
 
   return (
-    <div className="min-h-screen elegant-gradient py-12">
+    <div className="min-h-screen elegant-gradient py-12 mt-12">
       <div className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">

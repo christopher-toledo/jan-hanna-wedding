@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { MapPin, Clock, Gift, Car, Users, Music, Camera } from "lucide-react"
-import { motion } from "framer-motion"
-import Image from "next/image"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { MapPin, Clock, Gift, Car, Users, Music, Camera } from "lucide-react";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function InformationPage() {
   return (
@@ -21,14 +21,16 @@ export default function InformationPage() {
           <div className="absolute inset-0 bg-white/90"></div>
         </div>
 
-        <div className="relative z-10 container mx-auto px-6">
+        <div className="relative z-10 container mx-auto py-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="font-serif text-5xl md:text-6xl text-primary mb-6">Wedding Details</h1>
+            <h1 className="font-serif text-5xl md:text-6xl text-primary mb-6">
+              Wedding Details
+            </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Everything you need to know about Jan & Hanna's special day
             </p>
@@ -37,7 +39,7 @@ export default function InformationPage() {
         </div>
       </section>
 
-      <div className="container mx-auto px-6 pb-24">
+      <div className="container mx-auto px-6 py-24">
         <div className="max-w-6xl mx-auto">
           {/* Main Details Grid */}
           <div className="grid lg:grid-cols-2 gap-8 mb-16">
@@ -60,13 +62,23 @@ export default function InformationPage() {
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-semibold text-lg text-primary mb-2">Date & Time</h4>
-                      <p className="text-muted-foreground text-lg">Tuesday, September 23, 2025</p>
-                      <p className="text-muted-foreground">Ceremony begins at 4:00 PM</p>
-                      <p className="text-sm text-muted-foreground">Please arrive by 3:45 PM</p>
+                      <h4 className="font-semibold text-lg text-primary mb-2">
+                        Date & Time
+                      </h4>
+                      <p className="text-muted-foreground text-lg">
+                        Tuesday, September 23, 2025
+                      </p>
+                      <p className="text-muted-foreground">
+                        Ceremony begins at 4:00 PM
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Please arrive by 3:45 PM
+                      </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-lg text-primary mb-2">Location</h4>
+                      <h4 className="font-semibold text-lg text-primary mb-2">
+                        Location
+                      </h4>
                       <p className="text-muted-foreground">
                         <strong>Sunset Gardens</strong>
                         <br />
@@ -76,9 +88,15 @@ export default function InformationPage() {
                       </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-lg text-primary mb-2">Dress Code</h4>
-                      <p className="text-muted-foreground">Semi-formal attire requested</p>
-                      <p className="text-sm text-muted-foreground">Garden party elegant</p>
+                      <h4 className="font-semibold text-lg text-primary mb-2">
+                        Dress Code
+                      </h4>
+                      <p className="text-muted-foreground">
+                        Semi-formal attire requested
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Garden party elegant
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -104,19 +122,37 @@ export default function InformationPage() {
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-semibold text-lg text-primary mb-2">Time</h4>
-                      <p className="text-muted-foreground text-lg">6:00 PM - 11:00 PM</p>
-                      <p className="text-sm text-muted-foreground">Cocktail hour starts at 5:00 PM</p>
+                      <h4 className="font-semibold text-lg text-primary mb-2">
+                        Time
+                      </h4>
+                      <p className="text-muted-foreground text-lg">
+                        6:00 PM - 11:00 PM
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Cocktail hour starts at 5:00 PM
+                      </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-lg text-primary mb-2">Location</h4>
-                      <p className="text-muted-foreground">Same as ceremony venue</p>
-                      <p className="text-sm text-muted-foreground">Beautiful outdoor pavilion</p>
+                      <h4 className="font-semibold text-lg text-primary mb-2">
+                        Location
+                      </h4>
+                      <p className="text-muted-foreground">
+                        Same as ceremony venue
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Beautiful outdoor pavilion
+                      </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-lg text-primary mb-2">Dinner</h4>
-                      <p className="text-muted-foreground">Three-course plated dinner</p>
-                      <p className="text-sm text-muted-foreground">Vegetarian and dietary options available</p>
+                      <h4 className="font-semibold text-lg text-primary mb-2">
+                        Dinner
+                      </h4>
+                      <p className="text-muted-foreground">
+                        Three-course plated dinner
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Vegetarian and dietary options available
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -130,12 +166,20 @@ export default function InformationPage() {
               {
                 icon: Car,
                 title: "Travel & Parking",
-                details: ["Free parking on-site", "Valet service available", "Uber/Lyft pickup area designated"],
+                details: [
+                  "Free parking on-site",
+                  "Valet service available",
+                  "Uber/Lyft pickup area designated",
+                ],
               },
               {
                 icon: Gift,
                 title: "Registry & Gifts",
-                details: ["Your presence is our present!", "No gifts necessary", "Donations to charity welcome"],
+                details: [
+                  "Your presence is our present!",
+                  "No gifts necessary",
+                  "Donations to charity welcome",
+                ],
               },
               {
                 icon: Camera,
@@ -149,7 +193,11 @@ export default function InformationPage() {
               {
                 icon: Music,
                 title: "Entertainment",
-                details: ["Live band during ceremony", "DJ for reception dancing", "Song requests welcome"],
+                details: [
+                  "Live band during ceremony",
+                  "DJ for reception dancing",
+                  "Song requests welcome",
+                ],
               },
             ].map((item, index) => (
               <motion.div
@@ -204,13 +252,41 @@ export default function InformationPage() {
               <CardContent>
                 <div className="space-y-6">
                   {[
-                    { time: "3:30 PM", event: "Guest arrival and seating", description: "Welcome drinks served" },
-                    { time: "4:00 PM", event: "Ceremony begins", description: "Exchange of vows" },
-                    { time: "4:30 PM", event: "Cocktail hour", description: "Photos and mingling" },
-                    { time: "6:00 PM", event: "Reception dinner", description: "Three-course meal" },
-                    { time: "8:00 PM", event: "First dance", description: "Dancing begins" },
-                    { time: "10:00 PM", event: "Cake cutting", description: "Sweet celebration" },
-                    { time: "11:00 PM", event: "Last dance", description: "Final celebration" },
+                    {
+                      time: "3:30 PM",
+                      event: "Guest arrival and seating",
+                      description: "Welcome drinks served",
+                    },
+                    {
+                      time: "4:00 PM",
+                      event: "Ceremony begins",
+                      description: "Exchange of vows",
+                    },
+                    {
+                      time: "4:30 PM",
+                      event: "Cocktail hour",
+                      description: "Photos and mingling",
+                    },
+                    {
+                      time: "6:00 PM",
+                      event: "Reception dinner",
+                      description: "Three-course meal",
+                    },
+                    {
+                      time: "8:00 PM",
+                      event: "First dance",
+                      description: "Dancing begins",
+                    },
+                    {
+                      time: "10:00 PM",
+                      event: "Cake cutting",
+                      description: "Sweet celebration",
+                    },
+                    {
+                      time: "11:00 PM",
+                      event: "Last dance",
+                      description: "Final celebration",
+                    },
                   ].map((item, index) => (
                     <motion.div
                       key={index}
@@ -221,12 +297,18 @@ export default function InformationPage() {
                       className="flex items-start gap-6 py-4 border-b border-gray-100 last:border-b-0"
                     >
                       <div className="flex-shrink-0 w-20 text-right">
-                        <span className="font-semibold text-primary text-lg">{item.time}</span>
+                        <span className="font-semibold text-primary text-lg">
+                          {item.time}
+                        </span>
                       </div>
                       <div className="flex-shrink-0 w-3 h-3 bg-primary rounded-full mt-2"></div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-lg mb-1">{item.event}</h4>
-                        <p className="text-muted-foreground">{item.description}</p>
+                        <h4 className="font-semibold text-lg mb-1">
+                          {item.event}
+                        </h4>
+                        <p className="text-muted-foreground">
+                          {item.description}
+                        </p>
                       </div>
                     </motion.div>
                   ))}
@@ -255,31 +337,45 @@ export default function InformationPage() {
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-8">
                   <div>
-                    <h4 className="font-semibold text-lg text-primary mb-3">Recommended Hotels</h4>
+                    <h4 className="font-semibold text-lg text-primary mb-3">
+                      Recommended Hotels
+                    </h4>
                     <div className="space-y-4">
                       <div className="p-4 bg-muted/30 rounded-lg">
                         <h5 className="font-semibold">Grand Hotel</h5>
-                        <p className="text-sm text-muted-foreground">5 minutes drive from venue</p>
-                        <p className="text-sm text-muted-foreground">Special wedding rate: $120/night</p>
+                        <p className="text-sm text-muted-foreground">
+                          5 minutes drive from venue
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Special wedding rate: $120/night
+                        </p>
                       </div>
                       <div className="p-4 bg-muted/30 rounded-lg">
                         <h5 className="font-semibold">Comfort Inn & Suites</h5>
-                        <p className="text-sm text-muted-foreground">10 minutes drive from venue</p>
-                        <p className="text-sm text-muted-foreground">Special wedding rate: $95/night</p>
+                        <p className="text-sm text-muted-foreground">
+                          10 minutes drive from venue
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Special wedding rate: $95/night
+                        </p>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-lg text-primary mb-3">Getting There</h4>
+                    <h4 className="font-semibold text-lg text-primary mb-3">
+                      Getting There
+                    </h4>
                     <div className="space-y-3">
                       <p className="text-muted-foreground">
                         <strong>From Airport:</strong> 25 minutes by car or taxi
                       </p>
                       <p className="text-muted-foreground">
-                        <strong>Public Transit:</strong> Bus route 42 stops 2 blocks away
+                        <strong>Public Transit:</strong> Bus route 42 stops 2
+                        blocks away
                       </p>
                       <p className="text-muted-foreground">
-                        <strong>Parking:</strong> Free on-site parking for 200+ cars
+                        <strong>Parking:</strong> Free on-site parking for 200+
+                        cars
                       </p>
                     </div>
                   </div>
@@ -298,9 +394,12 @@ export default function InformationPage() {
           >
             <Card className="elegant-shadow elegant-border bg-primary/5">
               <CardContent className="pt-8 text-center">
-                <h3 className="font-serif text-2xl text-primary mb-4">Questions?</h3>
+                <h3 className="font-serif text-2xl text-primary mb-4">
+                  Questions?
+                </h3>
                 <p className="text-muted-foreground mb-4">
-                  We're here to help! Don't hesitate to reach out if you have any questions.
+                  We're here to help! Don't hesitate to reach out if you have
+                  any questions.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <p className="text-muted-foreground">
@@ -310,12 +409,14 @@ export default function InformationPage() {
                     <strong>Hanna:</strong> (555) 987-6543
                   </p>
                 </div>
-                <p className="text-sm text-muted-foreground mt-4">Email: hello@janandhanna.com</p>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Email: hello@janandhanna.com
+                </p>
               </CardContent>
             </Card>
           </motion.div>
         </div>
       </div>
     </div>
-  )
+  );
 }
