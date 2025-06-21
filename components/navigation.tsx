@@ -50,14 +50,6 @@ export function Navigation() {
             >
               Gallery
             </button>
-            <Link
-              href="/admin"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === "/admin" ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              Admin
-            </Link>
           </div>
 
           <div className="md:hidden">
