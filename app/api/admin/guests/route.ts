@@ -10,6 +10,7 @@ interface Guest {
   email: string
   phone?: string
   rsvpStatus: "pending" | "attending" | "not-attending"
+  invitationSent: boolean
   createdAt: string
 }
 
@@ -37,10 +38,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, email, phone } = await request.json()
+    const { name, email, phone, additionalGuests } = await request.json()
 
-    if (!name || !email) {
-      return NextResponse.json({ error: "Name and email are required" }, { status: 400 })
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
     const dataDir = path.join(process.cwd(), "data")
@@ -58,9 +59,9 @@ export async function POST(request: Request) {
     }
 
     // Check if guest already exists
-    const existingGuest = guests.find((g) => g.email.toLowerCase() === email.toLowerCase())
+    const existingGuest = guests.find((g) => g.name.toLowerCase() === name.toLowerCase())
     if (existingGuest) {
-      return NextResponse.json({ error: "A guest with this email already exists" }, { status: 400 })
+      return NextResponse.json({ error: "A guest with this name already exists" }, { status: 400 })
     }
 
     // Create new guest
@@ -70,17 +71,40 @@ export async function POST(request: Request) {
       email,
       phone: phone || undefined,
       rsvpStatus: "pending",
+      invitationSent: false,
       createdAt: new Date().toISOString(),
     }
 
     guests.push(newGuest)
-
-    // Save to file
     await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+
+    // Add additional guests if provided
+    if (additionalGuests && additionalGuests.length > 0) {
+      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
+      let existingAdditionalGuests: any[] = []
+
+      if (existsSync(additionalGuestsFile)) {
+        const fileContent = await readFile(additionalGuestsFile, "utf-8")
+        existingAdditionalGuests = JSON.parse(fileContent)
+      }
+
+      const newAdditionalGuests = additionalGuests.map((guest: any) => ({
+        id: uuidv4(),
+        primaryGuestId: newGuest.id,
+        name: guest.name,
+        email: guest.email || undefined,
+        phone: guest.phone || undefined,
+        rsvpStatus: "pending",
+        createdAt: new Date().toISOString(),
+      }))
+
+      existingAdditionalGuests.push(...newAdditionalGuests)
+      await writeFile(additionalGuestsFile, JSON.stringify(existingAdditionalGuests, null, 2))
+    }
 
     return NextResponse.json({ success: true, guest: newGuest })
   } catch (error) {
     console.error("Error adding guest:", error)
-    return NextResponse.json({ error: "Failed to add guest "+error }, { status: 500 })
+    return NextResponse.json({ error: "Failed to add guest" }, { status: 500 })
   }
 }

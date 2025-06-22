@@ -98,7 +98,7 @@ export function RSVPResponses() {
                   </div>
                 </div>
 
-                {response.additionalGuests &&
+                {/* {response.additionalGuests &&
                   response.additionalGuests.length > 0 && (
                     <div className="bg-muted/30 rounded-lg p-3">
                       <div className="flex items-center gap-2 mb-2">
@@ -118,7 +118,7 @@ export function RSVPResponses() {
                         ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                 {response.dietaryRestrictions && (
                   <div className="flex items-start gap-2">

@@ -23,15 +23,15 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "#fefcfa",
-        foreground: "#2c2c2c",
+        background: "#f2efeb",
+        foreground: "#393f4a",
         primary: {
-          DEFAULT: "#8b7355",
+          DEFAULT: "#393f4a",
           foreground: "#ffffff",
         },
         secondary: {
           DEFAULT: "#f8f4f0",
-          foreground: "#2c2c2c",
+          foreground: "#393f4a",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -43,7 +43,7 @@ const config: Config = {
         },
         accent: {
           DEFAULT: "#ebe5dd",
-          foreground: "#2c2c2c",
+          foreground: "#393f4a",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -51,16 +51,18 @@ const config: Config = {
         },
         card: {
           DEFAULT: "#ffffff",
-          foreground: "#2c2c2c",
+          foreground: "#393f4a",
         },
       },
       fontFamily: {
-        serif: ["var(--font-playfair)"],
-        sans: ["var(--font-inter)"],
+        serif: ["var(--font-the-seasons)", "serif"],
+        sans: ["var(--font-montserrat)", "sans-serif"],
+        header: ["var(--font-the-seasons)", "serif"],
+        body: ["var(--font-montserrat)", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
+        md: "calc(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {

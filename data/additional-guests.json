@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1b547e1c-17e7-4176-b8f1-d9945bcec57c",
+    "primaryGuestId": "3af1e5a7-e798-42ec-a0d0-085e93c51263",
+    "name": "ew Additional Guest 1",
+    "rsvpStatus": "attending",
+    "createdAt": "2025-06-21T16:51:08.661Z",
+    "email": "",
+    "phone": ""
+  },
+  {
+    "id": "0cda3166-e956-4d7d-8c66-b3e333283388",
+    "primaryGuestId": "3af1e5a7-e798-42ec-a0d0-085e93c51263",
+    "name": "New Additional Guest 2",
+    "rsvpStatus": "attending",
+    "createdAt": "2025-06-21T16:51:08.661Z",
+    "email": "",
+    "phone": ""
+  }
+]

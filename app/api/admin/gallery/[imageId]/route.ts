@@ -15,8 +15,9 @@ interface GalleryImage {
 
 export async function PATCH(request: NextRequest, { params }: { params: { imageId: string } }) {
   try {
+    const _params = await(params)
     const { visible } = await request.json()
-    const imageId = params.imageId
+    const imageId = _params.imageId
 
     const dataDir = path.join(process.cwd(), "data")
     const galleryFile = path.join(dataDir, "gallery.json")
@@ -48,7 +49,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { imageI
 
 export async function DELETE(request: NextRequest, { params }: { params: { imageId: string } }) {
   try {
-    const imageId = params.imageId
+    const _params = await(params)
+    const imageId = _params.imageId
 
     const dataDir = path.join(process.cwd(), "data")
     const galleryFile = path.join(dataDir, "gallery.json")

@@ -20,8 +20,8 @@ export async function addGuest(prevState: any, formData: FormData) {
     const email = formData.get("email") as string
     const phone = formData.get("phone") as string
 
-    if (!name || !email) {
-      return { error: "Name and email are required" }
+    if (!name) {
+      return { error: "Name is required" }
     }
 
     const dataDir = path.join(process.cwd(), "data")
@@ -39,9 +39,9 @@ export async function addGuest(prevState: any, formData: FormData) {
     }
 
     // Check if guest already exists
-    const existingGuest = guests.find((g) => g.email.toLowerCase() === email.toLowerCase())
+    const existingGuest = guests.find((g) => g.name.toLowerCase() === name.toLowerCase())
     if (existingGuest) {
-      return { error: "A guest with this email already exists" }
+      return { error: "A guest with this name already exists" }
     }
 
     // Create new guest

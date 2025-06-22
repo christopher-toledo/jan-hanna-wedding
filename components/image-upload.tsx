@@ -1,56 +1,71 @@
 "use client";
 
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  startTransition,
-  FormEvent,
-} from "react";
-import { useActionState } from "react";
+import type React from "react";
+
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, X, ImageIcon, Loader2 } from "lucide-react";
+import { Upload, X, ImageIcon, Loader2, AlertCircle } from "lucide-react";
 import { uploadImage } from "@/app/actions/gallery";
+import { useActionState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ImageUploadProps {
   onUploadSuccess?: () => void;
 }
 
+interface UploadSettings {
+  enabled: boolean;
+  maxPhotos: number;
+  message?: string;
+}
+
 export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
+  const [state, formAction, isPending] = useActionState(uploadImage, null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [uploadSettings, setUploadSettings] = useState<UploadSettings>({
+    enabled: true,
+    maxPhotos: 5,
+  });
+  const [loading, setLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
-
+  const [hasProcessedSuccess, setHasProcessedSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [state, formAction, isPending] = useActionState(uploadImage, null);
-
+  // Fetch upload settings
   useEffect(() => {
-    if (state?.success) {
-      alert("Successfully Uploaded");
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/admin/upload-settings");
+        if (response.ok) {
+          const settings = await response.json();
+          setUploadSettings(settings);
+        }
+      } catch (error) {
+        console.error("Error fetching upload settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  // Handle successful upload
+  useEffect(() => {
+    if (state?.success && !hasProcessedSuccess) {
       setShowSuccess(true);
-      onUploadSuccess?.();
-      setTimeout(() => {
-        resetForm();
-      }, 2000);
+      setHasProcessedSuccess(true);
+      // Call the callback to refresh gallery
+      if (onUploadSuccess) {
+        onUploadSuccess();
+      }
     }
-
-    if (state?.error) {
-      alert("Upload failed: " + state.error);
-    }
-  }, [state]);
-
-  const resetForm = () => {
-    setSelectedFiles([]);
-    setPreviews([]);
-    setShowSuccess(false);
-    formRef.current?.reset();
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
+  }, [state?.success, hasProcessedSuccess, onUploadSuccess]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -61,7 +76,20 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
       return;
     }
 
+    // Limit to maxPhotos
+    if (imageFiles.length > uploadSettings.maxPhotos) {
+      alert(
+        `You can only upload up to ${uploadSettings.maxPhotos} photos at a time`
+      );
+      return;
+    }
+
     setSelectedFiles(imageFiles);
+
+    // Clean up old previews
+    previews.forEach((preview) => URL.revokeObjectURL(preview));
+
+    // Create new previews
     const newPreviews = imageFiles.map((file) => URL.createObjectURL(file));
     setPreviews(newPreviews);
   };
@@ -69,26 +97,79 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
   const removeFile = (index: number) => {
     const newFiles = selectedFiles.filter((_, i) => i !== index);
     const newPreviews = previews.filter((_, i) => i !== index);
+
+    // Revoke the URL to free memory
     URL.revokeObjectURL(previews[index]);
+
     setSelectedFiles(newFiles);
     setPreviews(newPreviews);
   };
 
-  const confirmAndSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const resetForm = useCallback(() => {
+    // Clean up all preview URLs
+    previews.forEach((preview) => URL.revokeObjectURL(preview));
 
-    if (!selectedFiles.length) return;
+    // Reset all state
+    setSelectedFiles([]);
+    setPreviews([]);
+    setShowSuccess(false);
+    setHasProcessedSuccess(true);
 
-    const confirmed = confirm("Are you sure you want to upload these photos?");
-    if (!confirmed) return;
+    // Reset form elements
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+  }, [previews]);
 
-    const formData = new FormData(e.currentTarget);
-    selectedFiles.forEach((file) => formData.append("images", file));
+  // Enhanced form action that includes selected files
+  const enhancedFormAction = (formData: FormData) => {
+    // Reset the processed success flag when starting a new upload
+    setHasProcessedSuccess(false);
 
-    startTransition(() => {
-      formAction(formData);
+    // Add selected files to form data
+    selectedFiles.forEach((file) => {
+      formData.append("images", file);
     });
+
+    // Call the original action
+    return formAction(formData);
   };
+
+  // Clean up previews on unmount
+  useEffect(() => {
+    return () => {
+      previews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+        <p className="text-muted-foreground">Loading upload settings...</p>
+      </div>
+    );
+  }
+
+  if (!uploadSettings.enabled) {
+    return (
+      <div className="text-center py-8">
+        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+          <Upload className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="font-header text-xl text-primary mb-2">
+          Photo Uploads Disabled
+        </h3>
+        <p className="text-muted-foreground">
+          {uploadSettings.message ||
+            "Photo uploads are currently disabled. Please check back later."}
+        </p>
+      </div>
+    );
+  }
 
   if (showSuccess) {
     return (
@@ -96,26 +177,33 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <ImageIcon className="h-8 w-8 text-green-600" />
         </div>
-        <h3 className="font-serif text-xl text-primary mb-2">
+        <h3 className="font-header text-xl text-primary mb-2">
           Photos Uploaded!
         </h3>
         <p className="text-muted-foreground">
           Thank you for sharing your beautiful moments with us.
         </p>
         <div className="mt-4 text-sm text-muted-foreground">
-          <p>Your photos will appear in the gallery below shortly...</p>
+          <p>Your photos will appear in the gallery shortly...</p>
         </div>
+        <Button variant="outline" className="mt-4" onClick={resetForm}>
+          Upload More Photos
+        </Button>
       </div>
     );
   }
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      onSubmit={confirmAndSubmit}
-      className="space-y-6"
-    >
+    <form ref={formRef} action={enhancedFormAction} className="space-y-6">
+      {/* Upload Limit Notice */}
+      <Alert>
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          You can upload up to {uploadSettings.maxPhotos} photos at a time. Each
+          photo should be under 10MB.
+        </AlertDescription>
+      </Alert>
+
       <div className="space-y-4">
         <div>
           <Label htmlFor="uploader" className="text-base font-medium">
@@ -144,7 +232,9 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
         </div>
 
         <div>
-          <Label className="text-base font-medium">Select Photos</Label>
+          <Label className="text-base font-medium">
+            Select Photos (Max {uploadSettings.maxPhotos})
+          </Label>
           <div className="mt-2">
             <input
               ref={fileInputRef}
@@ -164,22 +254,25 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
                 Click to select photos
               </span>
               <span className="text-xs text-muted-foreground mt-1">
-                PNG, JPG, GIF up to 10MB each
+                PNG, JPG, GIF up to 10MB each (Max {uploadSettings.maxPhotos}{" "}
+                photos)
               </span>
             </label>
           </div>
         </div>
 
+        {/* File Previews */}
         {selectedFiles.length > 0 && (
           <div className="space-y-4">
             <Label className="text-base font-medium">
-              Selected Photos ({selectedFiles.length})
+              Selected Photos ({selectedFiles.length}/{uploadSettings.maxPhotos}
+              )
             </Label>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {previews.map((preview, index) => (
                 <div key={index} className="relative group">
                   <img
-                    src={preview}
+                    src={preview || "/placeholder.svg"}
                     alt={`Preview ${index + 1}`}
                     className="w-full h-24 object-cover rounded-lg border"
                   />
@@ -203,6 +296,12 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
           </div>
         )}
       </div>
+
+      {state?.error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-600 text-sm">{state.error}</p>
+        </div>
+      )}
 
       <Button
         type="submit"

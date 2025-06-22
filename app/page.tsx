@@ -16,22 +16,16 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { GalleryGrid } from "@/components/gallery-grid";
-import { ImageUpload } from "@/components/image-upload";
+import CountdownTimer from "@/components/countdown-timer";
 
 export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
-  const [galleryRefreshTrigger, setGalleryRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleUploadSuccess = () => {
-    // Trigger gallery refresh
-    setGalleryRefreshTrigger((prev) => prev + 1);
-  };
 
   return (
     <div className="flex flex-col overflow-hidden">
@@ -217,6 +211,13 @@ export default function HomePage() {
             <ArrowDown className="h-5 w-5" />
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* Countdown Timer Section */}
+      <section className="py-4 bg-linen relative overflow-hidden">
+        <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
+          <CountdownTimer />
+        </div>
       </section>
 
       {/* Our Story Section */}
@@ -432,7 +433,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Gallery Section */}
+      {/* Gallery Preview Section */}
       <section id="gallery" className="py-24 bg-white">
         <div className="container mx-auto px-6">
           <motion.div
@@ -446,46 +447,42 @@ export default function HomePage() {
               Wedding Gallery
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Share your favorite moments with us and create lasting memories
-              together
+              Beautiful moments from our special day
             </p>
             <div className="w-24 h-px bg-primary/30 mx-auto mt-4"></div>
           </motion.div>
 
-          {/* Upload Section */}
+          {/* Gallery Preview */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="max-w-2xl mx-auto mb-16"
           >
-            <Card className="elegant-shadow elegant-border">
-              <CardContent className="p-8">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Camera className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="font-serif text-2xl text-primary mb-2">
-                    Share Your Photos
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Upload your beautiful moments from our special day
-                  </p>
-                </div>
-                <ImageUpload onUploadSuccess={handleUploadSuccess} />
-              </CardContent>
-            </Card>
+            <GalleryGrid isPreview={true} />
           </motion.div>
 
-          {/* Gallery Grid */}
+          {/* View More Button */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
+            className="text-center mt-12"
           >
-            <GalleryGrid refreshTrigger={galleryRefreshTrigger} />
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-6 text-base font-medium tracking-wide elegant-shadow"
+              >
+                <Link href="/gallery">
+                  <Camera className="h-5 w-5 mr-2" />
+                  View More Photos
+                </Link>
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -494,7 +491,7 @@ export default function HomePage() {
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+            src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
             alt="Wedding background"
             fill
             className="object-cover"
