@@ -72,7 +72,21 @@ export function UploadSettingsManager() {
 
   const formatDateTimeLocal = (dateString?: string) => {
     if (!dateString) return "";
-    return new Date(dateString).toISOString().slice(0, 16);
+    // Parse the date string as UTC, then convert to UTC+8 for display in input[type="datetime-local"]
+    const date = new Date(dateString);
+    // Add 8 hours to UTC time
+    date.setHours(date.getUTCHours() + 8);
+    // Format as yyyy-MM-ddTHH:mm (local time for UTC+8)
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    const yyyy = date.getFullYear();
+    const MM = pad(date.getMonth() + 1);
+    const dd = pad(date.getDate());
+    const HH = pad(date.getHours());
+    const mm = pad(date.getMinutes());
+
+    const formattedDate = `${yyyy}-${MM}-${dd}T${HH}:${mm}`;
+    console.log(formattedDate);
+    return `${yyyy}-${MM}-${dd}T${HH}:${mm}`;
   };
 
   const handleDateTimeChange = (
@@ -81,7 +95,7 @@ export function UploadSettingsManager() {
   ) => {
     setSettings((prev) => ({
       ...prev,
-      [field]: value ? new Date(value).toISOString() : undefined,
+      [field]: value ? formatDateTimeLocal(value) : undefined,
     }));
   };
 
