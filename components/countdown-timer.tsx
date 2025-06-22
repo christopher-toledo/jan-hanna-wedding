@@ -23,11 +23,18 @@ function getTimeRemaining(target: Date): CountdownTime {
 }
 
 export default function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState<CountdownTime>(() =>
-    getTimeRemaining(WEDDING_DATE)
-  );
+  // Hydration fix: Don't render timer until after mount
+  const [mounted, setMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<CountdownTime>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
+    setMounted(true);
+    setTimeLeft(getTimeRemaining(WEDDING_DATE));
     const timer = setInterval(() => {
       setTimeLeft(getTimeRemaining(WEDDING_DATE));
     }, 1000);
@@ -39,6 +46,11 @@ export default function CountdownTimer() {
     timeLeft.hours === 0 &&
     timeLeft.minutes === 0 &&
     timeLeft.seconds === 0;
+
+  if (!mounted) {
+    // Prevent hydration mismatch by rendering nothing until mounted
+    return null;
+  }
 
   return (
     <motion.div
@@ -60,15 +72,15 @@ export default function CountdownTimer() {
         ) : (
           <div className="flex flex-nowrap gap-2 xs:gap-3 sm:gap-4 md:gap-8 text-midnightBlue items-start w-full justify-center overflow-x-auto">
             <CountdownUnit value={timeLeft.days} label="Days" />
-            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2">
+            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2 align-top">
               :
             </span>
             <CountdownUnit value={timeLeft.hours} label="Hours" />
-            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2">
+            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2 align-top">
               :
             </span>
             <CountdownUnit value={timeLeft.minutes} label="Minutes" />
-            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2">
+            <span className="text-[40px] xs:text-[60px] sm:text-[70px] md:text-[90px] font-bold font-spartan leading-none mx-0 xs:mx-1 pt-1 xs:pt-2 align-top">
               :
             </span>
             <CountdownUnit value={timeLeft.seconds} label="Seconds" />
