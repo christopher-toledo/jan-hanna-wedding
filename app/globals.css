@@ -2,12 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=The+Seasons:wght@400;700&display=swap");
+
 :root {
+  --font-the-seasons: "The Seasons", serif;
   --font-montserrat: "Montserrat", sans-serif;
-  --font-pinyon: "Pinyon Script", cursive;
-  --font-cormorant: "Cormorant Garamond", serif;
-  --font-the_seasons: "the-seasons", sans-serif;
-  --font-league-spartan: "League Spartan", sans-serif;
 }
 
 @layer base {
@@ -19,14 +18,31 @@
   }
 
   .font-serif {
-    font-family: var(--font-the_seasons);
-  }
-
-  .font-cursive {
-    font-family: var(--font-pinyon);
+    font-family: var(--font-the-seasons);
   }
 
   .font-sans {
+    font-family: var(--font-montserrat);
+  }
+
+  /* Header styles */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-the-seasons);
+  }
+
+  /* Ensure all text uses Montserrat by default */
+  p,
+  span,
+  div,
+  button,
+  input,
+  textarea,
+  label {
     font-family: var(--font-montserrat);
   }
 }
@@ -49,5 +65,15 @@
 
   .elegant-border {
     border: 1px solid rgba(139, 115, 85, 0.2);
+  }
+
+  /* Header font class */
+  .font-header {
+    font-family: var(--font-the-seasons);
+  }
+
+  /* Subheading and body text font class */
+  .font-body {
+    font-family: var(--font-montserrat);
   }
 }

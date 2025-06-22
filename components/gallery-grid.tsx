@@ -19,11 +19,23 @@ interface GalleryImage {
   visible: boolean;
 }
 
-interface GalleryGridProps {
-  refreshTrigger?: number;
+interface PreviewSettings {
+  count: number;
+  selectedImages: string[];
+  useLatest: boolean;
 }
 
-export function GalleryGrid({ refreshTrigger }: GalleryGridProps) {
+interface GalleryGridProps {
+  refreshTrigger?: number;
+  limit?: number;
+  isPreview?: boolean;
+}
+
+export function GalleryGrid({
+  refreshTrigger,
+  limit,
+  isPreview = false,
+}: GalleryGridProps) {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
@@ -34,22 +46,77 @@ export function GalleryGrid({ refreshTrigger }: GalleryGridProps) {
 
   const fetchImages = useCallback(async () => {
     try {
-      const response = await fetch("/api/gallery");
-      const data = await response.json();
-      // Only show visible images to public
-      const visibleImages =
-        data.images?.filter((img: GalleryImage) => img.visible) || [];
+      let visibleImages: GalleryImage[] = [];
+
+      if (isPreview) {
+        // Fetch preview settings and images for home page preview
+        const [settingsResponse, imagesResponse] = await Promise.all([
+          fetch("/api/admin/preview-settings"),
+          fetch("/api/gallery"),
+        ]);
+
+        if (settingsResponse.ok && imagesResponse.ok) {
+          const settings: PreviewSettings = await settingsResponse.json();
+          const data = await imagesResponse.json();
+          const allVisibleImages =
+            data.images?.filter((img: GalleryImage) => img.visible) || [];
+
+          if (settings.useLatest) {
+            // Use latest photos
+            allVisibleImages.sort(
+              (a: GalleryImage, b: GalleryImage) =>
+                new Date(b.uploadedAt).getTime() -
+                new Date(a.uploadedAt).getTime()
+            );
+            visibleImages = allVisibleImages.slice(0, settings.count);
+          } else {
+            // Use manually selected photos
+            visibleImages = allVisibleImages.filter((img: GalleryImage) =>
+              settings.selectedImages.includes(img.id)
+            );
+            // Maintain the order of selection
+            visibleImages.sort((a, b) => {
+              const aIndex = settings.selectedImages.indexOf(a.id);
+              const bIndex = settings.selectedImages.indexOf(b.id);
+              return aIndex - bIndex;
+            });
+          }
+        }
+      } else {
+        // Regular gallery view
+        const response = await fetch("/api/gallery");
+        const data = await response.json();
+        visibleImages =
+          data.images?.filter((img: GalleryImage) => img.visible) || [];
+
+        // Sort by upload date, newest first
+        visibleImages.sort(
+          (a: GalleryImage, b: GalleryImage) =>
+            new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+        );
+
+        // Apply limit if specified
+        if (limit && limit > 0) {
+          visibleImages = visibleImages.slice(0, limit);
+        }
+      }
+
       setImages(visibleImages);
     } catch (error) {
       console.error("Error fetching images:", error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []); // Remove dependencies to prevent infinite loop
 
   useEffect(() => {
     fetchImages();
-  }, [fetchImages, refreshTrigger]);
+  }, [refreshTrigger]); // Only depend on refreshTrigger
+
+  useEffect(() => {
+    setLoading(true);
+    fetchImages();
+  }, [limit, isPreview]);
 
   const openModal = (index: number) => {
     setSelectedImageIndex(index);
@@ -120,9 +187,10 @@ export function GalleryGrid({ refreshTrigger }: GalleryGridProps) {
   }, [handleKeyDown]);
 
   if (loading) {
+    const skeletonCount = limit || (isPreview ? 10 : 8);
     return (
       <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-2 sm:gap-4 space-y-2 sm:space-y-4">
-        {[...Array(8)].map((_, i) => (
+        {[...Array(skeletonCount)].map((_, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
@@ -152,8 +220,9 @@ export function GalleryGrid({ refreshTrigger }: GalleryGridProps) {
           No Photos Yet
         </h3>
         <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto leading-relaxed">
-          Be the first to share a beautiful moment from our special day! Upload
-          your photos above to get started.
+          {isPreview
+            ? "No photos have been selected for the preview gallery yet."
+            : "Be the first to share a beautiful moment from our special day! Upload your photos to get started."}
         </p>
       </motion.div>
     );
@@ -224,7 +293,7 @@ export function GalleryGrid({ refreshTrigger }: GalleryGridProps) {
               </Button>
 
               {/* Navigation Buttons - Hidden on small screens, shown on hover/tap */}
-              {selectedImageIndex != null && selectedImageIndex > 0 && (
+              {selectedImageIndex !== null && selectedImageIndex > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -235,7 +304,7 @@ export function GalleryGrid({ refreshTrigger }: GalleryGridProps) {
                 </Button>
               )}
 
-              {selectedImageIndex != null &&
+              {selectedImageIndex !== null &&
                 selectedImageIndex < images.length - 1 && (
                   <Button
                     variant="ghost"
@@ -249,7 +318,7 @@ export function GalleryGrid({ refreshTrigger }: GalleryGridProps) {
 
               {/* Image Counter */}
               <div className="absolute top-2 left-1/2 -translate-x-1/2 sm:top-4 z-30 bg-black/60 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium">
-                {selectedImageIndex != null && selectedImageIndex + 1} of{" "}
+                {selectedImageIndex !== null && selectedImageIndex + 1} of{" "}
                 {images.length}
               </div>
 
