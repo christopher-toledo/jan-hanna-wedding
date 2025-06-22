@@ -85,7 +85,7 @@ export function UploadSettingsManager() {
     const mm = pad(date.getMinutes());
 
     const formattedDate = `${yyyy}-${MM}-${dd}T${HH}:${mm}`;
-    console.log(formattedDate);
+
     return `${yyyy}-${MM}-${dd}T${HH}:${mm}`;
   };
 
