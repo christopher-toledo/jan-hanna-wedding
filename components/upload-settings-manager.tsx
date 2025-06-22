@@ -146,7 +146,7 @@ export function UploadSettingsManager() {
             id="max-photos"
             type="number"
             min="1"
-            max="20"
+            max="999"
             value={settings.maxPhotos}
             onChange={(e) =>
               setSettings((prev) => ({

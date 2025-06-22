@@ -82,7 +82,7 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const settings: UploadSettings = {
       enabled: body.enabled ?? defaultSettings.enabled,
-      maxPhotos: Math.max(1, Math.min(20, body.maxPhotos ?? defaultSettings.maxPhotos)), // Limit between 1-20
+      maxPhotos: Math.max(1, Math.min(body.maxPhotos ?? defaultSettings.maxPhotos)), 
       message: body.message || "",
       scheduleStart: body.scheduleStart || undefined,
       scheduleEnd: body.scheduleEnd || undefined,
