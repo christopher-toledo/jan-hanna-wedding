@@ -963,13 +963,13 @@ export function GuestManager() {
                     {
                       key: "attending",
                       label: "Attending",
-                      count: getStatusCount("attending"),
+                      count: getStatusCount("attending", true),
                       icon: UserCheck,
                     },
                     {
                       key: "not-attending",
                       label: "Not Attending",
-                      count: getStatusCount("not-attending"),
+                      count: getStatusCount("not-attending", true),
                       icon: UserX,
                     },
                   ].map((filter) => (
