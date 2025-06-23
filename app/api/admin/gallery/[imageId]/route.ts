@@ -1,16 +1,18 @@
-import { readFile, writeFile, unlink } from "fs/promises"
+import { readFile, writeFile } from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
 import { type NextRequest, NextResponse } from "next/server"
+import { del } from "@vercel/blob"
 
 interface GalleryImage {
   id: string
   filename: string
   originalName: string
-  uploaderName: string
+  uploader: string
   uploadedAt: string
   caption?: string
   visible: boolean
+  blobUrl: string
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: { imageId: string } }) {
@@ -54,7 +56,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { image
 
     const dataDir = path.join(process.cwd(), "data")
     const galleryFile = path.join(dataDir, "gallery.json")
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "gallery")
 
     if (!existsSync(galleryFile)) {
       return NextResponse.json({ error: "Gallery not found" }, { status: 404 })
@@ -70,10 +71,14 @@ export async function DELETE(request: NextRequest, { params }: { params: { image
 
     const imageToDelete = gallery[imageIndex]
 
-    // Delete physical file
-    const imagePath = path.join(uploadsDir, imageToDelete.filename)
-    if (existsSync(imagePath)) {
-      await unlink(imagePath)
+    try {
+      // Delete from Vercel Blob Storage
+      if (imageToDelete.blobUrl) {
+        await del(imageToDelete.blobUrl)
+      }
+    } catch (deleteError) {
+      console.error("Error deleting from Vercel Blob:", deleteError)
+      // Continue with metadata deletion even if blob deletion fails
     }
 
     // Remove from gallery array

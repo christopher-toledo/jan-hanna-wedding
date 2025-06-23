@@ -26,6 +26,7 @@ interface GalleryImage {
   uploadedAt: string;
   caption?: string;
   visible: boolean;
+  blobUrl: string;
 }
 
 export function GalleryManager() {
@@ -446,7 +447,7 @@ export function GalleryManager() {
                   }
                 >
                   <Image
-                    src={`/api/gallery/${image.filename}`}
+                    src={image.blobUrl}
                     alt={image.caption || `Photo by ${image.uploader}`}
                     fill
                     className="object-cover"

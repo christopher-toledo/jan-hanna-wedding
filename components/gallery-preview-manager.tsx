@@ -20,6 +20,7 @@ interface GalleryImage {
   uploadedAt: string;
   caption?: string;
   visible: boolean;
+  blobUrl: string;
 }
 
 interface PreviewSettings {
@@ -236,7 +237,7 @@ export function GalleryPreviewManager() {
                       }`}
                     >
                       <Image
-                        src={`/api/gallery/${image.filename}`}
+                        src={image.blobUrl}
                         alt={image.caption || `Photo by ${image.uploader}`}
                         width={150}
                         height={150}
