@@ -460,11 +460,6 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                     setErrors((prev) => ({ ...prev, primaryPhone: "" }));
                   }
                 }}
-                placeholder={
-                  isPhoneRequired
-                    ? "09XXXXXXXXX or +639XXXXXXXXX"
-                    : "09XXXXXXXXX or +639XXXXXXXXX (optional)"
-                }
                 pattern="^(09\d{9}|\+639\d{9})$"
                 className={`mt-1 ${
                   errors.primaryPhone
@@ -506,7 +501,6 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                 onChange={(e) => {
                   setPrimaryGuestEmail(e.target.value);
                 }}
-                placeholder="your.email@example.com (optional)"
                 className="mt-1"
               />
             </div>
@@ -586,7 +580,6 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                               e.target.value
                             )
                           }
-                          placeholder="email@example.com"
                           className="mt-1"
                         />
                       </div>
@@ -604,7 +597,6 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                               e.target.value
                             )
                           }
-                          placeholder="(555) 123-4567"
                           className="mt-1"
                         />
                       </div>
