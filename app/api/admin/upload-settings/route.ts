@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server"
-import { readFile, writeFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { executeQuery } from "@/lib/db"
 
 interface UploadSettings {
   enabled: boolean
@@ -17,23 +15,25 @@ const defaultSettings: UploadSettings = {
   message: "",
 }
 
-async function getSettingsFilePath() {
-  const dataDir = path.join(process.cwd(), "data")
-  if (!existsSync(dataDir)) {
-    await mkdir(dataDir, { recursive: true })
-  }
-  return path.join(dataDir, "upload-settings.json")
-}
-
 async function readSettings(): Promise<UploadSettings> {
   try {
-    const settingsFile = await getSettingsFilePath()
-    if (!existsSync(settingsFile)) {
+    const result = await executeQuery(
+      `SELECT enabled, max_photos, message, schedule_start, schedule_end 
+       FROM upload_settings WHERE id = 1`,
+    )
+
+    if (result.rows.length === 0) {
       return defaultSettings
     }
 
-    const fileContent = await readFile(settingsFile, "utf-8")
-    const settings = JSON.parse(fileContent)
+    const row = result.rows[0]
+    const settings: UploadSettings = {
+      enabled: Boolean(row.enabled),
+      maxPhotos: Number(row.max_photos),
+      message: row.message || "",
+      scheduleStart: row.schedule_start || undefined,
+      scheduleEnd: row.schedule_end || undefined,
+    }
 
     // Check if uploads are scheduled
     if (settings.scheduleStart && settings.scheduleEnd) {
@@ -50,7 +50,7 @@ async function readSettings(): Promise<UploadSettings> {
       }
     }
 
-    return { ...defaultSettings, ...settings }
+    return settings
   } catch (error) {
     console.error("Error reading upload settings:", error)
     return defaultSettings
@@ -59,8 +59,18 @@ async function readSettings(): Promise<UploadSettings> {
 
 async function writeSettings(settings: UploadSettings): Promise<void> {
   try {
-    const settingsFile = await getSettingsFilePath()
-    await writeFile(settingsFile, JSON.stringify(settings, null, 2))
+    await executeQuery(
+      `INSERT OR REPLACE INTO upload_settings (id, enabled, max_photos, message, schedule_start, schedule_end, updated_at) 
+       VALUES (1, ?, ?, ?, ?, ?, ?)`,
+      [
+        settings.enabled,
+        settings.maxPhotos,
+        settings.message || "",
+        settings.scheduleStart || null,
+        settings.scheduleEnd || null,
+        new Date().toISOString(),
+      ],
+    )
   } catch (error) {
     console.error("Error writing upload settings:", error)
     throw error
@@ -82,7 +92,7 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const settings: UploadSettings = {
       enabled: body.enabled ?? defaultSettings.enabled,
-      maxPhotos: Math.max(1, Math.min(body.maxPhotos ?? defaultSettings.maxPhotos)), 
+      maxPhotos: Math.max(1, Math.min(body.maxPhotos ?? defaultSettings.maxPhotos)),
       message: body.message || "",
       scheduleStart: body.scheduleStart || undefined,
       scheduleEnd: body.scheduleEnd || undefined,

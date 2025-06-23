@@ -1,33 +1,18 @@
-import { readFile, writeFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
 import { NextResponse } from "next/server"
 import { v4 as uuidv4 } from "uuid"
-
-interface Guest {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  rsvpStatus: "pending" | "attending" | "not-attending"
-  invitationSent: boolean
-  createdAt: string
-}
+import { executeQuery, executeTransaction } from "@/lib/db"
+import { type GuestRow, transformGuestRow } from "@/lib/types"
 
 export async function GET() {
   try {
-    const dataDir = path.join(process.cwd(), "data")
-    const guestsFile = path.join(dataDir, "guests.json")
+    const result = await executeQuery<GuestRow>(
+      `SELECT id, name, email, phone, rsvp_status, 
+              invitation_sent, created_at
+       FROM guests 
+       ORDER BY created_at DESC`,
+    )
 
-    if (!existsSync(guestsFile)) {
-      return NextResponse.json({ guests: [] })
-    }
-
-    const fileContent = await readFile(guestsFile, "utf-8")
-    const guests = JSON.parse(fileContent)
-
-    // Sort by creation date, newest first
-    guests.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    const guests = result.rows.map(transformGuestRow)
 
     return NextResponse.json({ guests })
   } catch (error) {
@@ -44,63 +29,63 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    const dataDir = path.join(process.cwd(), "data")
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
-    }
-
-    // Read existing guests
-    const guestsFile = path.join(dataDir, "guests.json")
-    let guests: Guest[] = []
-
-    if (existsSync(guestsFile)) {
-      const fileContent = await readFile(guestsFile, "utf-8")
-      guests = JSON.parse(fileContent)
-    }
-
     // Check if guest already exists
-    const existingGuest = guests.find((g) => g.name.toLowerCase() === name.toLowerCase())
-    if (existingGuest) {
+    const existingGuest = await executeQuery<{ id: string }>("SELECT id FROM guests WHERE LOWER(name) = LOWER(?)", [
+      name,
+    ])
+
+    if (existingGuest.rows.length > 0) {
       return NextResponse.json({ error: "A guest with this name already exists" }, { status: 400 })
     }
 
     // Create new guest
-    const newGuest: Guest = {
+    const newGuest = {
       id: uuidv4(),
       name,
-      email,
-      phone: phone || undefined,
-      rsvpStatus: "pending",
+      email: email || "",
+      phone: phone || "",
+      rsvpStatus: "pending" as const,
       invitationSent: false,
       createdAt: new Date().toISOString(),
     }
 
-    guests.push(newGuest)
-    await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+    const queries = []
+
+    // Add primary guest
+    queries.push({
+      sql: `INSERT INTO guests (id, name, email, phone, rsvp_status, invitation_sent, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        newGuest.id,
+        newGuest.name,
+        newGuest.email,
+        newGuest.phone,
+        newGuest.rsvpStatus,
+        newGuest.invitationSent,
+        newGuest.createdAt,
+      ],
+    })
 
     // Add additional guests if provided
     if (additionalGuests && additionalGuests.length > 0) {
-      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-      let existingAdditionalGuests: any[] = []
-
-      if (existsSync(additionalGuestsFile)) {
-        const fileContent = await readFile(additionalGuestsFile, "utf-8")
-        existingAdditionalGuests = JSON.parse(fileContent)
+      for (const guest of additionalGuests) {
+        queries.push({
+          sql: `INSERT INTO additional_guests (id, primary_guest_id, name, email, phone, rsvp_status, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          args: [
+            uuidv4(),
+            newGuest.id,
+            guest.name,
+            guest.email || "",
+            guest.phone || "",
+            "pending",
+            new Date().toISOString(),
+          ],
+        })
       }
-
-      const newAdditionalGuests = additionalGuests.map((guest: any) => ({
-        id: uuidv4(),
-        primaryGuestId: newGuest.id,
-        name: guest.name,
-        email: guest.email || undefined,
-        phone: guest.phone || undefined,
-        rsvpStatus: "pending",
-        createdAt: new Date().toISOString(),
-      }))
-
-      existingAdditionalGuests.push(...newAdditionalGuests)
-      await writeFile(additionalGuestsFile, JSON.stringify(existingAdditionalGuests, null, 2))
     }
+
+    await executeTransaction(queries)
 
     return NextResponse.json({ success: true, guest: newGuest })
   } catch (error) {

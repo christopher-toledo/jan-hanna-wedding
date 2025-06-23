@@ -1,19 +1,62 @@
 import { NextResponse } from "next/server"
-import { readFile } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { executeQuery } from "@/lib/db"
+import type { RSVPResponse } from "@/lib/types"
+
+interface RSVPResponseDbRow {
+  id: unknown
+  guest_id: unknown
+  guest_name: unknown
+  attending: unknown
+  dietary_restrictions: unknown
+  message: unknown
+  submitted_at: unknown
+}
+
+interface RSVPAdditionalGuestDbRow {
+  name: unknown
+  email: unknown
+}
 
 export async function GET() {
   try {
-    const dataDir = path.join(process.cwd(), "data")
-    const rsvpFile = path.join(dataDir, "rsvps.json")
+    // Get RSVP responses with additional guests
+    const rsvpResult = await executeQuery<RSVPResponseDbRow>(
+      `SELECT id, guest_id, guest_name, 
+              attending, dietary_restrictions, 
+              message, submitted_at
+       FROM rsvp_responses
+       ORDER BY submitted_at DESC`,
+    )
 
-    if (!existsSync(rsvpFile)) {
-      return NextResponse.json({ rsvps: [] })
+    const rsvps: RSVPResponse[] = []
+
+    for (const rsvpRow of rsvpResult.rows) {
+      // Get additional guests for this RSVP
+      const additionalGuestsResult = await executeQuery<RSVPAdditionalGuestDbRow>(
+        `SELECT name, email 
+         FROM rsvp_additional_guests 
+         WHERE rsvp_response_id = ?
+         ORDER BY created_at`,
+        [rsvpRow.id],
+      )
+
+      // Create the complete RSVP response object
+      const rsvp: RSVPResponse = {
+        id: String(rsvpRow.id),
+        guestId: String(rsvpRow.guest_id),
+        guestName: String(rsvpRow.guest_name),
+        attending: String(rsvpRow.attending) as "yes" | "no",
+        dietaryRestrictions: rsvpRow.dietary_restrictions ? String(rsvpRow.dietary_restrictions) : undefined,
+        message: rsvpRow.message ? String(rsvpRow.message) : undefined,
+        submittedAt: String(rsvpRow.submitted_at),
+        additionalGuests: additionalGuestsResult.rows.map((row) => ({
+          name: String(row.name || ""),
+          email: String(row.email || ""),
+        })),
+      }
+
+      rsvps.push(rsvp)
     }
-
-    const fileContent = await readFile(rsvpFile, "utf-8")
-    const rsvps = JSON.parse(fileContent)
 
     return NextResponse.json({ rsvps })
   } catch (error) {

@@ -1,9 +1,7 @@
 "use server"
 
-import { writeFile, readFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
 import { v4 as uuidv4 } from "uuid"
+import { executeQuery } from "@/lib/db"
 
 interface Guest {
   id: string
@@ -24,40 +22,28 @@ export async function addGuest(prevState: any, formData: FormData) {
       return { error: "Name is required" }
     }
 
-    const dataDir = path.join(process.cwd(), "data")
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
-    }
-
-    // Read existing guests
-    const guestsFile = path.join(dataDir, "guests.json")
-    let guests: Guest[] = []
-
-    if (existsSync(guestsFile)) {
-      const fileContent = await readFile(guestsFile, "utf-8")
-      guests = JSON.parse(fileContent)
-    }
-
     // Check if guest already exists
-    const existingGuest = guests.find((g) => g.name.toLowerCase() === name.toLowerCase())
-    if (existingGuest) {
+    const existingGuest = await executeQuery("SELECT id FROM guests WHERE LOWER(name) = LOWER(?)", [name])
+
+    if (existingGuest.rows.length > 0) {
       return { error: "A guest with this name already exists" }
     }
 
     // Create new guest
-    const newGuest: Guest = {
+    const newGuest = {
       id: uuidv4(),
       name,
-      email,
-      phone: phone || undefined,
+      email: email || "",
+      phone: phone || "",
       rsvpStatus: "pending",
       createdAt: new Date().toISOString(),
     }
 
-    guests.push(newGuest)
-
-    // Save to file
-    await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+    await executeQuery(
+      `INSERT INTO guests (id, name, email, phone, rsvp_status, invitation_sent, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [newGuest.id, newGuest.name, newGuest.email, newGuest.phone, newGuest.rsvpStatus, false, newGuest.createdAt],
+    )
 
     return { success: true, message: "Guest added successfully!" }
   } catch (error) {
@@ -77,31 +63,20 @@ export async function updateGuest(prevState: any, formData: FormData) {
       return { error: "Guest ID, name and email are required" }
     }
 
-    const dataDir = path.join(process.cwd(), "data")
-    const guestsFile = path.join(dataDir, "guests.json")
+    // Check if guest exists
+    const existingGuest = await executeQuery("SELECT id FROM guests WHERE id = ?", [guestId])
 
-    if (!existsSync(guestsFile)) {
-      return { error: "No guests found" }
-    }
-
-    const fileContent = await readFile(guestsFile, "utf-8")
-    const guests: Guest[] = JSON.parse(fileContent)
-
-    const guestIndex = guests.findIndex((g) => g.id === guestId)
-    if (guestIndex === -1) {
+    if (existingGuest.rows.length === 0) {
       return { error: "Guest not found" }
     }
 
     // Update guest
-    guests[guestIndex] = {
-      ...guests[guestIndex],
-      name,
-      email,
-      phone: phone || undefined,
-    }
-
-    // Save to file
-    await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+    await executeQuery(
+      `UPDATE guests 
+       SET name = ?, email = ?, phone = ? 
+       WHERE id = ?`,
+      [name, email, phone || "", guestId],
+    )
 
     return { success: true, message: "Guest updated successfully!" }
   } catch (error) {
@@ -112,20 +87,12 @@ export async function updateGuest(prevState: any, formData: FormData) {
 
 export async function deleteGuest(guestId: string) {
   try {
-    const dataDir = path.join(process.cwd(), "data")
-    const guestsFile = path.join(dataDir, "guests.json")
+    // Delete guest (CASCADE will handle related records)
+    const result = await executeQuery("DELETE FROM guests WHERE id = ?", [guestId])
 
-    if (!existsSync(guestsFile)) {
-      throw new Error("No guests found")
+    if (result.rowsAffected === 0) {
+      throw new Error("Guest not found")
     }
-
-    const fileContent = await readFile(guestsFile, "utf-8")
-    let guests: Guest[] = JSON.parse(fileContent)
-
-    guests = guests.filter((g) => g.id !== guestId)
-
-    // Save to file
-    await writeFile(guestsFile, JSON.stringify(guests, null, 2))
 
     return { success: true }
   } catch (error) {

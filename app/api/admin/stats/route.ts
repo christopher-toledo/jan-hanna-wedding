@@ -1,82 +1,74 @@
 import { NextResponse } from "next/server"
-import { readFile } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { executeQuery } from "@/lib/db"
+
+interface CountResult {
+  count: number
+}
+
+interface RSVPStatsResult {
+  attending: number
+  not_attending: number
+  pending: number
+}
 
 export async function GET() {
   try {
-    const dataDir = path.join(process.cwd(), "data")
-    const guestsFile = path.join(dataDir, "guests.json")
-    const rsvpsFile = path.join(dataDir, "rsvps.json")
-    const galleryFile = path.join(dataDir, "gallery.json")
-
-    let primaryGuests = 0
-    let additionalGuestsCount = 0
-    let attendingGuests = 0
-    let notAttendingGuests = 0
-    let pendingGuests = 0
-    let additionalGuestsFromRSVP = 0
-    let totalImages = 0
-    let rsvpResponses = 0
-
     // Get primary guest stats
-    if (existsSync(guestsFile)) {
-      const guestsContent = await readFile(guestsFile, "utf-8")
-      const guests = JSON.parse(guestsContent)
+    const primaryGuestsResult = await executeQuery<CountResult>("SELECT COUNT(*) as count FROM guests")
+    const primaryGuests = primaryGuestsResult.rows[0]?.count || 0
 
-      primaryGuests = guests.length
-      attendingGuests = guests.filter((g: any) => g.rsvpStatus === "attending").length
-      notAttendingGuests = guests.filter((g: any) => g.rsvpStatus === "not-attending").length
-      pendingGuests = guests.filter((g: any) => g.rsvpStatus === "pending").length
-    }
+    // Get primary guest RSVP stats
+    const primaryRSVPResult = await executeQuery<RSVPStatsResult>(
+      `SELECT 
+         SUM(CASE WHEN rsvp_status = 'attending' THEN 1 ELSE 0 END) as attending,
+         SUM(CASE WHEN rsvp_status = 'not-attending' THEN 1 ELSE 0 END) as not_attending,
+         SUM(CASE WHEN rsvp_status = 'pending' THEN 1 ELSE 0 END) as pending
+       FROM guests`,
+    )
+    const primaryRSVP = primaryRSVPResult.rows[0] || { attending: 0, not_attending: 0, pending: 0 }
 
-    // Get additional guests count from additional-guests.json
-    const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-    if (existsSync(additionalGuestsFile)) {
-      const additionalGuestsContent = await readFile(additionalGuestsFile, "utf-8")
-      const additionalGuests = JSON.parse(additionalGuestsContent)
-      additionalGuestsCount = additionalGuests.length
+    // Get additional guest stats
+    const additionalGuestsResult = await executeQuery<CountResult>("SELECT COUNT(*) as count FROM additional_guests")
+    const additionalGuestsCount = additionalGuestsResult.rows[0]?.count || 0
 
-      // Add their RSVP statuses to the totals
-      attendingGuests += additionalGuests.filter((g: any) => g.rsvpStatus === "attending").length
-      notAttendingGuests += additionalGuests.filter((g: any) => g.rsvpStatus === "not-attending").length
-      pendingGuests += additionalGuests.filter((g: any) => g.rsvpStatus === "pending").length
-    }
+    // Get additional guest RSVP stats
+    const additionalRSVPResult = await executeQuery<RSVPStatsResult>(
+      `SELECT 
+         SUM(CASE WHEN rsvp_status = 'attending' THEN 1 ELSE 0 END) as attending,
+         SUM(CASE WHEN rsvp_status = 'not-attending' THEN 1 ELSE 0 END) as not_attending,
+         SUM(CASE WHEN rsvp_status = 'pending' THEN 1 ELSE 0 END) as pending
+       FROM additional_guests`,
+    )
+    const additionalRSVP = additionalRSVPResult.rows[0] || { attending: 0, not_attending: 0, pending: 0 }
 
-    // Get RSVP stats for additional guests brought via RSVP form
-    if (existsSync(rsvpsFile)) {
-      const rsvpsContent = await readFile(rsvpsFile, "utf-8")
-      const rsvps = JSON.parse(rsvpsContent)
+    // Get RSVP responses count
+    const rsvpResponsesResult = await executeQuery<CountResult>("SELECT COUNT(*) as count FROM rsvp_responses")
+    const rsvpResponses = rsvpResponsesResult.rows[0]?.count || 0
 
-      rsvpResponses = rsvps.length
-
-      // Count additional guests from RSVP responses
-      // additionalGuestsFromRSVP = rsvps.reduce((total: number, rsvp: any) => {
-      //   if (rsvp.additionalGuests && Array.isArray(rsvp.additionalGuests)) {
-      //     return total + rsvp.additionalGuests.length
-      //   }
-      //   return total
-      // }, 0)
-    }
+    // Get additional guests from RSVP responses
+    const rsvpAdditionalGuestsResult = await executeQuery<CountResult>(
+      "SELECT COUNT(*) as count FROM rsvp_additional_guests",
+    )
+    const additionalGuestsFromRSVP = rsvpAdditionalGuestsResult.rows[0]?.count || 0
 
     // Get gallery stats
-    if (existsSync(galleryFile)) {
-      const galleryContent = await readFile(galleryFile, "utf-8")
-      const gallery = JSON.parse(galleryContent)
-      totalImages = gallery.length || 0
-    }
+    const galleryResult = await executeQuery<CountResult>("SELECT COUNT(*) as count FROM gallery_images")
+    const totalImages = galleryResult.rows[0]?.count || 0
 
-    // Calculate total guests (primary + additional from admin + additional from RSVP)
-    const totalGuests = primaryGuests + additionalGuestsCount 
+    // Calculate totals
+    const totalGuests = Number(primaryGuests) + Number(additionalGuestsCount)
+    const attendingGuests = Number(primaryRSVP.attending) + Number(additionalRSVP.attending)
+    const notAttendingGuests = Number(primaryRSVP.not_attending) + Number(additionalRSVP.not_attending)
+    const pendingGuests = Number(primaryRSVP.pending) + Number(additionalRSVP.pending)
 
     return NextResponse.json({
       totalGuests,
       attendingGuests,
       notAttendingGuests,
       pendingGuests,
-      additionalGuests: additionalGuestsFromRSVP, // Only RSVP additional guests for the card
-      totalImages,
-      rsvpResponses,
+      additionalGuests: Number(additionalGuestsFromRSVP), // Only RSVP additional guests for the card
+      totalImages: Number(totalImages),
+      rsvpResponses: Number(rsvpResponses),
     })
   } catch (error) {
     console.error("Error fetching stats:", error)

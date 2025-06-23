@@ -1,38 +1,28 @@
-import { readFile, writeFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
 import { NextResponse } from "next/server"
 import { v4 as uuidv4 } from "uuid"
-
-interface AdditionalGuest {
-  id: string
-  primaryGuestId: string
-  name: string
-  email?: string
-  phone?: string
-  rsvpStatus: "pending" | "attending" | "not-attending"
-  createdAt: string
-}
+import { executeQuery } from "@/lib/db"
+import { type AdditionalGuestRow, transformAdditionalGuestRow } from "@/lib/types"
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const primaryGuestId = searchParams.get("primaryGuestId")
 
-    const dataDir = path.join(process.cwd(), "data")
-    const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-
-    if (!existsSync(additionalGuestsFile)) {
-      return NextResponse.json({ additionalGuests: [] })
-    }
-
-    const fileContent = await readFile(additionalGuestsFile, "utf-8")
-    let additionalGuests = JSON.parse(fileContent)
+    let query = `SELECT id, primary_guest_id, name, email, phone, 
+                        rsvp_status, created_at
+                 FROM additional_guests`
+    const params: any[] = []
 
     // Filter by primary guest if specified
     if (primaryGuestId) {
-      additionalGuests = additionalGuests.filter((guest: AdditionalGuest) => guest.primaryGuestId === primaryGuestId)
+      query += " WHERE primary_guest_id = ?"
+      params.push(primaryGuestId)
     }
+
+    query += " ORDER BY created_at DESC"
+
+    const result = await executeQuery<AdditionalGuestRow>(query, params)
+    const additionalGuests = result.rows.map(transformAdditionalGuestRow)
 
     return NextResponse.json({ additionalGuests })
   } catch (error) {
@@ -49,31 +39,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Primary guest ID and name are required" }, { status: 400 })
     }
 
-    const dataDir = path.join(process.cwd(), "data")
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
+    // Check if primary guest exists
+    const primaryGuestResult = await executeQuery<{ id: string }>("SELECT id FROM guests WHERE id = ?", [
+      primaryGuestId,
+    ])
+
+    if (primaryGuestResult.rows.length === 0) {
+      return NextResponse.json({ error: "Primary guest not found" }, { status: 400 })
     }
 
-    const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-    let additionalGuests: AdditionalGuest[] = []
-
-    if (existsSync(additionalGuestsFile)) {
-      const fileContent = await readFile(additionalGuestsFile, "utf-8")
-      additionalGuests = JSON.parse(fileContent)
-    }
-
-    const newAdditionalGuest: AdditionalGuest = {
+    const newAdditionalGuest = {
       id: uuidv4(),
       primaryGuestId,
       name,
-      email: email || undefined,
-      phone: phone || undefined,
-      rsvpStatus: "pending",
+      email: email || "",
+      phone: phone || "",
+      rsvpStatus: "pending" as const,
       createdAt: new Date().toISOString(),
     }
 
-    additionalGuests.push(newAdditionalGuest)
-    await writeFile(additionalGuestsFile, JSON.stringify(additionalGuests, null, 2))
+    await executeQuery(
+      `INSERT INTO additional_guests (id, primary_guest_id, name, email, phone, rsvp_status, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        newAdditionalGuest.id,
+        newAdditionalGuest.primaryGuestId,
+        newAdditionalGuest.name,
+        newAdditionalGuest.email,
+        newAdditionalGuest.phone,
+        newAdditionalGuest.rsvpStatus,
+        newAdditionalGuest.createdAt,
+      ],
+    )
 
     return NextResponse.json({ success: true, additionalGuest: newAdditionalGuest })
   } catch (error) {

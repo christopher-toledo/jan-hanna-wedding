@@ -1,50 +1,22 @@
-import { readFile, writeFile } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
 import { NextResponse } from "next/server"
 import { v4 as uuidv4 } from "uuid"
+import { executeQuery, executeTransaction } from "@/lib/db"
+import { type GuestRow, transformGuestRow } from "@/lib/types"
 
 export async function DELETE(request: Request, { params }: { params: { guestId: string } }) {
   try {
-    const guestId = params.guestId
-    const dataDir = path.join(process.cwd(), "data")
-    const guestsFile = path.join(dataDir, "guests.json")
-    const rsvpsFile = path.join(dataDir, "rsvps.json")
-    const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
+    const _params = await params
+    const guestId = _params.guestId
 
-    // Delete guest
-    if (!existsSync(guestsFile)) {
-      return NextResponse.json({ error: "No guests found" }, { status: 404 })
-    }
+    // Check if guest exists
+    const guestResult = await executeQuery<{ id: string }>("SELECT id FROM guests WHERE id = ?", [guestId])
 
-    const guestsContent = await readFile(guestsFile, "utf-8")
-    let guests = JSON.parse(guestsContent)
-
-    const guestExists = guests.find((g: any) => g.id === guestId)
-    if (!guestExists) {
+    if (guestResult.rows.length === 0) {
       return NextResponse.json({ error: "Guest not found" }, { status: 404 })
     }
 
-    guests = guests.filter((g: any) => g.id !== guestId)
-    await writeFile(guestsFile, JSON.stringify(guests, null, 2))
-
-    // Delete associated RSVP records
-    if (existsSync(rsvpsFile)) {
-      const rsvpsContent = await readFile(rsvpsFile, "utf-8")
-      let rsvps = JSON.parse(rsvpsContent)
-
-      rsvps = rsvps.filter((rsvp: any) => rsvp.guestId !== guestId)
-      await writeFile(rsvpsFile, JSON.stringify(rsvps, null, 2))
-    }
-
-    // Delete associated additional guests
-    if (existsSync(additionalGuestsFile)) {
-      const additionalGuestsContent = await readFile(additionalGuestsFile, "utf-8")
-      let additionalGuests = JSON.parse(additionalGuestsContent)
-
-      additionalGuests = additionalGuests.filter((guest: any) => guest.primaryGuestId !== guestId)
-      await writeFile(additionalGuestsFile, JSON.stringify(additionalGuests, null, 2))
-    }
+    // Delete guest (CASCADE will handle related records)
+    await executeQuery("DELETE FROM guests WHERE id = ?", [guestId])
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -55,7 +27,8 @@ export async function DELETE(request: Request, { params }: { params: { guestId: 
 
 export async function PUT(request: Request, { params }: { params: { guestId: string } }) {
   try {
-    const guestId = params.guestId
+    const _params = await params
+    const guestId = _params.guestId
     const body = await request.json()
     const { name, email, phone, additionalGuests: newAdditionalGuests } = body
 
@@ -63,63 +36,63 @@ export async function PUT(request: Request, { params }: { params: { guestId: str
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    const dataDir = path.join(process.cwd(), "data")
-    const guestsFile = path.join(dataDir, "guests.json")
+    // Check if guest exists
+    const guestResult = await executeQuery<{ id: string }>("SELECT id FROM guests WHERE id = ?", [guestId])
 
-    if (!existsSync(guestsFile)) {
-      return NextResponse.json({ error: "No guests found" }, { status: 404 })
-    }
-
-    const fileContent = await readFile(guestsFile, "utf-8")
-    const guests = JSON.parse(fileContent)
-
-    const guestIndex = guests.findIndex((g: any) => g.id === guestId)
-    if (guestIndex === -1) {
+    if (guestResult.rows.length === 0) {
       return NextResponse.json({ error: "Guest not found" }, { status: 404 })
     }
 
-    // Check if email is already used by another guest
-    const existingGuest = guests.find((g: any) => g.name.toLowerCase() === name.toLowerCase() && g.id !== guestId)
-    if (existingGuest) {
+    // Check if name is already used by another guest
+    const existingGuest = await executeQuery<{ id: string }>(
+      "SELECT id FROM guests WHERE LOWER(name) = LOWER(?) AND id != ?",
+      [name, guestId],
+    )
+
+    if (existingGuest.rows.length > 0) {
       return NextResponse.json({ error: "A guest with this name already exists" }, { status: 400 })
     }
 
-    // Update guest
-    guests[guestIndex] = {
-      ...guests[guestIndex],
-      name,
-      email,
-      phone: phone || undefined,
-    }
+    const queries = []
 
-    await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+    // Update guest
+    queries.push({
+      sql: "UPDATE guests SET name = ?, email = ?, phone = ? WHERE id = ?",
+      args: [name, email || "", phone || "", guestId],
+    })
 
     // Handle additional guests if provided
     if (newAdditionalGuests && newAdditionalGuests.length > 0) {
-      const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-      let existingAdditionalGuests: any[] = []
-
-      if (existsSync(additionalGuestsFile)) {
-        const additionalFileContent = await readFile(additionalGuestsFile, "utf-8")
-        existingAdditionalGuests = JSON.parse(additionalFileContent)
+      for (const guest of newAdditionalGuests) {
+        queries.push({
+          sql: `INSERT INTO additional_guests (id, primary_guest_id, name, email, phone, rsvp_status, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          args: [
+            uuidv4(),
+            guestId,
+            guest.name,
+            guest.email || "",
+            guest.phone || "",
+            "pending",
+            new Date().toISOString(),
+          ],
+        })
       }
-
-      // Add new additional guests
-      const additionalGuestRecords = newAdditionalGuests.map((guest: any) => ({
-        id: uuidv4(),
-        primaryGuestId: guestId,
-        name: guest.name,
-        email: guest.email || undefined,
-        phone: guest.phone || undefined,
-        rsvpStatus: "pending",
-        createdAt: new Date().toISOString(),
-      }))
-
-      existingAdditionalGuests.push(...additionalGuestRecords)
-      await writeFile(additionalGuestsFile, JSON.stringify(existingAdditionalGuests, null, 2))
     }
 
-    return NextResponse.json({ success: true, guest: guests[guestIndex] })
+    await executeTransaction(queries)
+
+    // Get updated guest
+    const updatedGuestResult = await executeQuery<GuestRow>(
+      `SELECT id, name, email, phone, rsvp_status, 
+              invitation_sent, created_at
+       FROM guests WHERE id = ?`,
+      [guestId],
+    )
+
+    const updatedGuest = updatedGuestResult.rows[0] ? transformGuestRow(updatedGuestResult.rows[0]) : null
+
+    return NextResponse.json({ success: true, guest: updatedGuest })
   } catch (error) {
     console.error("Error updating guest:", error)
     return NextResponse.json({ error: "Failed to update guest" }, { status: 500 })
@@ -128,33 +101,46 @@ export async function PUT(request: Request, { params }: { params: { guestId: str
 
 export async function PATCH(request: Request, { params }: { params: { guestId: string } }) {
   try {
-    const guestId = params.guestId
+    const _params = await params
+    const guestId = _params.guestId
     const body = await request.json()
 
-    const dataDir = path.join(process.cwd(), "data")
-    const guestsFile = path.join(dataDir, "guests.json")
+    // Check if guest exists
+    const guestResult = await executeQuery<{ id: string }>("SELECT id FROM guests WHERE id = ?", [guestId])
 
-    if (!existsSync(guestsFile)) {
-      return NextResponse.json({ error: "No guests found" }, { status: 404 })
-    }
-
-    const fileContent = await readFile(guestsFile, "utf-8")
-    const guests = JSON.parse(fileContent)
-
-    const guestIndex = guests.findIndex((g: any) => g.id === guestId)
-    if (guestIndex === -1) {
+    if (guestResult.rows.length === 0) {
       return NextResponse.json({ error: "Guest not found" }, { status: 404 })
     }
 
-    // Update only the provided fields
-    guests[guestIndex] = {
-      ...guests[guestIndex],
-      ...body,
+    // Build dynamic update query based on provided fields
+    const updateFields = []
+    const updateValues = []
+
+    for (const [key, value] of Object.entries(body)) {
+      const dbKey = key === "rsvpStatus" ? "rsvp_status" : key === "invitationSent" ? "invitation_sent" : key
+      updateFields.push(`${dbKey} = ?`)
+      updateValues.push(value)
     }
 
-    await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+    if (updateFields.length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 })
+    }
 
-    return NextResponse.json({ success: true, guest: guests[guestIndex] })
+    updateValues.push(guestId)
+
+    await executeQuery(`UPDATE guests SET ${updateFields.join(", ")} WHERE id = ?`, updateValues)
+
+    // Get updated guest
+    const updatedGuestResult = await executeQuery<GuestRow>(
+      `SELECT id, name, email, phone, rsvp_status, 
+              invitation_sent, created_at
+       FROM guests WHERE id = ?`,
+      [guestId],
+    )
+
+    const updatedGuest = updatedGuestResult.rows[0] ? transformGuestRow(updatedGuestResult.rows[0]) : null
+
+    return NextResponse.json({ success: true, guest: updatedGuest })
   } catch (error) {
     console.error("Error updating guest:", error)
     return NextResponse.json({ error: "Failed to update guest" }, { status: 500 })

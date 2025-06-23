@@ -1,10 +1,9 @@
 "use server"
 
-import { writeFile, readFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
 import { v4 as uuidv4 } from "uuid"
 import { put } from "@vercel/blob"
+import { executeQuery } from "@/lib/db"
+import path from "path"
 
 interface GalleryImage {
   id: string
@@ -27,21 +26,6 @@ export async function uploadImage(prevState: any, formData: FormData) {
       return { error: "Please provide your name and select at least one image" }
     }
 
-    // Create data directory for metadata storage
-    const dataDir = path.join(process.cwd(), "data")
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
-    }
-
-    // Read existing gallery data
-    const galleryFile = path.join(dataDir, "gallery.json")
-    let galleryData: GalleryImage[] = []
-
-    if (existsSync(galleryFile)) {
-      const fileContent = await readFile(galleryFile, "utf-8")
-      galleryData = JSON.parse(fileContent)
-    }
-
     // Process each image
     const uploadedImages: GalleryImage[] = []
 
@@ -57,14 +41,14 @@ export async function uploadImage(prevState: any, formData: FormData) {
 
       try {
         // Upload to Vercel Blob Storage
-        const blob = await put(uniqueFilename, image, {
-          access: 'public',
+        const blob = await put("gallery/" + uniqueFilename, image, {
+          access: "public",
           addRandomSuffix: false,
         })
 
         console.log("Blob upload response:", blob)
 
-        uploadedImages.push({
+        const newImage = {
           id: uuidv4(),
           filename: uniqueFilename,
           originalName: image.name,
@@ -73,7 +57,25 @@ export async function uploadImage(prevState: any, formData: FormData) {
           caption: caption || "",
           visible: true,
           blobUrl: blob.url,
-        })
+        }
+
+        // Save metadata to database
+        await executeQuery(
+          `INSERT INTO gallery_images (id, filename, original_name, uploader, uploaded_at, caption, visible, blob_url)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            newImage.id,
+            newImage.filename,
+            newImage.originalName,
+            newImage.uploader,
+            newImage.uploadedAt,
+            newImage.caption,
+            newImage.visible,
+            newImage.blobUrl,
+          ],
+        )
+
+        uploadedImages.push(newImage)
       } catch (uploadError) {
         console.error("Error uploading to Vercel Blob:", uploadError)
         // Continue with other images if one fails
@@ -84,10 +86,6 @@ export async function uploadImage(prevState: any, formData: FormData) {
     if (uploadedImages.length === 0) {
       return { error: "Failed to upload any images. Please try again." }
     }
-
-    // Save metadata to local JSON file
-    galleryData.push(...uploadedImages)
-    await writeFile(galleryFile, JSON.stringify(galleryData, null, 2))
 
     return { success: true, message: `Successfully uploaded ${uploadedImages.length} image(s)` }
   } catch (error) {
