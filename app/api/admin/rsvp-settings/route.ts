@@ -1,7 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { readFile, writeFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { executeQuery } from "@/lib/db"
 
 interface RSVPSettings {
   enabled: boolean
@@ -11,8 +9,9 @@ interface RSVPSettings {
 
 // Utility functions for Philippine time (UTC+8)
 function convertToPhilippineTime(utcDate: Date): Date {
-  return new Date(utcDate.setHours(utcDate.getUTCHours() + 8));
+  return new Date(utcDate.setHours(utcDate.getUTCHours() + 8))
 }
+
 function isRSVPOpen(settings: RSVPSettings): boolean {
   if (!settings.enabled) return false
 
@@ -29,24 +28,22 @@ function isRSVPOpen(settings: RSVPSettings): boolean {
 
 export async function GET() {
   try {
-    const dataDir = path.join(process.cwd(), "data")
-    const settingsFile = path.join(dataDir, "rsvp-settings.json")
+    const result = await executeQuery("SELECT enabled, deadline, custom_message FROM rsvp_settings WHERE id = 1")
 
-    if (!existsSync(settingsFile)) {
-      // Return default settings
-      const defaultSettings: RSVPSettings = {
-        enabled: true,
-        deadline: undefined,
-        customMessage: "RSVP submissions are currently closed.",
-      }
-      return NextResponse.json({
-        settings: defaultSettings,
-        isOpen: isRSVPOpen(defaultSettings),
-      })
+    let settings: RSVPSettings = {
+      enabled: true,
+      deadline: undefined,
+      customMessage: "RSVP submissions are currently closed.",
     }
 
-    const fileContent = await readFile(settingsFile, "utf-8")
-    const settings: RSVPSettings = JSON.parse(fileContent)
+    if (result.rows.length > 0) {
+      const row = result.rows[0]
+      settings = {
+        enabled: Boolean(row.enabled),
+        deadline: row.deadline || undefined,
+        customMessage: row.custom_message || "RSVP submissions are currently closed.",
+      }
+    }
 
     return NextResponse.json({
       settings,
@@ -63,23 +60,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { enabled, deadline, customMessage } = body
 
-    const dataDir = path.join(process.cwd(), "data")
-    const settingsFile = path.join(dataDir, "rsvp-settings.json")
-
-    // Ensure data directory exists
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
-    }
-
-    // Convert deadline from Philippine time to UTC for storage
-
     const settings: RSVPSettings = {
       enabled: Boolean(enabled),
       deadline: deadline,
       customMessage: customMessage || "RSVP submissions are currently closed.",
     }
 
-    await writeFile(settingsFile, JSON.stringify(settings, null, 2))
+    await executeQuery(
+      `INSERT OR REPLACE INTO rsvp_settings (id, enabled, deadline, custom_message, updated_at) 
+       VALUES (1, ?, ?, ?, ?)`,
+      [settings.enabled, settings.deadline, settings.customMessage, new Date().toISOString()],
+    )
 
     return NextResponse.json({
       success: true,

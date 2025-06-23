@@ -1,9 +1,7 @@
 "use server"
 
-import { writeFile, readFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
 import { v4 as uuidv4 } from "uuid"
+import { executeTransaction } from "@/lib/db"
 
 interface Guest {
   id: string
@@ -69,84 +67,87 @@ export async function submitRSVP(prevState: any, formData: FormData) {
       return { error: "Please enter a valid email address" }
     }
 
-    const dataDir = path.join(process.cwd(), "data")
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
+    // Prepare transaction queries
+    const queries = []
+
+    // Update primary guest contact info and RSVP status
+    queries.push({
+      sql: `UPDATE guests 
+            SET email = ?, phone = ?, rsvp_status = ? 
+            WHERE id = ?`,
+      args: [
+        primaryGuestEmail || "",
+        primaryGuestPhone || "",
+        attending === "yes" ? "attending" : "not-attending",
+        guestId,
+      ],
+    })
+
+    // Update additional guests based on selection
+    if (selectedAdditionalGuests.length > 0) {
+      // First, set all additional guests for this primary guest to not-attending
+      queries.push({
+        sql: `UPDATE additional_guests 
+              SET rsvp_status = 'not-attending' 
+              WHERE primary_guest_id = ?`,
+        args: [guestId],
+      })
+
+      // Then update selected ones to attending with their details
+      for (const additionalGuestId of selectedAdditionalGuests) {
+        const guestDetails = additionalGuestDetails.find((d: any) => d.id === additionalGuestId)
+        queries.push({
+          sql: `UPDATE additional_guests 
+                SET rsvp_status = 'attending', email = ?, phone = ? 
+                WHERE id = ? AND primary_guest_id = ?`,
+          args: [guestDetails?.email || "", guestDetails?.phone || "", additionalGuestId, guestId],
+        })
+      }
+    } else {
+      // Set all additional guests to not-attending if none selected
+      queries.push({
+        sql: `UPDATE additional_guests 
+              SET rsvp_status = 'not-attending' 
+              WHERE primary_guest_id = ?`,
+        args: [guestId],
+      })
     }
 
-    // Update primary guest contact info
-    const guestsFile = path.join(dataDir, "guests.json")
-    if (existsSync(guestsFile)) {
-      const guestsContent = await readFile(guestsFile, "utf-8")
-      const guests: Guest[] = JSON.parse(guestsContent)
+    // Remove existing RSVP response for this guest
+    queries.push({
+      sql: "DELETE FROM rsvp_responses WHERE guest_id = ?",
+      args: [guestId],
+    })
 
-      const guestIndex = guests.findIndex((g) => g.id === guestId)
-      if (guestIndex !== -1) {
-        guests[guestIndex] = {
-          ...guests[guestIndex],
-          email: primaryGuestEmail || "", // Allow empty email
-          phone: primaryGuestPhone || "", // Allow empty phone for non-attending
-          rsvpStatus: attending === "yes" ? "attending" : "not-attending",
-        }
-        await writeFile(guestsFile, JSON.stringify(guests, null, 2))
+    // Add new RSVP response
+    const rsvpId = uuidv4()
+    queries.push({
+      sql: `INSERT INTO rsvp_responses (id, guest_id, guest_name, attending, dietary_restrictions, message, submitted_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        rsvpId,
+        guestId,
+        guestName,
+        attending,
+        attending === "yes" || selectedAdditionalGuests.length > 0 ? dietaryRestrictions || null : null,
+        message || null,
+        new Date().toISOString(),
+      ],
+    })
+
+    // Add additional guests from RSVP response
+    for (const guest of additionalGuestDetails) {
+      if (guest.name) {
+        queries.push({
+          sql: `INSERT INTO rsvp_additional_guests (id, rsvp_response_id, name, email, created_at)
+                VALUES (?, ?, ?, ?, ?)`,
+          args: [uuidv4(), rsvpId, guest.name, guest.email || "", new Date().toISOString()],
+        })
       }
     }
 
-    // Update additional guests - they can attend independently of primary guest
-    const additionalGuestsFile = path.join(dataDir, "additional-guests.json")
-    if (existsSync(additionalGuestsFile)) {
-      const additionalContent = await readFile(additionalGuestsFile, "utf-8")
-      const additionalGuests: AdditionalGuest[] = JSON.parse(additionalContent)
-
-      // Update all additional guests for this primary guest based on selection
-      const updatedAdditionalGuests = additionalGuests.map((guest) => {
-        if (guest.primaryGuestId === guestId) {
-          const isSelected = selectedAdditionalGuests.includes(guest.id)
-          const guestDetails = additionalGuestDetails.find((d: any) => d.id === guest.id)
-
-          return {
-            ...guest,
-            rsvpStatus: isSelected ? "attending" : "not-attending",
-            email: guestDetails?.email || guest.email || "",
-            phone: guestDetails?.phone || guest.phone || "",
-          }
-        }
-        return guest
-      })
-
-      await writeFile(additionalGuestsFile, JSON.stringify(updatedAdditionalGuests, null, 2))
-    }
-
-    // Save RSVP response
-    const rsvpsFile = path.join(dataDir, "rsvps.json")
-    let rsvps: RSVPResponse[] = []
-
-    if (existsSync(rsvpsFile)) {
-      const rsvpsContent = await readFile(rsvpsFile, "utf-8")
-      rsvps = JSON.parse(rsvpsContent)
-    }
-
-    // Remove existing RSVP for this guest if it exists
-    rsvps = rsvps.filter((rsvp) => rsvp.guestId !== guestId)
-
-    // Add new RSVP - include additional guest details regardless of primary attendance
-    const newRSVP: RSVPResponse = {
-      id: uuidv4(),
-      guestId,
-      guestName,
-      attending: attending as "yes" | "no",
-      additionalGuests: additionalGuestDetails.map((guest: any) => ({
-        name: guest.name || "",
-        email: guest.email || "",
-      })),
-      dietaryRestrictions:
-        attending === "yes" || selectedAdditionalGuests.length > 0 ? dietaryRestrictions || undefined : undefined,
-      message: message || undefined,
-      submittedAt: new Date().toISOString(),
-    }
-
-    rsvps.push(newRSVP)
-    await writeFile(rsvpsFile, JSON.stringify(rsvps, null, 2))
+    // Execute all queries in a transaction
+    await executeTransaction(queries)
 
     return { success: true, message: "RSVP submitted successfully!" }
   } catch (error) {
