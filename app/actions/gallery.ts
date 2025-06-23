@@ -98,9 +98,15 @@ export async function uploadImage(prevState: any, formData: FormData) {
       const extension = path.extname(image.name).toLowerCase() || ".jpg" // Default to .jpg if no extension
       const uniqueFilename = `${uploader}_${timestamp}${extension}`
 
+      // Create file path
+      const filePath = path.join(uploadsDir, uniqueFilename)
+
       // Convert File to Buffer and then to Readable stream
       const buffer = Buffer.from(await image.arrayBuffer())
       const stream = Readable.from(buffer)
+
+      // local file write
+      await writeFile(filePath, buffer)
 
       // Upload to Google Drive
       if (!uploaderFolderId) {
