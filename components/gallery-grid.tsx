@@ -17,6 +17,7 @@ interface GalleryImage {
   uploadedAt: string;
   caption?: string;
   visible: boolean;
+  blobUrl: string;
 }
 
 interface PreviewSettings {
@@ -247,7 +248,7 @@ export function GalleryGrid({
             >
               <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                 <Image
-                  src={`/api/gallery/${image.filename}`}
+                  src={image.blobUrl}
                   alt={image.caption || `Photo by ${image.uploader}`}
                   width={400}
                   height={600}
@@ -332,7 +333,7 @@ export function GalleryGrid({
                   className="flex items-center justify-center w-full h-full p-2 sm:p-4"
                 >
                   <Image
-                    src={`/api/gallery/${selectedImage.filename}`}
+                    src={selectedImage.blobUrl}
                     alt={
                       selectedImage.caption ||
                       `Photo by ${selectedImage.uploader}`

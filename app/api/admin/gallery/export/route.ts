@@ -19,14 +19,15 @@ export async function GET() {
       return NextResponse.json({ error: "No images to export" }, { status: 404 })
     }
 
-    // Return metadata as JSON for now (simpler approach)
+    // Return metadata as JSON with blob URLs
     const metadata = gallery.map((img: any) => ({
       filename: img.originalName,
-      uploader: img.uploaderName,
+      uploader: img.uploader,
       uploadedAt: img.uploadedAt,
       caption: img.caption || "",
       visible: img.visible,
-      downloadUrl: `/api/gallery/${img.filename}`,
+      blobUrl: img.blobUrl,
+      downloadUrl: img.blobUrl, // Vercel Blob URLs are directly accessible
     }))
 
     return NextResponse.json(

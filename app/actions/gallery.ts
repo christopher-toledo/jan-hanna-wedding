@@ -1,12 +1,9 @@
 "use server"
 
-import { writeFile, readFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
 import { v4 as uuidv4 } from "uuid"
-import { google } from "googleapis"
-import { Readable } from "stream"
-import { getDriveClient } from "../service/googledrive"
+import { put } from "@vercel/blob"
+import { executeQuery } from "@/lib/db"
+import path from "path"
 
 interface GalleryImage {
   id: string
@@ -16,29 +13,7 @@ interface GalleryImage {
   uploadedAt: string
   caption?: string
   visible: boolean
-}
-
-// Helper to get or create uploader subfolder
-async function getOrCreateUploaderFolder(drive: any, parentId: string, uploader: string): Promise<string> {
-  // Check if folder exists
-  const listRes = await drive.files.list({
-    q: `'${parentId}' in parents and name='${uploader}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-    fields: "files(id, name)",
-    spaces: "drive",
-  });
-  if (listRes.data.files && listRes.data.files.length > 0) {
-    return listRes.data.files[0].id!;
-  }
-  // Create folder if not exists
-  const createRes = await drive.files.create({
-    requestBody: {
-      name: uploader,
-      mimeType: "application/vnd.google-apps.folder",
-      parents: [parentId],
-    },
-    fields: "id",
-  });
-  return createRes.data.id!;
+  blobUrl: string
 }
 
 export async function uploadImage(prevState: any, formData: FormData) {
@@ -51,37 +26,6 @@ export async function uploadImage(prevState: any, formData: FormData) {
       return { error: "Please provide your name and select at least one image" }
     }
 
-    // TODO: Firebase datastore for production
-    // START: Local file storage for testing purposes
-    // LOCAL FILES for testing purposes
-    // Create directories
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "gallery")
-    const dataDir = path.join(process.cwd(), "data")
-
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
-    }
-
-    // Read existing gallery data
-    const galleryFile = path.join(dataDir, "gallery.json")
-    let galleryData: GalleryImage[] = []
-
-    if (existsSync(galleryFile)) {
-      const fileContent = await readFile(galleryFile, "utf-8")
-      galleryData = JSON.parse(fileContent)
-    }
-    // END: Local file storage for testing purposes
-
-    // Google Drive setup
-    const galleryFolderId = process.env.GOOGLE_DRIVE_GALLERY_FOLDER_ID as string;
-    const drive = getDriveClient()
-
-    // Get or create uploader subfolder
-    const uploaderFolderId = await getOrCreateUploaderFolder(drive, galleryFolderId, uploader);
-
     // Process each image
     const uploadedImages: GalleryImage[] = []
 
@@ -91,54 +35,57 @@ export async function uploadImage(prevState: any, formData: FormData) {
       }
 
       // Generate unique filename with {uploader}_{timestamp}.{extension}
-      // timestamp into iso format
-      // YYYY-MM-DDTHH:mm:ss.sssZ 
-      // {uploader}_{timestamp}.{extension}
-      const timestamp = new Date().toISOString().replace(/[:.-]/g, "_") // Replace invalid characters
-      const extension = path.extname(image.name).toLowerCase() || ".jpg" // Default to .jpg if no extension
+      const timestamp = new Date().toISOString().replace(/[:.-]/g, "_")
+      const extension = path.extname(image.name).toLowerCase() || ".jpg"
       const uniqueFilename = `${uploader}_${timestamp}${extension}`
 
-      // Create file path
-      const filePath = path.join(uploadsDir, uniqueFilename)
+      try {
+        // Upload to Vercel Blob Storage
+        const blob = await put("gallery/" + uniqueFilename, image, {
+          access: "public",
+          addRandomSuffix: false,
+        })
 
-      // Convert File to Buffer and then to Readable stream
-      const buffer = Buffer.from(await image.arrayBuffer())
-      const stream = Readable.from(buffer)
+        console.log("Blob upload response:", blob)
 
-      // local file write
-      await writeFile(filePath, buffer)
+        const newImage = {
+          id: uuidv4(),
+          filename: uniqueFilename,
+          originalName: image.name,
+          uploader,
+          uploadedAt: new Date().toISOString(),
+          caption: caption || "",
+          visible: true,
+          blobUrl: blob.url,
+        }
 
-      // Upload to Google Drive
-      if (!uploaderFolderId) {
-        throw new Error("Uploader folder ID is not set");
+        // Save metadata to database
+        await executeQuery(
+          `INSERT INTO gallery_images (id, filename, original_name, uploader, uploaded_at, caption, visible, blob_url)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            newImage.id,
+            newImage.filename,
+            newImage.originalName,
+            newImage.uploader,
+            newImage.uploadedAt,
+            newImage.caption,
+            newImage.visible,
+            newImage.blobUrl,
+          ],
+        )
+
+        uploadedImages.push(newImage)
+      } catch (uploadError) {
+        console.error("Error uploading to Vercel Blob:", uploadError)
+        // Continue with other images if one fails
+        continue
       }
-      const driveRes = await drive.files.create({
-        requestBody: {
-          name: uniqueFilename,
-          mimeType: image.type,
-          parents: [uploaderFolderId], // <-- use uploader subfolder
-          description: caption || "",
-        },
-        media: {
-          mimeType: image.type,
-          body: stream,
-        },
-        fields: "id,webViewLink,webContentLink",
-      });
-
-      console.log("Drive upload response:", driveRes.data);  
-      uploadedImages.push({
-        id: driveRes.data.id!,
-        filename: uniqueFilename,
-        originalName: image.name,
-        uploader,
-        uploadedAt: new Date().toISOString(),
-        caption: caption || "",
-        visible: true, // Default visibility
-      });
     }
-    galleryData.push(...uploadedImages)
-    await writeFile(galleryFile, JSON.stringify(galleryData, null, 2))
+
+    if (uploadedImages.length === 0) {
+      return { error: "Failed to upload any images. Please try again." }
+    }
 
     return { success: true, message: `Successfully uploaded ${uploadedImages.length} image(s)` }
   } catch (error) {

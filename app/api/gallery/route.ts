@@ -1,19 +1,20 @@
 import { NextResponse } from "next/server"
-import { readFile } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { executeQuery } from "@/lib/db"
 
 export async function GET() {
   try {
-    const dataDir = path.join(process.cwd(), "data")
-    const galleryFile = path.join(dataDir, "gallery.json")
+    const result = await executeQuery(
+      `SELECT id, filename, original_name as originalName, uploader, uploaded_at as uploadedAt, 
+              caption, visible, blob_url as blobUrl
+       FROM gallery_images 
+       WHERE visible = 1
+       ORDER BY uploaded_at DESC`,
+    )
 
-    if (!existsSync(galleryFile)) {
-      return NextResponse.json({ images: [] })
-    }
-
-    const fileContent = await readFile(galleryFile, "utf-8")
-    const images = JSON.parse(fileContent)
+    const images = result.rows.map((row: any) => ({
+      ...row,
+      visible: Boolean(row.visible),
+    }))
 
     return NextResponse.json({ images })
   } catch (error) {

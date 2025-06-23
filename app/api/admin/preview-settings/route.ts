@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
-import { readFile, writeFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
+import { executeQuery, executeTransaction } from "@/lib/db"
 import path from "path"
+import { existsSync } from "fs"
+import { mkdir } from "fs/promises"
 
 interface PreviewSettings {
   count: number
@@ -25,14 +26,22 @@ async function getSettingsFilePath() {
 
 async function readSettings(): Promise<PreviewSettings> {
   try {
-    const settingsFile = await getSettingsFilePath()
-    if (!existsSync(settingsFile)) {
+    const settingsResult = await executeQuery("SELECT count, use_latest FROM preview_settings WHERE id = 1")
+
+    if (settingsResult.rows.length === 0) {
       return defaultSettings
     }
 
-    const fileContent = await readFile(settingsFile, "utf-8")
-    const settings = JSON.parse(fileContent)
-    return { ...defaultSettings, ...settings }
+    const settings = settingsResult.rows[0]
+
+    // Get selected images
+    const selectedImagesResult = await executeQuery("SELECT image_id FROM preview_selected_images ORDER BY created_at")
+
+    return {
+      count: Number(settings.count),
+      useLatest: Boolean(settings.use_latest),
+      selectedImages: selectedImagesResult.rows.map((row: any) => row.image_id),
+    }
   } catch (error) {
     console.error("Error reading preview settings:", error)
     return defaultSettings
@@ -41,8 +50,31 @@ async function readSettings(): Promise<PreviewSettings> {
 
 async function writeSettings(settings: PreviewSettings): Promise<void> {
   try {
-    const settingsFile = await getSettingsFilePath()
-    await writeFile(settingsFile, JSON.stringify(settings, null, 2))
+    const queries = []
+
+    // Update or insert settings
+    queries.push({
+      sql: `INSERT OR REPLACE INTO preview_settings (id, count, use_latest, updated_at) 
+            VALUES (1, ?, ?, ?)`,
+      args: [settings.count, settings.useLatest, new Date().toISOString()],
+    })
+
+    // Clear existing selected images
+    queries.push({
+      sql: "DELETE FROM preview_selected_images",
+      args: [],
+    })
+
+    // Insert new selected images
+    for (const imageId of settings.selectedImages) {
+      queries.push({
+        sql: `INSERT INTO preview_selected_images (image_id, created_at) 
+              VALUES (?, ?)`,
+        args: [imageId, new Date().toISOString()],
+      })
+    }
+
+    await executeTransaction(queries)
   } catch (error) {
     console.error("Error writing preview settings:", error)
     throw error

@@ -1,24 +1,24 @@
 import { RSVPForm } from "@/components/rsvp-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { notFound } from "next/navigation";
-import { readFile } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
+import { executeQuery } from "@/lib/db";
 
-// Remove the mock guests object and replace with dynamic lookup
+interface GuestResult {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+// Get guest from database
 async function getGuest(guestId: string) {
   try {
-    const dataDir = path.join(process.cwd(), "data");
-    const guestsFile = path.join(dataDir, "guests.json");
+    const result = await executeQuery<GuestResult>(
+      "SELECT id, name, email, phone FROM guests WHERE id = ?",
+      [guestId]
+    );
 
-    if (!existsSync(guestsFile)) {
-      return null;
-    }
-
-    const fileContent = await readFile(guestsFile, "utf-8");
-    const guests = JSON.parse(fileContent);
-
-    return guests.find((guest: any) => guest.id === guestId) || null;
+    return result.rows.length > 0 ? result.rows[0] : null;
   } catch (error) {
     console.error("Error fetching guest:", error);
     return null;
