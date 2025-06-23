@@ -70,9 +70,9 @@ export default function HomePage() {
               </motion.h1>
 
               <motion.div
-                initial={{ opacity: 0, scale: 0 }}
+                initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
+                transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
                 className="flex items-center justify-center space-x-6"
               >
                 <Image
@@ -88,7 +88,7 @@ export default function HomePage() {
               <motion.h1
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.4, duration: 0.8, ease: "easeOut" }}
+                transition={{ delay: 1.3, duration: 0.8, ease: "easeOut" }}
                 className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 JAN
@@ -98,7 +98,7 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.8, duration: 0.8 }}
+              transition={{ delay: 1.6, duration: 0.8 }}
               className="space-y-6"
             >
               <p className="mt-8 text-xl md:text-6xl text-darkGrayBlue font-alta max-w-2xl mx-auto leading-relaxed drop-shadow">
@@ -107,71 +107,52 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
         </div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.5, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60"
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{
-              duration: 2,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-            className="flex flex-col items-center space-y-2"
-          >
-            <span className="text-base tracking-wide font-alta">
-              Scroll to RSVP
-            </span>
-            <ArrowDown className="h-5 w-5" />
-          </motion.div>
-        </motion.div>
       </section>
 
       {/* Countdown Timer Section */}
       <section className="py-4 bg-linen relative overflow-hidden">
-        <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
-          <CountdownTimer />
-        </div>
-      </section>
-
-      {/* Countdown Gallery Section */}
-      <section className="py-4 bg-linen">
-        <div className="container mx-auto px-6 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
-              <Image
-                src="/images/countdown-1.jpg"
-                alt="Countdown 1"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
-              <Image
-                src="/images/countdown-2.jpg"
-                alt="Countdown 2"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
-              <Image
-                src="/images/countdown-3.jpg"
-                alt="Countdown 3"
-                fill
-                className="object-cover"
-                priority
-              />
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
+            <CountdownTimer />
+          </div>
+          <div className="container mx-auto px-6 sm:px-6">
+            {/* Countdown Gallery */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+              <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+                <Image
+                  src="/images/countdown-1.jpg"
+                  alt="Countdown 1"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+                <Image
+                  src="/images/countdown-2.jpg"
+                  alt="Countdown 2"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+                <Image
+                  src="/images/countdown-3.jpg"
+                  alt="Countdown 3"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Our Story Section */}
