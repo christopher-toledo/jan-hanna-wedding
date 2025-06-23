@@ -50,17 +50,6 @@ export async function uploadImage(prevState: any, formData: FormData) {
       return { error: "Please provide your name and select at least one image" }
     }
 
-    // Create directories
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "gallery")
-    const dataDir = path.join(process.cwd(), "data")
-
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
-    }
-
     // Google Drive setup
     const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON as string)
     const galleryFolderId = process.env.GOOGLE_DRIVE_GALLERY_FOLDER_ID as string;
@@ -111,7 +100,15 @@ export async function uploadImage(prevState: any, formData: FormData) {
       });
 
       console.log("Drive upload response:", driveRes.data);  
-    
+      uploadedImages.push({
+        id: driveRes.data.id!,
+        filename: uniqueFilename,
+        originalName: image.name,
+        uploader,
+        uploadedAt: new Date().toISOString(),
+        caption: caption || "",
+        visible: true, // Default visibility
+      });
     }
     return { success: true, message: `Successfully uploaded ${uploadedImages.length} image(s)` }
   } catch (error) {
