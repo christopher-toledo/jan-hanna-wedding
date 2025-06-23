@@ -49,7 +49,7 @@ export default function HomePage() {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-20 md:-mt-40">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-60 md:-mt-80">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
