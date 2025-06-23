@@ -17,6 +17,29 @@ interface GalleryImage {
   visible: boolean
 }
 
+// Helper to get or create uploader subfolder
+async function getOrCreateUploaderFolder(drive: any, parentId: string, uploader: string): Promise<string> {
+  // Check if folder exists
+  const listRes = await drive.files.list({
+    q: `'${parentId}' in parents and name='${uploader}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+    fields: "files(id, name)",
+    spaces: "drive",
+  });
+  if (listRes.data.files && listRes.data.files.length > 0) {
+    return listRes.data.files[0].id!;
+  }
+  // Create folder if not exists
+  const createRes = await drive.files.create({
+    requestBody: {
+      name: uploader,
+      mimeType: "application/vnd.google-apps.folder",
+      parents: [parentId],
+    },
+    fields: "id",
+  });
+  return createRes.data.id!;
+}
+
 export async function uploadImage(prevState: any, formData: FormData) {
   try {
     const uploader = formData.get("uploader") as string
@@ -49,6 +72,9 @@ export async function uploadImage(prevState: any, formData: FormData) {
     })
     const drive = google.drive({ version: "v3", auth: jwtClient })
 
+    // Get or create uploader subfolder
+    const uploaderFolderId = await getOrCreateUploaderFolder(drive, galleryFolderId, uploader);
+
     // Process each image
     const uploadedImages: GalleryImage[] = []
 
@@ -67,47 +93,26 @@ export async function uploadImage(prevState: any, formData: FormData) {
       const stream = Readable.from(buffer)
 
       // Upload to Google Drive
-      if (!galleryFolderId) {
-        throw new Error("GOOGLE_DRIVE_GALLERY_FOLDER_ID is not set");
+      if (!uploaderFolderId) {
+        throw new Error("Uploader folder ID is not set");
       }
       const driveRes = await drive.files.create({
         requestBody: {
           name: uniqueFilename,
           mimeType: image.type,
-          parents: [galleryFolderId],
+          parents: [uploaderFolderId], // <-- use uploader subfolder
+          description: caption || "",
         },
         media: {
           mimeType: image.type,
-          body: stream, // Use Node.js stream here
+          body: stream,
         },
         fields: "id,webViewLink,webContentLink",
       });
 
       console.log("Drive upload response:", driveRes.data);  
-
-      // Create image record
-      const imageRecord: GalleryImage = {
-        id: uuidv4(),
-        filename: uniqueFilename,
-        originalName: image.name,
-        uploader,
-        uploadedAt: new Date().toISOString(),
-        caption: caption || undefined,
-        visible: true,
-        // Optionally add drive file info here
-        // driveFileId: driveRes.data.id,
-        // driveWebViewLink: driveRes.data.webViewLink,
-      }
-
-      uploadedImages.push(imageRecord)
+    
     }
-
-    // Add to gallery data
-    // galleryData.push(...uploadedImages)
-
-    // Save gallery data
-    // await writeFile(galleryFile, JSON.stringify(galleryData, null, 2))
-
     return { success: true, message: `Successfully uploaded ${uploadedImages.length} image(s)` }
   } catch (error) {
     console.error("Error uploading images:", error)
