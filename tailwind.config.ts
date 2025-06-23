@@ -23,15 +23,15 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "#f2efeb",
-        foreground: "#393f4a",
+        background: "#fefcfa",
+        foreground: "#2c2c2c",
         primary: {
-          DEFAULT: "#393f4a",
+          DEFAULT: "#8b7355",
           foreground: "#ffffff",
         },
         secondary: {
           DEFAULT: "#f8f4f0",
-          foreground: "#393f4a",
+          foreground: "#2c2c2c",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -43,7 +43,7 @@ const config: Config = {
         },
         accent: {
           DEFAULT: "#ebe5dd",
-          foreground: "#393f4a",
+          foreground: "#2c2c2c",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -51,18 +51,26 @@ const config: Config = {
         },
         card: {
           DEFAULT: "#ffffff",
-          foreground: "#393f4a",
+          foreground: "#2c2c2c",
         },
+        powderBlue: "#b6c6d8",
+        peach: "#f3ad86",
+        blushPink: "#f1a49a",
+        slateBlue: "#67839c",
+        darkGrayBlue: "#393f4a",
       },
       fontFamily: {
-        serif: ["var(--font-the-seasons)", "serif"],
-        sans: ["var(--font-montserrat)", "sans-serif"],
-        header: ["var(--font-the-seasons)", "serif"],
-        body: ["var(--font-montserrat)", "sans-serif"],
+        serif: ["var(--font-cormorant)"],
+        cursive: ["var(--font-pinyon-script)"],
+        sans: ["var(--font-the_seasons)"],
+        montserrat: ["var(--font-montserrat)"],
+        spartan: ["var(--font-league-spartan)"],
+        brittany: ["var(--font-brittany)"],
+        alta: ["var(--font-alta)"],
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(--radius) - 2px)",
+        md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
