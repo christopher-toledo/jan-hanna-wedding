@@ -30,7 +30,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col overflow-hidden">
       {/* Hero Section with Parallax */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[60vh] md:min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image with Parallax */}
         <div
           className="absolute inset-0 z-0"
@@ -42,14 +42,17 @@ export default function HomePage() {
             src="/images/MainBanner.jpg"
             alt="Wedding venue"
             fill
-            className="object-cover"
+            className="object-cover object-top md:object-center"
+            style={{
+              transform: "scale(1.2)",
+            }}
             priority
           />
           <div className="absolute inset-0 bg-black/5" />
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-60 md:-mt-80">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-5 md:-mt-80">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
