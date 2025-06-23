@@ -10,7 +10,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { submitRSVP } from "@/app/actions/rsvp";
 import { useActionState } from "react";
-import { Heart, Users, Mail, AlertCircle, Info } from "lucide-react";
+import {
+  Heart,
+  Users,
+  Mail,
+  AlertCircle,
+  Info,
+  Clock,
+  Edit,
+} from "lucide-react";
 
 interface RSVPFormProps {
   guestId: string;
@@ -39,6 +47,12 @@ interface RSVPResponse {
   submittedAt: string;
 }
 
+interface RSVPSettings {
+  enabled: boolean;
+  deadline?: string;
+  customMessage?: string;
+}
+
 export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
   const [state, action, isPending] = useActionState(submitRSVP, null);
   const [attending, setAttending] = useState<string>("");
@@ -57,6 +71,9 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rsvpSettings, setRsvpSettings] = useState<RSVPSettings | null>(null);
+  const [isRsvpOpen, setIsRsvpOpen] = useState(true);
+  const [hasExistingRsvp, setHasExistingRsvp] = useState(false);
 
   // Refs for focusing on error fields
   const emailRef = useRef<HTMLInputElement>(null);
@@ -67,6 +84,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
   const isPhoneRequired = attending === "yes";
 
   useEffect(() => {
+    fetchRsvpSettings();
     fetchGuestData();
     fetchAdditionalGuests();
     fetchExistingRSVP();
@@ -93,6 +111,17 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
     }
   }, [state, errors, isPending]);
 
+  const fetchRsvpSettings = async () => {
+    try {
+      const response = await fetch("/api/admin/rsvp-settings");
+      const data = await response.json();
+      setRsvpSettings(data.settings);
+      setIsRsvpOpen(data.isOpen);
+    } catch (error) {
+      console.error("Error fetching RSVP settings:", error);
+    }
+  };
+
   const fetchGuestData = async () => {
     try {
       const response = await fetch(`/api/admin/guests`);
@@ -116,6 +145,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       );
 
       if (existingRSVP) {
+        setHasExistingRsvp(true);
         setAttending(existingRSVP.attending);
         setDietaryRestrictions(existingRSVP.dietaryRestrictions || "");
         setMessage(existingRSVP.message || "");
@@ -194,6 +224,42 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
+  const getDeadlineDisplay = () => {
+    if (!rsvpSettings?.deadline) return null;
+
+    const deadlineDate = new Date(rsvpSettings.deadline);
+
+    return deadlineDate.toLocaleString("en-PH", {
+      timeZone: "Asia/Manila",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // If RSVP is closed, show closed message
+  if (!isRsvpOpen) {
+    return (
+      <div className="text-center py-12">
+        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Clock className="h-10 w-10 text-red-600" />
+        </div>
+        <h3 className="font-serif text-3xl text-primary mb-4">RSVP Closed</h3>
+        <p className="text-muted-foreground text-lg mb-4">
+          {rsvpSettings?.customMessage ||
+            "RSVP submissions are currently closed."}
+        </p>
+        {rsvpSettings?.deadline && (
+          <p className="text-sm text-muted-foreground">
+            The deadline was {getDeadlineDisplay()}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   if (state?.success) {
     return (
       <div className="text-center py-12">
@@ -202,7 +268,8 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         </div>
         <h3 className="font-serif text-3xl text-primary mb-4">Thank You!</h3>
         <p className="text-muted-foreground text-lg">
-          Your RSVP has been submitted successfully.
+          Your RSVP has been {hasExistingRsvp ? "updated" : "submitted"}{" "}
+          successfully.
         </p>
         <p className="text-sm text-muted-foreground mt-2">
           {attending === "yes"
@@ -269,6 +336,30 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
     <form action={enhancedAction} className="space-y-8">
       <input type="hidden" name="guestId" value={guestId} />
       <input type="hidden" name="guestName" value={guestName} />
+
+      {/* RSVP Update Notice */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start gap-2">
+          <Edit className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-blue-800">
+            <p className="font-medium">
+              {hasExistingRsvp ? "Update Your RSVP" : "Submit Your RSVP"}
+            </p>
+            <p className="text-blue-600">
+              {hasExistingRsvp
+                ? "You can update your response anytime before the deadline. Your previous answers have been loaded below."
+                : "You can update your response anytime after submitting, as long as it's before the deadline."}
+            </p>
+            {rsvpSettings?.deadline && (
+              <p className="text-blue-600 mt-1">
+                <Clock className="h-3 w-3 inline mr-1" />
+                Deadline: {getDeadlineDisplay()} (Philippine Time)
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* RSVP Response */}
       <div className="space-y-4" ref={attendingRef}>
         <Label className="text-lg font-medium text-primary flex items-center gap-1">
@@ -614,7 +705,13 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         className="w-full bg-primary hover:bg-primary/90 text-white py-6 text-lg font-medium elegant-shadow"
         disabled={isPending || isSubmitting}
       >
-        {isPending || isSubmitting ? "Submitting..." : "Submit RSVP"}
+        {isPending || isSubmitting
+          ? hasExistingRsvp
+            ? "Updating..."
+            : "Submitting..."
+          : hasExistingRsvp
+          ? "Update RSVP"
+          : "Submit RSVP"}
       </Button>
     </form>
   );

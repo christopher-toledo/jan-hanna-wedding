@@ -51,12 +51,12 @@ export async function GET() {
       rsvpResponses = rsvps.length
 
       // Count additional guests from RSVP responses
-      additionalGuestsFromRSVP = rsvps.reduce((total: number, rsvp: any) => {
-        if (rsvp.additionalGuests && Array.isArray(rsvp.additionalGuests)) {
-          return total + rsvp.additionalGuests.length
-        }
-        return total
-      }, 0)
+      // additionalGuestsFromRSVP = rsvps.reduce((total: number, rsvp: any) => {
+      //   if (rsvp.additionalGuests && Array.isArray(rsvp.additionalGuests)) {
+      //     return total + rsvp.additionalGuests.length
+      //   }
+      //   return total
+      // }, 0)
     }
 
     // Get gallery stats
@@ -67,7 +67,7 @@ export async function GET() {
     }
 
     // Calculate total guests (primary + additional from admin + additional from RSVP)
-    const totalGuests = primaryGuests + additionalGuestsCount + additionalGuestsFromRSVP
+    const totalGuests = primaryGuests + additionalGuestsCount 
 
     return NextResponse.json({
       totalGuests,

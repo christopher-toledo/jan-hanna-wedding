@@ -1,25 +1,14 @@
-import type React from "react";
-import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
-import "./globals.css";
 import { Navigation } from "@/components/navigation";
-
-const theSeasons = {
-  src: [
-    {
-      path: "/fonts/TheSeasons-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "/fonts/TheSeasons-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-  ],
-  variable: "--font-the-seasons",
-  display: "swap",
-};
+import type { Metadata } from "next";
+import {
+  Cormorant_Garamond,
+  Montserrat,
+  Pinyon_Script,
+  League_Spartan,
+} from "next/font/google";
+import localFont from "next/font/local";
+import type React from "react";
+import "./globals.css";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -27,8 +16,47 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+const pinyon = Pinyon_Script({
+  subsets: ["latin"],
+  variable: "--font-pinyon-script",
+  display: "swap",
+  weight: "400",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant-garamond",
+  display: "swap",
+  weight: ["400", "700"],
+});
+
+const leagueSpartan = League_Spartan({
+  subsets: ["latin"],
+  variable: "--font-league-spartan",
+  display: "swap",
+  weight: ["400", "700"],
+});
+
+const brittanyFont = localFont({
+  src: "../public/fonts/BrittanySignature.ttf",
+  variable: "--font-brittany",
+  display: "swap",
+  weight: "400",
+  style: "normal",
+  fallback: ["cursive"],
+});
+
+const altaFont = localFont({
+  src: "../public/fonts/alta-regular.otf",
+  variable: "--font-alta",
+  display: "swap",
+  weight: "400",
+  style: "normal",
+  fallback: ["sans-serif"],
+});
+
 export const metadata: Metadata = {
-  title: "Jan Bennette & Hanna - Wedding",
+  title: "Jan & Hanna - Wedding",
   description: "Join us for our special day",
   generator: "v0.dev",
 };
@@ -39,20 +67,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${montserrat.variable}`}>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=The+Seasons:wght@400;700&display=swap"
-          rel="preload"
-          as="style"
-        />
-        <noscript>
-          <link
-            href="https://fonts.googleapis.com/css2?family=The+Seasons:wght@400;700&display=swap"
-            rel="stylesheet"
-          />
-        </noscript>
-      </head>
+    <html
+      lang="en"
+      className={`${montserrat.variable} ${pinyon.variable} ${cormorant.variable} ${leagueSpartan.variable} ${brittanyFont.variable} ${altaFont.variable}`}
+    >
       <body className="font-sans antialiased">
         <Navigation />
         <main>{children}</main>

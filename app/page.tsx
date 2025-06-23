@@ -6,10 +6,10 @@ import {
   Calendar,
   MapPin,
   Clock,
-  Heart,
   Sparkles,
   ArrowDown,
   Camera,
+  Heart,
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -39,89 +39,31 @@ export default function HomePage() {
           }}
         >
           <Image
-            src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+            src="/images/MainBanner.jpg"
             alt="Wedding venue"
             fill
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/20" />
+          <div className="absolute inset-0 bg-black/5" />
         </div>
 
-        {/* Floating Elements */}
-        <motion.div
-          className="absolute top-20 left-10 opacity-30"
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 5, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        >
-          <Sparkles className="h-8 w-8 text-white" />
-        </motion.div>
-
-        <motion.div
-          className="absolute bottom-32 right-16 opacity-30"
-          animate={{
-            y: [0, -15, 0],
-            rotate: [0, -5, 0],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-        >
-          <Heart className="h-12 w-12 text-white" />
-        </motion.div>
-
-        <motion.div
-          className="absolute top-1/3 right-20 opacity-20"
-          animate={{
-            y: [0, -10, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-            delay: 2,
-          }}
-        >
-          <Sparkles className="h-6 w-6 text-white" />
-        </motion.div>
-
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-60 md:-mt-80">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
             className="space-y-6"
           >
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="text-sm tracking-[0.3em] uppercase text-white/80 font-medium"
-            >
-              Together Forever
-            </motion.p>
-
             <div className="space-y-4">
               <motion.h1
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
-                Jan Bennette
+                HANNA
               </motion.h1>
 
               <motion.div
@@ -130,18 +72,23 @@ export default function HomePage() {
                 transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
                 className="flex items-center justify-center space-x-6"
               >
-                <div className="h-px bg-white/40 w-16"></div>
-                <Heart className="h-8 w-8 text-white drop-shadow-lg" />
-                <div className="h-px bg-white/40 w-16"></div>
+                <Image
+                  src="/images/and.png"
+                  alt="and"
+                  width={300}
+                  height={0}
+                  className="drop-shadow-lg h-auto w-24 xs:w-32 sm:w-40 md:w-48 lg:w-56"
+                  sizes="(max-width: 640px) 6rem, (max-width: 768px) 8rem, (max-width: 1024px) 10rem, 14rem"
+                />
               </motion.div>
 
               <motion.h1
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.4, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
-                Hanna Jane
+                JAN
               </motion.h1>
             </div>
 
@@ -151,42 +98,9 @@ export default function HomePage() {
               transition={{ delay: 1.8, duration: 0.8 }}
               className="space-y-6"
             >
-              <p className="text-xl md:text-2xl text-white/90 font-light max-w-2xl mx-auto leading-relaxed drop-shadow">
-                We joyfully invite you to celebrate our union as we begin this
-                beautiful journey together
+              <p className="mt-8 text-xl md:text-6xl text-darkGrayBlue font-alta max-w-2xl mx-auto leading-relaxed drop-shadow">
+                09.23.2025
               </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    asChild
-                    size="lg"
-                    className="border bg-white/90 hover:bg-white text-primary px-8 py-6 text-base font-medium tracking-wide shadow-2xl backdrop-blur-sm"
-                  >
-                    <Link href="/information">View Wedding Details</Link>
-                  </Button>
-                </motion.div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border border-white text-white hover:bg-white hover:text-primary backdrop-blur-sm px-8 py-6 text-base font-medium tracking-wide shadow-lg"
-                    onClick={() =>
-                      document
-                        .getElementById("gallery")
-                        ?.scrollIntoView({ behavior: "smooth" })
-                    }
-                  >
-                    Explore Gallery
-                  </Button>
-                </motion.div>
-              </div>
             </motion.div>
           </motion.div>
         </div>
@@ -207,7 +121,9 @@ export default function HomePage() {
             }}
             className="flex flex-col items-center space-y-2"
           >
-            <span className="text-sm tracking-wide">Scroll to explore</span>
+            <span className="text-base tracking-wide font-alta">
+              Scroll to RSVP
+            </span>
             <ArrowDown className="h-5 w-5" />
           </motion.div>
         </motion.div>
@@ -217,6 +133,41 @@ export default function HomePage() {
       <section className="py-4 bg-linen relative overflow-hidden">
         <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
           <CountdownTimer />
+        </div>
+      </section>
+
+      {/* Countdown Gallery Section */}
+      <section className="py-4 bg-linen">
+        <div className="container mx-auto px-6 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+              <Image
+                src="/images/countdown-1.jpg"
+                alt="Countdown 1"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+              <Image
+                src="/images/countdown-2.jpg"
+                alt="Countdown 2"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+              <Image
+                src="/images/countdown-3.jpg"
+                alt="Countdown 3"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
         </div>
       </section>
 

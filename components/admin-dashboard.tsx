@@ -6,6 +6,7 @@ import { RSVPResponses } from "./rsvp-responses";
 import { GalleryManager } from "./gallery-manager";
 import { UploadSettingsManager } from "./upload-settings-manager";
 import { GalleryPreviewManager } from "./gallery-preview-manager";
+import { RSVPSettingsManager } from "./rsvp-settings-manager";
 import {
   Users,
   MessageSquare,
@@ -13,6 +14,7 @@ import {
   Camera,
   Settings,
   Eye,
+  Calendar,
 } from "lucide-react";
 
 export function AdminDashboard() {
@@ -37,19 +39,25 @@ export function AdminDashboard() {
           </TabsTrigger>
           <TabsTrigger value="rsvps" className="flex items-center gap-2">
             <MessageSquare className="h-4 w-4" />
-            RSVPs
+            RSVP
+          </TabsTrigger>
+          <TabsTrigger
+            value="rsvp-settings"
+            className="flex items-center gap-2"
+          >
+            <Calendar className="h-4 w-4" />
+            RSVP Settings
           </TabsTrigger>
           <TabsTrigger value="gallery" className="flex items-center gap-2">
             <Camera className="h-4 w-4" />
             Gallery
           </TabsTrigger>
-          <TabsTrigger value="preview" className="flex items-center gap-2">
-            <Eye className="h-4 w-4" />
-            Preview
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
+          <TabsTrigger
+            value="gallery-settings"
+            className="flex items-center gap-2"
+          >
             <Settings className="h-4 w-4" />
-            Settings
+            Gallery Settings
           </TabsTrigger>
         </TabsList>
 
@@ -65,15 +73,16 @@ export function AdminDashboard() {
           <RSVPResponses />
         </TabsContent>
 
+        <TabsContent value="rsvp-settings">
+          <RSVPSettingsManager />
+        </TabsContent>
+
         <TabsContent value="gallery">
           <GalleryManager />
         </TabsContent>
 
-        <TabsContent value="preview">
+        <TabsContent value="gallery-settings" className="space-y-6">
           <GalleryPreviewManager />
-        </TabsContent>
-
-        <TabsContent value="settings">
           <UploadSettingsManager />
         </TabsContent>
       </Tabs>
