@@ -6,6 +6,7 @@ import path from "path"
 import { v4 as uuidv4 } from "uuid"
 import { google } from "googleapis"
 import { Readable } from "stream"
+import { getDriveClient } from "../service/googledrive"
 
 interface GalleryImage {
   id: string
@@ -51,15 +52,8 @@ export async function uploadImage(prevState: any, formData: FormData) {
     }
 
     // Google Drive setup
-    const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON as string)
     const galleryFolderId = process.env.GOOGLE_DRIVE_GALLERY_FOLDER_ID as string;
-
-    const jwtClient = new google.auth.JWT({
-      email: serviceAccount.client_email,
-      key: serviceAccount.private_key,
-      scopes: ["https://www.googleapis.com/auth/drive.file"],
-    })
-    const drive = google.drive({ version: "v3", auth: jwtClient })
+    const drive = getDriveClient()
 
     // Get or create uploader subfolder
     const uploaderFolderId = await getOrCreateUploaderFolder(drive, galleryFolderId, uploader);
@@ -73,8 +67,11 @@ export async function uploadImage(prevState: any, formData: FormData) {
       }
 
       // Generate unique filename with {uploader}_{timestamp}.{extension}
-      const timestamp = Date.now()
-      const extension = path.extname(image.name)
+      // timestamp into iso format
+      // YYYY-MM-DDTHH:mm:ss.sssZ 
+      // {uploader}_{timestamp}.{extension}
+      const timestamp = new Date().toISOString().replace(/[:.-]/g, "_") // Replace invalid characters
+      const extension = path.extname(image.name).toLowerCase() || ".jpg" // Default to .jpg if no extension
       const uniqueFilename = `${uploader}_${timestamp}${extension}`
 
       // Convert File to Buffer and then to Readable stream
