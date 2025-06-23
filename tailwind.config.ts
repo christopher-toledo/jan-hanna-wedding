@@ -58,6 +58,7 @@ const config: Config = {
         blushPink: "#f1a49a",
         slateBlue: "#67839c",
         darkGrayBlue: "#393f4a",
+        linen: "#f2efeb",
       },
       fontFamily: {
         serif: ["var(--font-cormorant)"],

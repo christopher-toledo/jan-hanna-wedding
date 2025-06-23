@@ -49,7 +49,7 @@ export default function HomePage() {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-20 md:-mt-40">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -61,7 +61,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-5xl md:text-7xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 HANNA
               </motion.h1>
@@ -86,7 +86,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.4, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-5xl md:text-7xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 JAN
               </motion.h1>
@@ -137,7 +137,7 @@ export default function HomePage() {
       </section>
 
       {/* Countdown Gallery Section */}
-      <section className="py-4 bg-white">
+      <section className="py-4 bg-linen">
         <div className="container mx-auto px-6 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
             <div className="aspect-square w-full relative overflow-hidden shadow-lg">

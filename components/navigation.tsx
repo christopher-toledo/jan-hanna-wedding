@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Heart } from "lucide-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
 
 export function Navigation() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const scrollToGallery = () => {
-    const gallerySection = document.getElementById("gallery")
+    const gallerySection = document.getElementById("gallery");
     if (gallerySection) {
-      gallerySection.scrollIntoView({ behavior: "smooth" })
+      gallerySection.scrollIntoView({ behavior: "smooth" });
     } else {
       // If not on home page, navigate to home then scroll
-      window.location.href = "/#gallery"
+      window.location.href = "/#gallery";
     }
-  }
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-primary/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-linen backdrop-blur-sm border-b border-primary/10">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-2">
@@ -39,7 +39,9 @@ export function Navigation() {
             <Link
               href="/information"
               className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === "/information" ? "text-primary" : "text-muted-foreground"
+                pathname === "/information"
+                  ? "text-primary"
+                  : "text-muted-foreground"
               }`}
             >
               Information
@@ -60,5 +62,5 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
