@@ -51,6 +51,30 @@ export async function uploadImage(prevState: any, formData: FormData) {
       return { error: "Please provide your name and select at least one image" }
     }
 
+    // TODO: Firebase datastore for production
+    // START: Local file storage for testing purposes
+    // LOCAL FILES for testing purposes
+    // Create directories
+    const uploadsDir = path.join(process.cwd(), "public", "uploads", "gallery")
+    const dataDir = path.join(process.cwd(), "data")
+
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true })
+    }
+    if (!existsSync(dataDir)) {
+      await mkdir(dataDir, { recursive: true })
+    }
+
+    // Read existing gallery data
+    const galleryFile = path.join(dataDir, "gallery.json")
+    let galleryData: GalleryImage[] = []
+
+    if (existsSync(galleryFile)) {
+      const fileContent = await readFile(galleryFile, "utf-8")
+      galleryData = JSON.parse(fileContent)
+    }
+    // END: Local file storage for testing purposes
+
     // Google Drive setup
     const galleryFolderId = process.env.GOOGLE_DRIVE_GALLERY_FOLDER_ID as string;
     const drive = getDriveClient()
@@ -107,6 +131,9 @@ export async function uploadImage(prevState: any, formData: FormData) {
         visible: true, // Default visibility
       });
     }
+    galleryData.push(...uploadedImages)
+    await writeFile(galleryFile, JSON.stringify(galleryData, null, 2))
+
     return { success: true, message: `Successfully uploaded ${uploadedImages.length} image(s)` }
   } catch (error) {
     console.error("Error uploading images:", error)
