@@ -236,112 +236,119 @@ export default function HomePage() {
       </section>
 
       {/* Wedding Details Preview */}
-      <section id="details">
-        <div className="py-12 bg-linen"></div>
-      </section>
-      <section className="pb-24 bg-linen relative overflow-hidden">
-        <div className="container mx-auto px-6">
+      <section id="details" className="py-8 bg-linen relative overflow-hidden">
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center"
           >
-            <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue mb-4 tracking-widest">
+            <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
               THE WEDDING DETAILS
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We can't wait to celebrate this special day with our loved ones
-            </p>
-            <div className="w-24 h-px bg-primary/30 mx-auto mt-4"></div>
           </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                icon: Calendar,
-                title: "When",
-                details: ["Tuesday", "September 23, 2025", "4:00 PM"],
-                delay: 0,
-              },
-              {
-                icon: MapPin,
-                title: "Where",
-                details: [
-                  "Sunset Gardens",
-                  "123 Wedding Lane",
-                  "Beautiful City, BC",
-                ],
-                delay: 0.2,
-              },
-              {
-                icon: Clock,
-                title: "Reception",
-                details: ["Following Ceremony", "6:00 PM", "Same Location"],
-                delay: 0.4,
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: item.delay }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10 }}
-              >
-                <Card className="text-center elegant-shadow hover:shadow-2xl transition-all duration-500 elegant-border group bg-white/80 backdrop-blur-sm">
-                  <CardContent className="pt-12 pb-8 px-8">
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                      className="relative mb-8"
-                    >
-                      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto group-hover:bg-primary/20 transition-colors duration-300">
-                        <item.icon className="h-10 w-10 text-primary" />
-                      </div>
-                    </motion.div>
-                    <h3 className="font-serif text-2xl text-primary mb-4">
-                      {item.title}
-                    </h3>
-                    <div className="space-y-2 text-muted-foreground">
-                      {item.details.map((detail, i) => (
-                        <p
-                          key={i}
-                          className={
-                            i === 1
-                              ? "text-xl font-serif text-primary"
-                              : "text-base"
-                          }
-                        >
-                          {detail}
-                        </p>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+          {/* Full-width, foreground Wedding Details Image */}
+          <div className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mb-8">
+            <Image
+              src="/images/weddingDetails.jpg"
+              alt="Wedding Details"
+              width={1920}
+              height={600}
+              className="block w-full h-[250px] sm:h-[350px] md:h-[450px] lg:h-[550px] object-cover object-center"
+              priority={false}
+            />
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-base font-medium tracking-wide elegant-shadow"
-              >
-                <Link href="/information">View Full Details</Link>
-              </Button>
-            </motion.div>
-          </motion.div>
         </div>
+      </section>
+      {/* Wedding Details - Venue */}
+      <section className="pb-8 bg-linen relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <h2 className="font-the-seasons text-6xl md:text-8xl text-darkGrayBlue tracking-widest">
+            VENUE
+          </h2>
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
+            <div className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full">
+              <Image
+                src="/images/venue-church.png"
+                alt="Ceremony Venue"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  Diocesan Shrine and Parish of Saint Pio of Pietrelcina Church
+                </p>
+                <p className="font-montserrat text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  106 Sumulong Hwy, Antipolo City, 1870 Rizal
+                </p>
+                <p className="font-montserrat text-[18px] text-darkGrayBlue text-center mt-4 w-full uppercase">
+                  Ceremony starts at 3:00 PM
+                </p>
+                <button
+                  type="button"
+                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
+                  onClick={() =>
+                    window.open(
+                      "https://maps.app.goo.gl/otwchXhayKxvai4P9",
+                      "_blank"
+                    )
+                  }
+                >
+                  View Map
+                </button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full">
+              <Image
+                src="/images/venue-reception-1.png"
+                alt="Reception Venue"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  Villa Ardin Events Place
+                </p>
+                <p className="font-montserrat text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  Valley Golf Hills, Don Celso S. Tuason Ave, Cainta, 1870 Rizal
+                </p>
+                <p
+                  className="font-montserrat text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase"
+                  aria-hidden="true"
+                >
+                  &nbsp;
+                </p>
+                <p className="font-montserrat text-[18px] text-darkGrayBlue text-center mt-4 w-full uppercase">
+                  Reception follows at 6:00 PM
+                </p>
+                <button
+                  type="button"
+                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
+                  onClick={() =>
+                    window.open(
+                      "https://maps.app.goo.gl/uUMv4PPDTMPX6DJD9",
+                      "_blank"
+                    )
+                  }
+                >
+                  View Map
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Gallery Preview Section */}
