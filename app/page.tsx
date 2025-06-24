@@ -1,22 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Calendar,
-  MapPin,
-  Clock,
-  Sparkles,
-  ArrowDown,
-  Camera,
-  Heart,
-} from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { GalleryGrid } from "@/components/gallery-grid";
 import CountdownTimer from "@/components/countdown-timer";
+import { GalleryGrid } from "@/components/gallery-grid";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Camera } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
@@ -61,7 +52,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[10rem] text-darkGrayBlue leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 HANNA
               </motion.h1>
@@ -86,7 +77,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.3, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[10rem] text-darkGrayBlue leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 JAN
               </motion.h1>
@@ -155,7 +146,7 @@ export default function HomePage() {
       </section>
 
       {/* Our Story Section */}
-      <section className="py-24 bg-white relative overflow-hidden">
+      <section className="py-12 bg-linen relative overflow-hidden">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -164,12 +155,13 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">
-              Our Love Story
+            <h2 className="font-the-seasons text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
+              OUR STORY
             </h2>
-            <div className="w-24 h-px bg-primary/30 mx-auto"></div>
+            <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-2 mb-4">
+              10 years forever to go
+            </p>
           </motion.div>
-
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -236,7 +228,7 @@ export default function HomePage() {
       </section>
 
       {/* Wedding Details Preview */}
-      <section id="details" className="py-8 bg-linen relative overflow-hidden">
+      <section id="details" className="pt-8 bg-linen relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -245,7 +237,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
+            <h2 className="font-the-seasons text-4xl md:text-7xl text-darkGrayBlue tracking-widest mb-4">
               THE WEDDING DETAILS
             </h2>
           </motion.div>
@@ -271,7 +263,7 @@ export default function HomePage() {
           viewport={{ once: true }}
           className="text-center"
         >
-          <h2 className="font-the-seasons text-6xl md:text-8xl text-darkGrayBlue tracking-widest">
+          <h2 className="font-the-seasons text-5xl md:text-8xl text-darkGrayBlue tracking-widest">
             VENUE
           </h2>
           <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
@@ -291,18 +283,18 @@ export default function HomePage() {
                 priority={false}
               />
               <div className="flex-1 flex flex-col justify-end items-center w-full">
-                <p className="font-montserrat font-bold text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
                   Diocesan Shrine and Parish of Saint Pio of Pietrelcina Church
                 </p>
-                <p className="font-montserrat text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                <p className="font-montserrat text-[14px] md:text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
                   106 Sumulong Hwy, Antipolo City, 1870 Rizal
                 </p>
-                <p className="font-montserrat text-[18px] text-darkGrayBlue text-center mt-4 w-full uppercase">
+                <p className="font-montserrat text-[16px] md:text-[18px] text-darkGrayBlue text-center mt-4 w-full uppercase">
                   Ceremony starts at 3:00 PM
                 </p>
                 <button
                   type="button"
-                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
+                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[16px] md:text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
                   onClick={() =>
                     window.open(
                       "https://maps.app.goo.gl/otwchXhayKxvai4P9",
@@ -330,10 +322,10 @@ export default function HomePage() {
                 priority={false}
               />
               <div className="flex-1 flex flex-col justify-end items-center w-full">
-                <p className="font-montserrat font-bold text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                <p className="font-montserrat font-bold text-[18px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
                   Villa Ardin Events Place
                 </p>
-                <p className="font-montserrat text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                <p className="font-montserrat text-[14px] md:text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
                   Valley Golf Hills, Don Celso S. Tuason Ave, Cainta, 1870 Rizal
                 </p>
                 <p
@@ -347,7 +339,7 @@ export default function HomePage() {
                 </p>
                 <button
                   type="button"
-                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
+                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[16px] md:text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
                   onClick={() =>
                     window.open(
                       "https://maps.app.goo.gl/uUMv4PPDTMPX6DJD9",
@@ -357,6 +349,97 @@ export default function HomePage() {
                 >
                   View Map
                 </button>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+      {/* Attire Inspiration Section */}
+      <section id="attire" className="py-8 bg-linen relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
+            ATTIRE INSPIRATION
+          </h2>
+          <p className="font-pinyon_script text-3xl md:text-5xl text-darkGrayBlue mt-8 mb-4">
+            For Our Guests
+          </p>
+          <p className="font-montserrat text-base md:text-lg text-darkGrayBlue mb-4 max-w-2xl mx-auto uppercase">
+            We kindly encourage our guests to wear formal or semi-formal attire
+            with these colors on our special day.
+          </p>
+          <p className="font-montserrat font-bold text-xl md:text-2xl text-darkGrayBlue uppercase text-center mt-8 mb-2">
+            The Colours
+          </p>
+          <div className="flex justify-center mb-8">
+            <Image
+              src="/images/attire-palette.png"
+              alt="Attire Colour Palette"
+              width={600}
+              height={120}
+              className="object-contain w-auto h-24 md:h-32"
+              priority={false}
+            />
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
+              <Image
+                src="/images/attire-men.png"
+                alt="Men's Attire Inspiration"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  For the Gentlemen
+                </p>
+                <p className="font-montserrat text-[14px] md:text-[15px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  keep it cool and classy.
+                  <br />
+                  light colored coat, long sleeve and trousers in soft natural
+                  shades. just skip black, gray, white and denim.
+                </p>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
+              <Image
+                src="/images/attire-women.png"
+                alt="Women's Attire Inspiration"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  For the Ladies
+                </p>
+                <p className="font-montserrat text-[14px] md:text-[15px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  go for light and airy look!
+                  <br />
+                  Long dress, Summer dress, jumpsuit or trouser in soft pastel
+                  color. gentle florals or any happy spring like colors.
+                </p>
               </div>
             </motion.div>
           </div>
@@ -413,37 +496,6 @@ export default function HomePage() {
                 </Link>
               </Button>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Quote Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-            alt="Wedding background"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-primary/80"></div>
-        </div>
-
-        <div className="relative z-10 container mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
-            <blockquote className="font-serif text-2xl md:text-3xl lg:text-4xl text-white leading-relaxed mb-8">
-              "Being deeply loved by someone gives you strength, while loving
-              someone deeply gives you courage."
-            </blockquote>
-            <cite className="text-white/80 text-lg tracking-wide">
-              — Lao Tzu
-            </cite>
           </motion.div>
         </div>
       </section>
