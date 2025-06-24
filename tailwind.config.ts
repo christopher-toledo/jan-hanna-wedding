@@ -63,10 +63,10 @@ const config: Config = {
       fontFamily: {
         serif: ["var(--font-cormorant)"],
         cursive: ["var(--font-pinyon-script)"],
-        sans: ["var(--font-the_seasons)"],
+        sans: ["var(--font-the-seasons)"],
         cormorant: ["var(--font-cormorant)"],
         pinyon_script: ["var(--font-pinyon-script)"],
-        seasons: ["var(--font-the_seasons)"],
+        seasons: ["var(--font-the-seasons)"],
         montserrat: ["var(--font-montserrat)"],
         spartan: ["var(--font-league-spartan)"],
         brittany: ["var(--font-brittany)"],
@@ -96,6 +96,9 @@ const config: Config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.6s ease-out",
       },
+      scale: {
+        120: '1.2',
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
