@@ -61,7 +61,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[10rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 HANNA
               </motion.h1>
@@ -86,7 +86,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.3, duration: 0.8, ease: "easeOut" }}
-                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
+                className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[10rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 JAN
               </motion.h1>
@@ -275,7 +275,13 @@ export default function HomePage() {
             VENUE
           </h2>
           <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
-            <div className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
               <Image
                 src="/images/venue-church.png"
                 alt="Ceremony Venue"
@@ -307,8 +313,14 @@ export default function HomePage() {
                   View Map
                 </button>
               </div>
-            </div>
-            <div className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
               <Image
                 src="/images/venue-reception-1.png"
                 alt="Reception Venue"
@@ -346,7 +358,7 @@ export default function HomePage() {
                   View Map
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
         </motion.div>
       </section>
