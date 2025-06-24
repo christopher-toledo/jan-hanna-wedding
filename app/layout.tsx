@@ -55,6 +55,44 @@ const altaFont = localFont({
   fallback: ["sans-serif"],
 });
 
+const theSeasons = localFont({
+  src: [
+    {
+      path: "../public/fonts/theseasons-reg.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/theseasons-bd.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/theseasons-it.otf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/theseasons-bdit.otf",
+      weight: "700",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/theseasons-lt.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/theseasons-ltit.otf",
+      weight: "300",
+      style: "italic",
+    },
+  ],
+  variable: "--font-the-seasons",
+  display: "swap",
+  fallback: ["serif"],
+});
+
 export const metadata: Metadata = {
   title: "Jan & Hanna - Wedding",
   description: "Join us for our special day",
@@ -69,7 +107,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${pinyon.variable} ${cormorant.variable} ${leagueSpartan.variable} ${brittanyFont.variable} ${altaFont.variable}`}
+      className={`${montserrat.variable} ${pinyon.variable} ${cormorant.variable} ${leagueSpartan.variable} ${brittanyFont.variable} ${altaFont.variable} ${theSeasons.variable}`}
     >
       <body className="font-sans antialiased">
         <Navigation />

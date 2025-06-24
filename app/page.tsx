@@ -42,17 +42,14 @@ export default function HomePage() {
             src="/images/MainBanner.jpg"
             alt="Wedding venue"
             fill
-            className="object-cover object-top md:object-center"
-            style={{
-              transform: "scale(1.2)",
-            }}
+            className="object-cover object-top md:object-center scale-120 md:scale-100"
             priority
           />
           <div className="absolute inset-0 bg-black/5" />
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-5 md:-mt-80">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-2 md:-mt-80">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -108,9 +105,11 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
-
+      <section id="save-the-date">
+        <div className="py-8 bg-linen"></div>
+      </section>
       {/* Countdown Timer Section */}
-      <section className="py-4 bg-linen relative overflow-hidden">
+      <section className="pb-4 bg-linen relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -237,7 +236,10 @@ export default function HomePage() {
       </section>
 
       {/* Wedding Details Preview */}
-      <section className="py-24 elegant-gradient relative overflow-hidden">
+      <section id="details">
+        <div className="py-12 bg-linen"></div>
+      </section>
+      <section className="pb-24 bg-linen relative overflow-hidden">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -246,8 +248,8 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">
-              Join Us
+            <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue mb-4 tracking-widest">
+              THE WEDDING DETAILS
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               We can't wait to celebrate this special day with our loved ones
@@ -338,32 +340,6 @@ export default function HomePage() {
                 <Link href="/information">View Full Details</Link>
               </Button>
             </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Background Decorations */}
-        <div className="absolute top-10 left-10 opacity-10">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 30,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            <Sparkles className="h-16 w-16 text-primary" />
-          </motion.div>
-        </div>
-        <div className="absolute bottom-10 right-10 opacity-10">
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            <Heart className="h-20 w-20 text-primary" />
           </motion.div>
         </div>
       </section>
