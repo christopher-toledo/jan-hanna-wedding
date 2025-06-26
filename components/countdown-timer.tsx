@@ -59,10 +59,9 @@ export default function CountdownTimer() {
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
     >
-      <h2 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-medium text-midnightBlue mb-4 text-center px-2">
+      <h2 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-6xl font-medium text-midnightBlue mb-4 text-center px-2">
         DAYS LEFT BEFORE WE SAY I DO
       </h2>
-      <div className="w-16 xs:w-20 sm:w-24 h-px bg-white/30 mx-auto"></div>
 
       <div className="flex flex-col items-center justify-center w-full">
         {isOver ? (

@@ -1,22 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Calendar,
-  MapPin,
-  Clock,
-  Sparkles,
-  ArrowDown,
-  Camera,
-  Heart,
-} from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { GalleryGrid } from "@/components/gallery-grid";
 import CountdownTimer from "@/components/countdown-timer";
+import { GalleryGrid } from "@/components/gallery-grid";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Camera } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
@@ -30,7 +21,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col overflow-hidden">
       {/* Hero Section with Parallax */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[60vh] md:min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image with Parallax */}
         <div
           className="absolute inset-0 z-0"
@@ -42,14 +33,14 @@ export default function HomePage() {
             src="/images/MainBanner.jpg"
             alt="Wedding venue"
             fill
-            className="object-cover"
+            className="object-cover object-top md:object-center scale-120 md:scale-100"
             priority
           />
           <div className="absolute inset-0 bg-black/5" />
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-60 md:-mt-80">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-2 md:-mt-80">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,9 +58,9 @@ export default function HomePage() {
               </motion.h1>
 
               <motion.div
-                initial={{ opacity: 0, scale: 0 }}
+                initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
+                transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
                 className="flex items-center justify-center space-x-6"
               >
                 <Image
@@ -85,7 +76,7 @@ export default function HomePage() {
               <motion.h1
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.4, duration: 0.8, ease: "easeOut" }}
+                transition={{ delay: 1.3, duration: 0.8, ease: "easeOut" }}
                 className="font-serif text-7xl xs:text-8xl sm:text-8xl md:text-8xl lg:text-[9rem] text-darkGrayBlue leading-none drop-shadow-lg"
               >
                 JAN
@@ -95,7 +86,7 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.8, duration: 0.8 }}
+              transition={{ delay: 1.6, duration: 0.8 }}
               className="space-y-6"
             >
               <p className="mt-8 text-xl md:text-6xl text-darkGrayBlue font-alta max-w-2xl mx-auto leading-relaxed drop-shadow">
@@ -104,75 +95,58 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
         </div>
-
-        {/* Scroll Indicator */}
+      </section>
+      <section id="save-the-date">
+        <div className="py-8 bg-linen"></div>
+      </section>
+      {/* Countdown Timer Section */}
+      <section className="pb-4 bg-linen relative overflow-hidden">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.5, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{
-              duration: 2,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-            className="flex flex-col items-center space-y-2"
-          >
-            <span className="text-base tracking-wide font-alta">
-              Scroll to RSVP
-            </span>
-            <ArrowDown className="h-5 w-5" />
-          </motion.div>
+          <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
+            <CountdownTimer />
+          </div>
+          <div className="container mx-auto px-6 sm:px-6">
+            {/* Countdown Gallery */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+              <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+                <Image
+                  src="/images/countdown-1.jpg"
+                  alt="Countdown 1"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+                <Image
+                  src="/images/countdown-2.jpg"
+                  alt="Countdown 2"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="aspect-square w-full relative overflow-hidden shadow-lg">
+                <Image
+                  src="/images/countdown-3.jpg"
+                  alt="Countdown 3"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
         </motion.div>
       </section>
 
-      {/* Countdown Timer Section */}
-      <section className="py-4 bg-linen relative overflow-hidden">
-        <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
-          <CountdownTimer />
-        </div>
-      </section>
-
-      {/* Countdown Gallery Section */}
-      <section className="py-4 bg-linen">
-        <div className="container mx-auto px-6 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
-              <Image
-                src="/images/countdown-1.jpg"
-                alt="Countdown 1"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
-              <Image
-                src="/images/countdown-2.jpg"
-                alt="Countdown 2"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="aspect-square w-full relative overflow-hidden shadow-lg">
-              <Image
-                src="/images/countdown-3.jpg"
-                alt="Countdown 3"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Our Story Section */}
-      <section className="py-24 bg-white relative overflow-hidden">
+      <section className="py-12 bg-linen relative overflow-hidden">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -181,12 +155,13 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">
-              Our Love Story
+            <h2 className="font-the-seasons text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
+              OUR STORY
             </h2>
-            <div className="w-24 h-px bg-primary/30 mx-auto"></div>
+            <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-2 mb-4">
+              10 years forever to go
+            </p>
           </motion.div>
-
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -253,135 +228,222 @@ export default function HomePage() {
       </section>
 
       {/* Wedding Details Preview */}
-      <section className="py-24 elegant-gradient relative overflow-hidden">
-        <div className="container mx-auto px-6">
+      <section id="details" className="pt-8 bg-linen relative overflow-hidden">
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center"
           >
-            <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">
-              Join Us
+            <h2 className="font-the-seasons text-4xl md:text-7xl text-darkGrayBlue tracking-widest mb-4">
+              THE WEDDING DETAILS
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We can't wait to celebrate this special day with our loved ones
-            </p>
-            <div className="w-24 h-px bg-primary/30 mx-auto mt-4"></div>
           </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                icon: Calendar,
-                title: "When",
-                details: ["Tuesday", "September 23, 2025", "4:00 PM"],
-                delay: 0,
-              },
-              {
-                icon: MapPin,
-                title: "Where",
-                details: [
-                  "Sunset Gardens",
-                  "123 Wedding Lane",
-                  "Beautiful City, BC",
-                ],
-                delay: 0.2,
-              },
-              {
-                icon: Clock,
-                title: "Reception",
-                details: ["Following Ceremony", "6:00 PM", "Same Location"],
-                delay: 0.4,
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: item.delay }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10 }}
-              >
-                <Card className="text-center elegant-shadow hover:shadow-2xl transition-all duration-500 elegant-border group bg-white/80 backdrop-blur-sm">
-                  <CardContent className="pt-12 pb-8 px-8">
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                      className="relative mb-8"
-                    >
-                      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto group-hover:bg-primary/20 transition-colors duration-300">
-                        <item.icon className="h-10 w-10 text-primary" />
-                      </div>
-                    </motion.div>
-                    <h3 className="font-serif text-2xl text-primary mb-4">
-                      {item.title}
-                    </h3>
-                    <div className="space-y-2 text-muted-foreground">
-                      {item.details.map((detail, i) => (
-                        <p
-                          key={i}
-                          className={
-                            i === 1
-                              ? "text-xl font-serif text-primary"
-                              : "text-base"
-                          }
-                        >
-                          {detail}
-                        </p>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+          {/* Full-width, foreground Wedding Details Image */}
+          <div className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mb-8">
+            <Image
+              src="/images/weddingDetails.jpg"
+              alt="Wedding Details"
+              width={1920}
+              height={600}
+              className="block w-full h-[250px] sm:h-[350px] md:h-[450px] lg:h-[550px] object-cover object-center"
+              priority={false}
+            />
+          </div>
+        </div>
+      </section>
+      {/* Wedding Details - Venue */}
+      <section className="pb-8 bg-linen relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <h2 className="font-the-seasons text-5xl md:text-8xl text-darkGrayBlue tracking-widest">
+            VENUE
+          </h2>
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
+              <Image
+                src="/images/venue-church.png"
+                alt="Ceremony Venue"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  Diocesan Shrine and Parish of Saint Pio of Pietrelcina Church
+                </p>
+                <p className="font-montserrat text-[14px] md:text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  106 Sumulong Hwy, Antipolo City, 1870 Rizal
+                </p>
+                <p className="font-montserrat text-[16px] md:text-[18px] text-darkGrayBlue text-center mt-4 w-full uppercase">
+                  Ceremony starts at 3:00 PM
+                </p>
+                <button
+                  type="button"
+                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[16px] md:text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
+                  onClick={() =>
+                    window.open(
+                      "https://maps.app.goo.gl/otwchXhayKxvai4P9",
+                      "_blank"
+                    )
+                  }
+                >
+                  View Map
+                </button>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
+              <Image
+                src="/images/venue-reception-1.png"
+                alt="Reception Venue"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[18px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  Villa Ardin Events Place
+                </p>
+                <p className="font-montserrat text-[14px] md:text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  Valley Golf Hills, Don Celso S. Tuason Ave, Cainta, 1870 Rizal
+                </p>
+                <p
+                  className="font-montserrat text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase"
+                  aria-hidden="true"
+                >
+                  &nbsp;
+                </p>
+                <p className="font-montserrat text-[18px] text-darkGrayBlue text-center mt-4 w-full uppercase">
+                  Reception follows at 6:00 PM
+                </p>
+                <button
+                  type="button"
+                  className="mt-4 px-6 py-2 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-[16px] md:text-[18px] text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white"
+                  onClick={() =>
+                    window.open(
+                      "https://maps.app.goo.gl/uUMv4PPDTMPX6DJD9",
+                      "_blank"
+                    )
+                  }
+                >
+                  View Map
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+      {/* Attire Inspiration Section */}
+      <section id="attire" className="py-8 bg-linen relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
+            ATTIRE INSPIRATION
+          </h2>
+          <p className="font-pinyon_script text-3xl md:text-5xl text-darkGrayBlue mt-8 mb-4">
+            For Our Guests
+          </p>
+          <p className="font-montserrat text-base md:text-lg text-darkGrayBlue mb-4 max-w-2xl mx-auto uppercase">
+            We kindly encourage our guests to wear formal or semi-formal attire
+            with these colors on our special day.
+          </p>
+          <p className="font-montserrat font-bold text-xl md:text-2xl text-darkGrayBlue uppercase text-center mt-8 mb-2">
+            The Colours
+          </p>
+          <div className="flex justify-center mb-8">
+            <Image
+              src="/images/attire-palette.png"
+              alt="Attire Colour Palette"
+              width={600}
+              height={120}
+              className="object-contain w-auto h-24 md:h-32"
+              priority={false}
+            />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-base font-medium tracking-wide elegant-shadow"
-              >
-                <Link href="/information">View Full Details</Link>
-              </Button>
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
+              <Image
+                src="/images/attire-men.png"
+                alt="Men's Attire Inspiration"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  For the Gentlemen
+                </p>
+                <p className="font-montserrat text-[14px] md:text-[15px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  keep it cool and classy.
+                  <br />
+                  light colored coat, long sleeve and trousers in soft natural
+                  shades. just skip black, gray, white and denim.
+                </p>
+              </div>
             </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Background Decorations */}
-        <div className="absolute top-10 left-10 opacity-10">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 30,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            <Sparkles className="h-16 w-16 text-primary" />
-          </motion.div>
-        </div>
-        <div className="absolute bottom-10 right-10 opacity-10">
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            <Heart className="h-20 w-20 text-primary" />
-          </motion.div>
-        </div>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="w-full md:w-1/2 max-w-xl overflow-hidden flex flex-col items-center h-full"
+            >
+              <Image
+                src="/images/attire-women.png"
+                alt="Women's Attire Inspiration"
+                width={800}
+                height={600}
+                className="object-cover w-full h-[250px] md:h-[350px]"
+                priority={false}
+              />
+              <div className="flex-1 flex flex-col justify-end items-center w-full">
+                <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
+                  For the Ladies
+                </p>
+                <p className="font-montserrat text-[14px] md:text-[15px] text-darkGrayBlue text-center mt-1 w-full uppercase">
+                  go for light and airy look!
+                  <br />
+                  Long dress, Summer dress, jumpsuit or trouser in soft pastel
+                  color. gentle florals or any happy spring like colors.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Gallery Preview Section */}
@@ -434,37 +496,6 @@ export default function HomePage() {
                 </Link>
               </Button>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Quote Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-            alt="Wedding background"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-primary/80"></div>
-        </div>
-
-        <div className="relative z-10 container mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
-            <blockquote className="font-serif text-2xl md:text-3xl lg:text-4xl text-white leading-relaxed mb-8">
-              "Being deeply loved by someone gives you strength, while loving
-              someone deeply gives you courage."
-            </blockquote>
-            <cite className="text-white/80 text-lg tracking-wide">
-              — Lao Tzu
-            </cite>
           </motion.div>
         </div>
       </section>
