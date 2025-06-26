@@ -1,29 +1,7 @@
 import { RSVPForm } from "@/components/rsvp-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { notFound } from "next/navigation";
-import { executeQuery } from "@/lib/db";
-
-interface GuestResult {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-}
-
-// Get guest from database
-async function getGuest(guestId: string) {
-  try {
-    const result = await executeQuery<GuestResult>(
-      "SELECT id, name, email, phone FROM guests WHERE id = ?",
-      [guestId]
-    );
-
-    return result.rows.length > 0 ? result.rows[0] : null;
-  } catch (error) {
-    console.error("Error fetching guest:", error);
-    return null;
-  }
-}
+import { redirect } from "next/navigation";
+import { getGuest } from "@/lib/db";
 
 interface RSVPPageProps {
   params: {
@@ -32,11 +10,11 @@ interface RSVPPageProps {
 }
 
 export default async function RSVPPage({ params }: RSVPPageProps) {
-  const { guestId } = await params;
+  const { guestId } = params;
   const guest = await getGuest(guestId);
 
   if (!guest) {
-    notFound();
+    redirect("/");
   }
 
   return (

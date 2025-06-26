@@ -8,8 +8,9 @@ import { Camera } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { RSVPForm } from "@/components/rsvp-form";
 
-export default function HomePage() {
+export default function HomePage({ guestId }: { guestId?: string }) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -499,6 +500,39 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Secret RSVP Section */}
+      {guestId && (
+        <section id="rsvp" className="py-16 bg-white relative overflow-hidden">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
+                RSVP
+              </h2>
+              <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-2 mb-4">
+                Will you be joining us?
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="max-w-2xl mx-auto"
+            >
+              <RSVPForm guestId={guestId} guestName="Guest" />
+            </motion.div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
+
+export { HomePage };

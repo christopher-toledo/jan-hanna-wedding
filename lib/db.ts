@@ -45,3 +45,23 @@ export async function executeTransaction(queries: Array<{ sql: string; args?: an
     throw error
   }
 }
+
+export interface GuestResult {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export async function getGuest(guestId: string): Promise<GuestResult | null> {
+  try {
+    const result = await executeQuery<GuestResult>(
+      "SELECT id, name, email, phone FROM guests WHERE id = ?",
+      [guestId]
+    );
+    return result.rows.length > 0 ? result.rows[0] : null;
+  } catch (error) {
+    console.error("Error fetching guest:", error);
+    return null;
+  }
+}
