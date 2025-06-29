@@ -239,15 +239,13 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
   };
 
   const handleRSVPChoice = (value: string) => {
-    console.log("value:", value);
     setAttending(value);
-    if (errors.attending) {
-      setErrors((prev) => ({ ...prev, attending: "" }));
-    }
-    // Clear phone error when changing attendance
-    if (errors.primaryPhone) {
-      setErrors((prev) => ({ ...prev, primaryPhone: "" }));
-    }
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      if (newErrors.attending) delete newErrors.attending;
+      if (newErrors.primaryPhone) delete newErrors.primaryPhone;
+      return newErrors;
+    });
   };
 
   // If RSVP is closed, show closed message
@@ -464,6 +462,8 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
             highlight="bg-primary/10"
           />
         </RadioGroup>
+        {/* Hidden input to ensure attending is included in formData */}
+        <input type="hidden" name="attending" value={attending} />
         {errors.attending && (
           <div
             id="attending-error"
@@ -535,24 +535,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                     <div className="ml-6 grid grid-cols-1 md:grid-cols-2 gap-3 ">
                       <div>
                         <Label className="text-sm text-muted-foreground">
-                          Email (optional)
-                        </Label>
-                        <Input
-                          type="email"
-                          value={additionalGuestDetails[guest.id]?.email || ""}
-                          onChange={(e) =>
-                            updateAdditionalGuestDetail(
-                              guest.id,
-                              "email",
-                              e.target.value
-                            )
-                          }
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-sm text-muted-foreground">
-                          Phone (optional)
+                          Phone Number
                         </Label>
                         <Input
                           type="tel"
@@ -561,6 +544,23 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                             updateAdditionalGuestDetail(
                               guest.id,
                               "phone",
+                              e.target.value
+                            )
+                          }
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm text-muted-foreground">
+                          Email Address
+                        </Label>
+                        <Input
+                          type="email"
+                          value={additionalGuestDetails[guest.id]?.email || ""}
+                          onChange={(e) =>
+                            updateAdditionalGuestDetail(
+                              guest.id,
+                              "email",
                               e.target.value
                             )
                           }
@@ -684,7 +684,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       {/* Message field - always show */}
       <div>
         <Label htmlFor="message" className="text-base font-medium">
-          Message for the Couple (optional)
+          Message for the Couple
         </Label>
         <Textarea
           id="message"
