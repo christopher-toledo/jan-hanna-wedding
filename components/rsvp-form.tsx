@@ -18,6 +18,7 @@ import {
   Info,
   Clock,
   Edit,
+  Circle,
 } from "lucide-react";
 
 interface RSVPFormProps {
@@ -225,7 +226,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
   };
 
   const getDeadlineDisplay = () => {
-    if (!rsvpSettings?.deadline) return null;
+    if (!rsvpSettings?.deadline) return "August 31, 2025";
 
     const deadlineDate = new Date(rsvpSettings.deadline);
 
@@ -234,9 +235,19 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     });
+  };
+
+  const handleRSVPChoice = (value: string) => {
+    console.log("value:", value);
+    setAttending(value);
+    if (errors.attending) {
+      setErrors((prev) => ({ ...prev, attending: "" }));
+    }
+    // Clear phone error when changing attendance
+    if (errors.primaryPhone) {
+      setErrors((prev) => ({ ...prev, primaryPhone: "" }));
+    }
   };
 
   // If RSVP is closed, show closed message
@@ -332,13 +343,56 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
     return action(formData);
   };
 
+  // RSVP Option Button Component
+  function RSVPOption({
+    id,
+    label,
+    selected,
+    onClick,
+    error,
+    highlight,
+  }: {
+    id: string;
+    label: string;
+    selected: boolean;
+    onClick: () => void;
+    error?: boolean;
+    highlight?: string;
+  }) {
+    return (
+      <div
+        id={`${id}-option`}
+        onClick={onClick}
+        className={`cursor-pointer flex-1 max-w-xs flex items-center space-x-3 p-4 border rounded-lg transition-colors justify-center hover:bg-darkGrayBlue/5
+        ${error ? "border-red-500" : ""}
+        ${
+          selected
+            ? `ring-2 ring-darkGrayBlue border-darkGrayBlue ${highlight}`
+            : ""
+        }
+      `}
+      >
+        <div className="flex items-center justify-center h-4 w-4">
+          <div className="aspect-square h-4 w-4 rounded-full border border-darkGrayBlue flex items-center justify-center">
+            {selected && (
+              <Circle className="h-2.5 w-2.5 fill-darkGrayBlue text-darkGrayBlue" />
+            )}
+          </div>
+        </div>
+        <Label htmlFor={id} className="text-base cursor-pointer">
+          {label}
+        </Label>
+      </div>
+    );
+  }
+
   return (
-    <form action={enhancedAction} className="space-y-8">
+    <form action={enhancedAction} className="space-y-4">
       <input type="hidden" name="guestId" value={guestId} />
       <input type="hidden" name="guestName" value={guestName} />
 
       {/* RSVP Update Notice */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start gap-2">
           <Edit className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-blue-800">
@@ -358,51 +412,57 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* RSVP Response */}
       <div className="space-y-4" ref={attendingRef}>
-        <Label className="text-lg font-medium text-primary flex items-center gap-1">
-          Will you be attending our wedding?
-          <span className="text-red-500">*</span>
+        <Label className="text-2xl font-cormorant text-black flex flex-col items-center gap-6 justify-center w-full text-center">
+          <span className="block px-8">
+            Kindly respond by{" "}
+            <span className="font-montserrat text-xl font-semibold">
+              {getDeadlineDisplay()}
+            </span>
+            . We look forward to celebrating with you.
+            <br />
+            <div className="pb-4" />
+            We wish to accommodate all our friends and family, but resources are
+            limited. We hope for your kind understanding by not bringing plus
+            ones to our event.
+            <br />
+          </span>
+          <span>
+            Will you be attending our wedding on{" "}
+            <span className="font-montserrat text-xl font-semibold">
+              <br />
+              September 23, 2025, Tuesday
+            </span>
+            ?
+          </span>
         </Label>
         <RadioGroup
           name="attending"
           value={attending}
-          onValueChange={(value) => {
-            setAttending(value);
-            if (errors.attending) {
-              setErrors((prev) => ({ ...prev, attending: "" }));
-            }
-            // Clear phone error when changing attendance
-            if (errors.primaryPhone) {
-              setErrors((prev) => ({ ...prev, primaryPhone: "" }));
-            }
-          }}
-          className="space-y-3"
+          onValueChange={handleRSVPChoice}
+          className="flex flex-row gap-6 justify-center"
           aria-invalid={!!errors.attending}
           aria-describedby={errors.attending ? "attending-error" : undefined}
         >
-          <div
-            className={`flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors ${
-              errors.attending ? "border-red-500" : ""
-            }`}
-          >
-            <RadioGroupItem value="yes" id="yes" />
-            <Label htmlFor="yes" className="text-base cursor-pointer">
-              Yes, I'll be there! ✨
-            </Label>
-          </div>
-          <div
-            className={`flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors ${
-              errors.attending ? "border-red-500" : ""
-            }`}
-          >
-            <RadioGroupItem value="no" id="no" />
-            <Label htmlFor="no" className="text-base cursor-pointer">
-              Sorry, I can't make it 💔
-            </Label>
-          </div>
+          <RSVPOption
+            id="yes"
+            label="Yes, I will be there!"
+            selected={attending === "yes"}
+            onClick={() => handleRSVPChoice("yes")}
+            error={!!errors.attending}
+            highlight="bg-darkGrayBlue/5"
+          />
+          <RSVPOption
+            id="no"
+            label="Sorry, I can't make it!"
+            selected={attending === "no"}
+            onClick={() => handleRSVPChoice("no")}
+            error={!!errors.attending}
+            highlight="bg-primary/10"
+          />
         </RadioGroup>
         {errors.attending && (
           <div
@@ -415,110 +475,17 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         )}
       </div>
 
-      {/* Primary Guest Contact Information */}
-      <Card className="bg-muted/30 elegant-border">
-        <CardContent className="pt-6 space-y-4">
-          <div className="flex items-center gap-2 mb-4">
-            <Mail className="h-5 w-5 text-primary" />
-            <Label className="text-base font-medium">
-              Your Contact Information
-            </Label>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label
-                htmlFor="primaryPhone"
-                className="text-sm font-medium flex items-center gap-1"
-              >
-                Phone Number
-                {isPhoneRequired && <span className="text-red-500">*</span>}
-                {!isPhoneRequired && (
-                  <span className="text-muted-foreground text-xs">
-                    (optional)
-                  </span>
-                )}
-              </Label>
-              <Input
-                ref={phoneRef}
-                id="primaryPhone"
-                type="tel"
-                value={primaryGuestPhone}
-                onChange={(e) => {
-                  // Only allow digits, optional +63 at start, and up to 11 digits after 0 or 10 after +63
-                  let val = e.target.value.replace(/[^\d+]/g, "");
-                  // Enforce PH format: starts with +63 or 0, followed by 10 digits
-                  if (val.startsWith("+63")) {
-                    val = "+63" + val.slice(3, 13);
-                  } else if (val.startsWith("0")) {
-                    val = val.slice(0, 11);
-                  } else {
-                    val = val.replace(/^\+?/, "");
-                  }
-                  setPrimaryGuestPhone(val);
-                  if (errors.primaryPhone) {
-                    setErrors((prev) => ({ ...prev, primaryPhone: "" }));
-                  }
-                }}
-                pattern="^(09\d{9}|\+639\d{9})$"
-                className={`mt-1 ${
-                  errors.primaryPhone
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                    : ""
-                }`}
-                aria-invalid={!!errors.primaryPhone}
-                aria-describedby={
-                  errors.primaryPhone ? "phone-error" : undefined
-                }
-                inputMode="tel"
-                maxLength={13}
-              />
-              {errors.primaryPhone && (
-                <div
-                  id="phone-error"
-                  className="flex items-center gap-1 mt-1 text-red-600 text-sm"
-                >
-                  <AlertCircle className="h-3 w-3" />
-                  {errors.primaryPhone}
-                </div>
-              )}
-            </div>
-            <div>
-              <Label
-                htmlFor="primaryEmail"
-                className="text-sm font-medium flex items-center gap-1"
-              >
-                Email Address
-                <span className="text-muted-foreground text-xs">
-                  (optional)
-                </span>
-              </Label>
-              <Input
-                ref={emailRef}
-                id="primaryEmail"
-                type="email"
-                value={primaryGuestEmail}
-                onChange={(e) => {
-                  setPrimaryGuestEmail(e.target.value);
-                }}
-                className="mt-1"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Additional Guests - Always show if they exist */}
       {additionalGuests.length > 0 && (
-        <Card className="bg-muted/30 elegant-border">
+        <Card className="bg-muted/10 elegant-border">
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Users className="h-5 w-5 text-primary" />
+              <Users className="h-5 w-5 text-darkGrayBlue" />
               <Label className="text-base font-medium">Additional Guests</Label>
             </div>
 
             {/* Show different messaging based on primary guest attendance */}
-            {attending === "no" && (
+            {/* {attending === "no" && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
@@ -531,7 +498,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
             <p className="text-sm text-muted-foreground mb-4">
               {attending === "yes"
@@ -609,6 +576,91 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         </Card>
       )}
 
+      {/* Primary Guest Contact Information */}
+      <Card className="bg-muted/10 elegant-border">
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Mail className="h-5 w-5 text-darkGrayBlue" />
+            <Label className="text-base font-medium">
+              Your Contact Information
+            </Label>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label
+                htmlFor="primaryPhone"
+                className="text-sm font-medium flex items-center gap-1"
+              >
+                Phone Number
+                {isPhoneRequired && <span className="text-red-500">*</span>}
+              </Label>
+              <Input
+                ref={phoneRef}
+                id="primaryPhone"
+                type="tel"
+                value={primaryGuestPhone}
+                onChange={(e) => {
+                  // Only allow digits, optional +63 at start, and up to 11 digits after 0 or 10 after +63
+                  let val = e.target.value.replace(/[^\d+]/g, "");
+                  // Enforce PH format: starts with +63 or 0, followed by 10 digits
+                  if (val.startsWith("+63")) {
+                    val = "+63" + val.slice(3, 13);
+                  } else if (val.startsWith("0")) {
+                    val = val.slice(0, 11);
+                  } else {
+                    val = val.replace(/^\+?/, "");
+                  }
+                  setPrimaryGuestPhone(val);
+                  if (errors.primaryPhone) {
+                    setErrors((prev) => ({ ...prev, primaryPhone: "" }));
+                  }
+                }}
+                pattern="^(09\d{9}|\+639\d{9})$"
+                className={`mt-1 ${
+                  errors.primaryPhone
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                    : ""
+                }`}
+                aria-invalid={!!errors.primaryPhone}
+                aria-describedby={
+                  errors.primaryPhone ? "phone-error" : undefined
+                }
+                inputMode="tel"
+                maxLength={13}
+              />
+              {errors.primaryPhone && (
+                <div
+                  id="phone-error"
+                  className="flex items-center gap-1 mt-1 text-red-600 text-sm"
+                >
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.primaryPhone}
+                </div>
+              )}
+            </div>
+            <div>
+              <Label
+                htmlFor="primaryEmail"
+                className="text-sm font-medium flex items-center gap-1"
+              >
+                Email Address
+              </Label>
+              <Input
+                ref={emailRef}
+                id="primaryEmail"
+                type="email"
+                value={primaryGuestEmail}
+                onChange={(e) => {
+                  setPrimaryGuestEmail(e.target.value);
+                }}
+                className="mt-1"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Show dietary restrictions only if primary guest OR any additional guest is attending */}
       {(attending === "yes" || selectedAdditionalGuests.length > 0) && (
         <div>
@@ -651,7 +703,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       </div>
 
       {/* Required fields notice */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start gap-2">
           <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-blue-800">
@@ -663,7 +715,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Enhanced error display */}
       {(state?.error || Object.keys(errors).length > 0) && (
@@ -677,7 +729,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
               {Object.keys(errors).length > 0 && (
                 <div>
                   <p className="font-medium mb-1">
-                    Please fix the following errors:
+                    Oops! We found some issues with your RSVP:
                   </p>
                   <ul className="list-disc list-inside space-y-1">
                     {errors.primaryPhone && <li>{errors.primaryPhone}</li>}
@@ -694,7 +746,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
 
       <Button
         type="submit"
-        className="w-full bg-primary hover:bg-primary/90 text-white py-6 text-lg font-medium elegant-shadow"
+        className="w-full bg-darkGrayBlue hover:bg-darkGrayBlue/90 text-white py-6 text-lg font-medium elegant-shadow"
         disabled={isPending || isSubmitting}
       >
         {isPending || isSubmitting

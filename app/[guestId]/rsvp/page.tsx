@@ -23,21 +23,20 @@ export default async function RSVPPage({ params }: RSVPPageProps) {
         <div className="max-w-2xl mx-auto">
           <Card className="elegant-shadow elegant-border relative overflow-hidden">
             {/* RSVP Background Image */}
-            <div className="absolute inset-0 w-full h-full z-0">
-              <img
-                src="/images/rsvp-background.png"
-                alt="RSVP background"
-                className="object-cover w-full h-full opacity-100"
-                draggable="false"
-              />
-            </div>
+            <img
+              src="/images/rsvp-background.png"
+              alt="RSVP background"
+              className="absolute inset-0 object-cover z-0 pointer-events-none select-none"
+              style={{ minHeight: 600, height: "100%", maxHeight: "none" }}
+              draggable="false"
+            />
             <div className="relative z-10">
               <CardHeader className="text-center pb-6">
-                <CardTitle className="font-cormorant text-6xl md:text-7xl text-slateBlue">
+                <CardTitle className="font-cormorant font-normal text-7xl md:text-8xl text-slateBlue mb-8">
                   RSVP
                 </CardTitle>
                 <p
-                  className="font-pinyon_script text-5xl md:text-6xl mt-2 mb-2"
+                  className="font-westonia text-6xl md:text-7xl my-2"
                   style={{ color: "#3f3e3e" }}
                 >
                   Hi {guest.name}!

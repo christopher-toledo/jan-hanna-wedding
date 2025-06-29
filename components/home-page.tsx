@@ -102,7 +102,7 @@ function HomePage({ guestId }: HomePageProps) {
         </div>
       </section>
       <section id="save-the-date">
-        <div className="py-8 bg-linen"></div>
+        <div className="pb-2 bg-linen"></div>
       </section>
       {/* Countdown Timer Section */}
       <section className="pb-4 bg-linen relative overflow-hidden">
@@ -452,22 +452,21 @@ function HomePage({ guestId }: HomePageProps) {
       </section>
 
       {/* Gallery Preview Section */}
-      <section id="gallery" className="py-24 bg-white">
+      <section id="gallery" className="py-8 bg-linen">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-8"
           >
-            <h2 className="font-serif text-4xl md:text-5xl text-primary mb-4">
-              Wedding Gallery
+            <h2 className="font-the-seasons text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
+              WEDDING GALLERY
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="font-montserrat text-base md:text-lg text-darkGrayBlue max-w-2xl mx-auto uppercase">
               Beautiful moments from our special day
             </p>
-            <div className="w-24 h-px bg-primary/30 mx-auto mt-4"></div>
           </motion.div>
 
           {/* Gallery Preview */}
@@ -489,17 +488,14 @@ function HomePage({ guestId }: HomePageProps) {
             className="text-center mt-12"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-6 text-base font-medium tracking-wide elegant-shadow"
+              <button
+                type="button"
+                className="mt-4 px-8 py-4 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-base md:text-lg text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white elegant-shadow inline-flex items-center gap-2"
+                onClick={() => window.open("/gallery", "_self")}
               >
-                <Link href="/gallery">
-                  <Camera className="h-5 w-5 mr-2" />
-                  View More Photos
-                </Link>
-              </Button>
+                <Camera className="h-5 w-5 mr-2" />
+                View More Photos
+              </button>
             </motion.div>
           </motion.div>
         </div>

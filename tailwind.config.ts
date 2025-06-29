@@ -26,7 +26,7 @@ const config: Config = {
         background: "#fefcfa",
         foreground: "#2c2c2c",
         primary: {
-          DEFAULT: "#8b7355",
+          DEFAULT: "#393f4a",
           foreground: "#ffffff",
         },
         secondary: {
@@ -63,7 +63,7 @@ const config: Config = {
       fontFamily: {
         serif: ["var(--font-cormorant)"],
         cursive: ["var(--font-pinyon-script)"],
-        sans: ["var(--font-the-seasons)"],
+        sans: ["var(--font-montserrat)"],
         cormorant: ["var(--font-cormorant)"],
         pinyon_script: ["var(--font-pinyon-script)"],
         seasons: ["var(--font-the-seasons)"],
@@ -71,6 +71,7 @@ const config: Config = {
         spartan: ["var(--font-league-spartan)"],
         brittany: ["var(--font-brittany)"],
         alta: ["var(--font-alta)"],
+        westonia: ["var(--font-westonia)"],
       },
       borderRadius: {
         lg: "var(--radius)",
