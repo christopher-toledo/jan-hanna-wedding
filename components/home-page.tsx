@@ -503,19 +503,19 @@ function HomePage({ guestId }: HomePageProps) {
 
       {/* Secret RSVP Section */}
       {guestId && (
-        <section id="rsvp" className="py-16 bg-white relative overflow-hidden">
+        <section id="rsvp" className="py-16 bg-linen relative overflow-hidden">
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-4"
             >
               <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
                 RSVP
               </h2>
-              <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-2 mb-4">
+              <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-4 mb-4">
                 Will you be joining us?
               </p>
             </motion.div>
@@ -524,9 +524,42 @@ function HomePage({ guestId }: HomePageProps) {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto"
+              className="max-w-4xl mx-auto"
             >
-              <RSVPForm guestId={guestId} guestName="Guest" />
+              <div className="p-8 mb-8">
+                <h3 className="font-cormorant text-3xl text-darkGrayBlue mb-4">
+                  We would be honored to have you celebrate this special day
+                  with us!
+                </h3>
+                <p className="font-montserrat text-lg text-darkGrayBlue mb-2">
+                  Please let us know if you'll be able to join us on our special
+                  day. Your RSVP helps us make sure everything is perfect for
+                  you and all our guests.
+                </p>
+                <p className="font-montserrat text-lg text-darkGrayBlue mb-2">
+                  We wish to accommodate all our friends and family, but
+                  resources are limited. We hope for your kind understanding by
+                  not bringing plus ones to our event.
+                </p>
+
+                <p className="font-montserrat text-base text-muted-foreground mb-2">
+                  Click the button below to confirm your attendance and help us
+                  prepare for a wonderful celebration together.
+                </p>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-center"
+                >
+                  <button
+                    type="button"
+                    className="mt-4 px-8 py-4 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-base md:text-lg text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white elegant-shadow inline-flex items-center gap-2"
+                    onClick={() => window.open(`/${guestId}/rsvp`, "_self")}
+                  >
+                    Go to RSVP Form
+                  </button>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
         </section>

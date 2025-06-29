@@ -30,17 +30,33 @@ export default async function RSVPPage({ params }: RSVPPageProps) {
               style={{ minHeight: 600, height: "100%", maxHeight: "none" }}
               draggable="false"
             />
+            {/* <img
+              src="/images/rsvp-background-2.png"
+              alt="RSVP header background"
+              className="absolute left-0 right-0 top-0 w-full object-cover z-0 pointer-events-none select-none"
+              style={{ width: "100%", height: "50%" }}
+              draggable="false"
+            /> */}
             <div className="relative z-10">
-              <CardHeader className="text-center pb-6">
-                <CardTitle className="font-cormorant font-normal text-7xl md:text-8xl text-slateBlue mb-8">
-                  RSVP
-                </CardTitle>
-                <p
-                  className="font-westonia text-6xl md:text-7xl my-2"
-                  style={{ color: "#3f3e3e" }}
-                >
-                  Hi {guest.name}!
-                </p>
+              <CardHeader className="text-center pb-6 relative">
+                {/* <img
+                  src="/images/rsvp-header.png"
+                  alt="RSVP header background"
+                  className="absolute left-0 right-0 top-0 w-full h-full object-cover z-0 pointer-events-none select-none"
+                  style={{ width: "100%", height: "100%" }}
+                  draggable="false"
+                /> */}
+                <div className="relative z-10">
+                  <CardTitle className="font-cormorant font-normal text-7xl md:text-8xl text-slateBlue mb-8">
+                    RSVP
+                  </CardTitle>
+                  <p
+                    className="font-westonia text-6xl md:text-7xl my-2"
+                    style={{ color: "#3f3e3e" }}
+                  >
+                    Hi {guest.name}!
+                  </p>
+                </div>
               </CardHeader>
               <CardContent className="px-8 pb-8">
                 <RSVPForm guestId={guestId} guestName={guest.name} />

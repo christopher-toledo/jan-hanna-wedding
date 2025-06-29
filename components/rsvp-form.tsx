@@ -275,15 +275,14 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
   if (state?.success) {
     return (
       <div className="text-center py-12">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Heart className="h-10 w-10 text-green-600" />
-        </div>
-        <h3 className="font-serif text-3xl text-primary mb-4">Thank You!</h3>
-        <p className="text-muted-foreground text-lg">
+        <h3 className="font-serif text-3xl md:text-4xl text-black mb-4">
+          Thank You!
+        </h3>
+        <p className="font-cormorant text-black text-xl md:text-2xl">
           Your RSVP has been {hasExistingRsvp ? "updated" : "submitted"}{" "}
           successfully.
         </p>
-        <p className="text-sm text-muted-foreground mt-2">
+        <p className="font-cormorant text-black text-lg md:text-xl mt-2">
           {attending === "yes"
             ? "We're excited to celebrate with you!"
             : "Thank you for letting us know. We'll miss you!"}
@@ -744,15 +743,17 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         </CardContent>
       </Card>
 
-      {/* Show dietary restrictions only if primary guest OR any additional guest is attending */}
-      {(attending === "yes" || selectedAdditionalGuests.length > 0) && (
-        <div>
-          <Label
-            htmlFor="dietaryRestrictions"
-            className="text-base font-medium"
-          >
-            Dietary Restrictions or Special Requests
-          </Label>
+      {/* Dietary Restrictions or Special Requests */}
+      <Card className="bg-white/50 elegant-border">
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Label
+              htmlFor="dietaryRestrictions"
+              className="text-xl font-cormorant"
+            >
+              Dietary Restrictions or Special Requests
+            </Label>
+          </div>
           <Textarea
             id="dietaryRestrictions"
             name="dietaryRestrictions"
@@ -761,29 +762,33 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
             placeholder="Please let us know about any dietary restrictions or special requests for attending guests"
             className="mt-2 min-h-[100px]"
           />
-        </div>
-      )}
+        </CardContent>
+      </Card>
 
       {/* Message field - always show */}
-      <div>
-        <Label htmlFor="message" className="text-base font-medium">
-          Message for the Couple
-        </Label>
-        <Textarea
-          id="message"
-          name="message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={
-            attending === "yes"
-              ? "Share your excitement or well wishes!"
-              : attending === "no"
-              ? "We'd love to hear from you even though you can't make it!"
-              : "Share your thoughts with us!"
-          }
-          className="mt-2 min-h-[100px]"
-        />
-      </div>
+      <Card className="bg-white/50 elegant-border">
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Label htmlFor="message" className="text-xl font-cormorant">
+              Message for the Couple
+            </Label>
+          </div>
+          <Textarea
+            id="message"
+            name="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={
+              attending === "yes"
+                ? "Share your excitement or well wishes!"
+                : attending === "no"
+                ? "We'd love to hear from you even though you can't make it!"
+                : "Share your thoughts with us!"
+            }
+            className="mt-2 min-h-[100px]"
+          />
+        </CardContent>
+      </Card>
 
       {/* Required fields notice */}
       {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
