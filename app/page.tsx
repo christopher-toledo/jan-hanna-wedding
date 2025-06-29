@@ -1,6 +1,12 @@
 import HomePage from "@/components/home-page";
 
-export default function Page(props: { searchParams?: { guestId?: string } }) {
-  const guestId = props.searchParams?.guestId;
+interface HomePageProps {
+  params: {
+    guestId: string;
+  };
+}
+
+export default async function Page({ params }: HomePageProps) {
+  const { guestId } = await params;
   return <HomePage guestId={guestId} />;
 }

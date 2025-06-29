@@ -10,7 +10,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { RSVPForm } from "@/components/rsvp-form";
 
-function HomePage({ guestId }: { guestId?: string }) {
+export interface HomePageProps {
+  guestId: string;
+}
+
+function HomePage({ guestId }: HomePageProps) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -41,7 +45,7 @@ function HomePage({ guestId }: { guestId?: string }) {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-2 md:-mt-80">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-2 md:-mt-64">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}

@@ -3,7 +3,7 @@ import { getGuest } from "@/lib/db";
 import { redirect } from "next/navigation";
 
 export default async function GuestRSVP({ params }: RSVPPageProps) {
-  const { guestId } = params;
+  const { guestId } = await params;
   const guest = await getGuest(guestId);
 
   if (!guest) {

@@ -9,7 +9,7 @@ interface HomePageProps {
 }
 
 export default async function GuestHomePage({ params }: HomePageProps) {
-  const { guestId } = params;
+  const { guestId } = await params;
   const guest = await getGuest(guestId);
 
   if (!guest) {
