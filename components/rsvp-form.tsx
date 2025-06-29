@@ -19,6 +19,7 @@ import {
   Clock,
   Edit,
   Circle,
+  Phone,
 } from "lucide-react";
 
 interface RSVPFormProps {
@@ -361,7 +362,7 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       <div
         id={`${id}-option`}
         onClick={onClick}
-        className={`cursor-pointer flex-1 max-w-xs flex items-center space-x-3 p-4 border rounded-lg transition-colors justify-center hover:bg-darkGrayBlue/5
+        className={`cursor-pointer flex-1 max-w-xs flex items-center space-x-3 p-2 border rounded-lg transition-colors justify-center hover:bg-darkGrayBlue/5
         ${error ? "border-red-500" : ""}
         ${
           selected
@@ -377,9 +378,117 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
             )}
           </div>
         </div>
-        <Label htmlFor={id} className="text-base cursor-pointer">
+        <Label
+          htmlFor={id}
+          className="text-xl cursor-pointer font-cormorant text-black"
+        >
           {label}
         </Label>
+      </div>
+    );
+  }
+
+  // Reusable YesNoRadioButton component
+  function YesNoRadioButton({
+    id,
+    name,
+    checked,
+    value,
+    label,
+    onChange,
+  }: {
+    id: string;
+    name: string;
+    checked: boolean;
+    value: boolean;
+    label: string;
+    onChange: (value: boolean) => void;
+  }) {
+    return (
+      <label
+        htmlFor={id}
+        className="flex items-center space-x-2 px-2 py-1 rounded cursor-pointer transition-colors hover:bg-darkGrayBlue/10"
+        style={{ minWidth: 48 }}
+      >
+        <input
+          type="radio"
+          id={id}
+          name={name}
+          checked={checked}
+          onChange={() => onChange(value)}
+          className="accent-darkGrayBlue w-4 h-4 cursor-pointer"
+          aria-label={label}
+        />
+        <span className="text-xl font-cormorant select-none">{label}</span>
+      </label>
+    );
+  }
+
+  // AdditionalGuestRadio component for Yes/No selection
+  function AdditionalGuestRadio({
+    guestId,
+    name,
+    checked,
+    onChange,
+  }: {
+    guestId: string;
+    name: string;
+    checked: boolean;
+    onChange: (attending: boolean) => void;
+  }) {
+    return (
+      <div className="flex flex-row gap-2 items-center">
+        <YesNoRadioButton
+          id={`additional-${guestId}-yes`}
+          name={`additional-attending-${guestId}`}
+          checked={checked}
+          value={true}
+          label="Yes"
+          onChange={onChange}
+        />
+        <YesNoRadioButton
+          id={`additional-${guestId}-no`}
+          name={`additional-attending-${guestId}`}
+          checked={!checked}
+          value={false}
+          label="No"
+          onChange={onChange}
+        />
+      </div>
+    );
+  }
+
+  // Reusable InputWithIcon component
+  function InputWithIcon({
+    type,
+    value,
+    onChange,
+    placeholder,
+    icon: Icon,
+    className = "",
+    ...props
+  }: {
+    type: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    placeholder: string;
+    icon: React.ElementType;
+    className?: string;
+    [key: string]: any;
+  }) {
+    return (
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary pointer-events-none">
+          <Icon className="h-5 w-5" />
+        </span>
+        <Input
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={`pl-10 ${className}`}
+          {...props}
+        />
       </div>
     );
   }
@@ -412,12 +521,30 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
         </div>
       </div> */}
 
+      {/* Reserved Seats Section */}
+      <div className="flex justify-center mt-2 mb-2">
+        <span className="text-3xl md:text-4xl font-medium text-black font-cormorant">
+          We reserved
+          <span
+            className="mx-4 font-spartan font-bold text-slateBlue text-5xl md:text-6xl underline decoration-black decoration-2 underline-offset-4"
+            style={{
+              textUnderlineOffset: "6px",
+              textDecorationColor: "black",
+              textDecorationThickness: "2px",
+            }}
+          >
+            {` ${1 + additionalGuests.length} `}
+          </span>
+          seat{1 + additionalGuests.length !== 1 ? "s" : ""} for you.
+        </span>
+      </div>
+
       {/* RSVP Response */}
       <div className="space-y-4" ref={attendingRef}>
         <Label className="text-2xl font-cormorant text-black flex flex-col items-center gap-6 justify-center w-full text-center">
           <span className="block px-8">
             Kindly respond by{" "}
-            <span className="font-montserrat text-xl font-semibold">
+            <span className="font-montserrat text-xl">
               {getDeadlineDisplay()}
             </span>
             . We look forward to celebrating with you.
@@ -428,13 +555,8 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
             ones to our event.
             <br />
           </span>
-          <span>
-            Will you be attending our wedding on{" "}
-            <span className="font-montserrat text-xl font-semibold">
-              <br />
-              September 23, 2025, Tuesday
-            </span>
-            ?
+          <span className="block px-20">
+            As we begin our forever, we’d be honored to have you by our side
           </span>
         </Label>
         <RadioGroup
@@ -477,11 +599,18 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
 
       {/* Additional Guests - Always show if they exist */}
       {additionalGuests.length > 0 && (
-        <Card className="bg-muted/10 elegant-border">
+        <Card className="bg-white/50 elegant-border">
           <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Users className="h-5 w-5 text-darkGrayBlue" />
-              <Label className="text-base font-medium">Additional Guests</Label>
+            <div className="flex items-center justify-between gap-2 mb-4 px-8">
+              <div className="flex items-center gap-2">
+                {/* <Users className="h-5 w-5 text-darkGrayBlue" /> */}
+                <Label className="text-xl font-cormorant">
+                  Additional Guests
+                </Label>
+              </div>
+              <Label className="text-xl font-cormorant text-right min-w-[96px]">
+                Attendance
+              </Label>
             </div>
 
             {/* Show different messaging based on primary guest attendance */}
@@ -500,73 +629,62 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
               </div>
             )} */}
 
-            <p className="text-sm text-muted-foreground mb-4">
+            {/* <p className="text-sm text-muted-foreground mb-4">
               {attending === "yes"
                 ? "Please select which of your additional guests will be attending and update their contact information:"
                 : "Please select which of your additional guests will be attending (they can attend even if you cannot):"}
-            </p>
+            </p> */}
 
             <div className="space-y-4">
               {additionalGuests.map((guest) => (
-                <div
-                  key={guest.id}
-                  className="border rounded-lg p-4 bg-white/50 space-y-3"
-                >
+                <div key={guest.id} className="rounded-lg px-4 space-y-3">
                   <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id={`additional-${guest.id}`}
-                      checked={selectedAdditionalGuests.includes(guest.id)}
-                      onCheckedChange={(checked) =>
-                        handleAdditionalGuestToggle(
-                          guest.id,
-                          checked as boolean
-                        )
-                      }
-                    />
                     <Label
                       htmlFor={`additional-${guest.id}`}
-                      className="flex-1 cursor-pointer"
+                      className="flex-1"
                     >
-                      <div className="font-medium">{guest.name}</div>
+                      <div className="font-cormorant text-2xl">
+                        {guest.name}
+                      </div>
                     </Label>
+                    <AdditionalGuestRadio
+                      guestId={guest.id}
+                      name={guest.name}
+                      checked={selectedAdditionalGuests.includes(guest.id)}
+                      onChange={(attending) =>
+                        handleAdditionalGuestToggle(guest.id, attending)
+                      }
+                    />
                   </div>
 
                   {selectedAdditionalGuests.includes(guest.id) && (
                     <div className="ml-6 grid grid-cols-1 md:grid-cols-2 gap-3 ">
-                      <div>
-                        <Label className="text-sm text-muted-foreground">
-                          Phone Number
-                        </Label>
-                        <Input
-                          type="tel"
-                          value={additionalGuestDetails[guest.id]?.phone || ""}
-                          onChange={(e) =>
-                            updateAdditionalGuestDetail(
-                              guest.id,
-                              "phone",
-                              e.target.value
-                            )
-                          }
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-sm text-muted-foreground">
-                          Email Address
-                        </Label>
-                        <Input
-                          type="email"
-                          value={additionalGuestDetails[guest.id]?.email || ""}
-                          onChange={(e) =>
-                            updateAdditionalGuestDetail(
-                              guest.id,
-                              "email",
-                              e.target.value
-                            )
-                          }
-                          className="mt-1"
-                        />
-                      </div>
+                      <InputWithIcon
+                        type="tel"
+                        value={additionalGuestDetails[guest.id]?.phone || ""}
+                        onChange={(e) =>
+                          updateAdditionalGuestDetail(
+                            guest.id,
+                            "phone",
+                            e.target.value
+                          )
+                        }
+                        placeholder="Phone Number"
+                        icon={Phone}
+                      />
+                      <InputWithIcon
+                        type="email"
+                        value={additionalGuestDetails[guest.id]?.email || ""}
+                        onChange={(e) =>
+                          updateAdditionalGuestDetail(
+                            guest.id,
+                            "email",
+                            e.target.value
+                          )
+                        }
+                        placeholder="Email Address"
+                        icon={Mail}
+                      />
                     </div>
                   )}
                 </div>
