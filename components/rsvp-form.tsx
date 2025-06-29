@@ -21,6 +21,8 @@ import {
   Circle,
   Phone,
 } from "lucide-react";
+import React from "react";
+import { InputWithIcon } from "@/components/ui/input-with-icon";
 
 interface RSVPFormProps {
   guestId: string;
@@ -458,41 +460,6 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
     );
   }
 
-  // Reusable InputWithIcon component
-  function InputWithIcon({
-    type,
-    value,
-    onChange,
-    placeholder,
-    icon: Icon,
-    className = "",
-    ...props
-  }: {
-    type: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder: string;
-    icon: React.ElementType;
-    className?: string;
-    [key: string]: any;
-  }) {
-    return (
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary pointer-events-none">
-          <Icon className="h-5 w-5" />
-        </span>
-        <Input
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className={`pl-10 ${className}`}
-          {...props}
-        />
-      </div>
-    );
-  }
-
   return (
     <form action={enhancedAction} className="space-y-4">
       <input type="hidden" name="guestId" value={guestId} />
@@ -656,37 +623,6 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                       }
                     />
                   </div>
-
-                  {selectedAdditionalGuests.includes(guest.id) && (
-                    <div className="ml-6 grid grid-cols-1 md:grid-cols-2 gap-3 ">
-                      <InputWithIcon
-                        type="tel"
-                        value={additionalGuestDetails[guest.id]?.phone || ""}
-                        onChange={(e) =>
-                          updateAdditionalGuestDetail(
-                            guest.id,
-                            "phone",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Phone Number"
-                        icon={Phone}
-                      />
-                      <InputWithIcon
-                        type="email"
-                        value={additionalGuestDetails[guest.id]?.email || ""}
-                        onChange={(e) =>
-                          updateAdditionalGuestDetail(
-                            guest.id,
-                            "email",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Email Address"
-                        icon={Mail}
-                      />
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -695,33 +631,27 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
       )}
 
       {/* Primary Guest Contact Information */}
-      <Card className="bg-muted/10 elegant-border">
+      <Card className="bg-white/50 elegant-border">
         <CardContent className="pt-6 space-y-4">
-          <div className="flex items-center gap-2 mb-4">
-            <Mail className="h-5 w-5 text-darkGrayBlue" />
-            <Label className="text-base font-medium">
-              Your Contact Information
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Label className="text-xl font-cormorant">
+              Contact Information
             </Label>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label
-                htmlFor="primaryPhone"
-                className="text-sm font-medium flex items-center gap-1"
-              >
-                Phone Number
-                {isPhoneRequired && <span className="text-red-500">*</span>}
-              </Label>
-              <Input
-                ref={phoneRef}
-                id="primaryPhone"
+          <div className="flex flex-col md:flex-row items-center gap-3 w-full">
+            <Label
+              htmlFor="primaryGuestInfo"
+              className="flex-1 min-w-[120px] md:w-auto md:text-left text-center"
+            >
+              <div className="font-cormorant text-xl">{guestName}</div>
+            </Label>
+            <div className="flex-1 w-full md:w-auto">
+              <InputWithIcon
                 type="tel"
                 value={primaryGuestPhone}
-                onChange={(e) => {
-                  // Only allow digits, optional +63 at start, and up to 11 digits after 0 or 10 after +63
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   let val = e.target.value.replace(/[^\d+]/g, "");
-                  // Enforce PH format: starts with +63 or 0, followed by 10 digits
                   if (val.startsWith("+63")) {
                     val = "+63" + val.slice(3, 13);
                   } else if (val.startsWith("0")) {
@@ -734,8 +664,12 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                     setErrors((prev) => ({ ...prev, primaryPhone: "" }));
                   }
                 }}
+                placeholder="Phone Number"
+                icon={Phone}
+                ref={phoneRef}
+                id="primaryPhone"
                 pattern="^(09\d{9}|\+639\d{9})$"
-                className={`mt-1 ${
+                className={`${
                   errors.primaryPhone
                     ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                     : ""
@@ -747,35 +681,66 @@ export function RSVPForm({ guestId, guestName }: RSVPFormProps) {
                 inputMode="tel"
                 maxLength={13}
               />
-              {errors.primaryPhone && (
-                <div
-                  id="phone-error"
-                  className="flex items-center gap-1 mt-1 text-red-600 text-sm"
-                >
-                  <AlertCircle className="h-3 w-3" />
-                  {errors.primaryPhone}
-                </div>
-              )}
             </div>
-            <div>
-              <Label
-                htmlFor="primaryEmail"
-                className="text-sm font-medium flex items-center gap-1"
-              >
-                Email Address
-              </Label>
-              <Input
-                ref={emailRef}
-                id="primaryEmail"
+            <div className="flex-1 w-full md:w-auto">
+              <InputWithIcon
                 type="email"
                 value={primaryGuestEmail}
-                onChange={(e) => {
-                  setPrimaryGuestEmail(e.target.value);
-                }}
-                className="mt-1"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPrimaryGuestEmail(e.target.value)
+                }
+                placeholder="Email Address"
+                icon={Mail}
+                ref={emailRef}
+                id="primaryEmail"
               />
             </div>
           </div>
+
+          {additionalGuests.map((guest) => (
+            <div key={guest.id} className="rounded-lg space-y-3">
+              {selectedAdditionalGuests.includes(guest.id) && (
+                <div className="flex flex-col md:flex-row items-center gap-3 w-full">
+                  <Label
+                    htmlFor={`additional-${guest.id}`}
+                    className="flex-1 min-w-[120px] md:w-auto md:text-left text-center"
+                  >
+                    <div className="font-cormorant text-xl">{guest.name}</div>
+                  </Label>
+                  <div className="flex-1 w-full md:w-auto">
+                    <InputWithIcon
+                      type="tel"
+                      value={additionalGuestDetails[guest.id]?.phone || ""}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        updateAdditionalGuestDetail(
+                          guest.id,
+                          "phone",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Phone Number"
+                      icon={Phone}
+                    />
+                  </div>
+                  <div className="flex-1 w-full md:w-auto">
+                    <InputWithIcon
+                      type="email"
+                      value={additionalGuestDetails[guest.id]?.email || ""}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        updateAdditionalGuestDetail(
+                          guest.id,
+                          "email",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Email Address"
+                      icon={Mail}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </CardContent>
       </Card>
 
