@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 import { getGuest } from "@/lib/db";
 
-interface RSVPPageProps {
+export interface RSVPPageProps {
   params: {
     guestId: string;
   };
@@ -31,11 +31,14 @@ export default async function RSVPPage({ params }: RSVPPageProps) {
 
           <Card className="elegant-shadow elegant-border">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="font-serif text-2xl text-primary">
-                Hello, {guest.name}!
+              <CardTitle className="font-cormorant text-2xl md:text-3xl text-slateBlue">
+                RSVP
               </CardTitle>
-              <p className="text-muted-foreground">
-                Please let us know if you'll be joining us
+              <p
+                className="font-pinyon_script text-3xl md:text-4xl mt-2 mb-2"
+                style={{ color: "#3f3e3e" }}
+              >
+                Hi {guest.name}!
               </p>
             </CardHeader>
             <CardContent className="px-8 pb-8">

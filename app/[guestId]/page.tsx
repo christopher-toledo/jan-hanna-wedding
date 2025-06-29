@@ -1,5 +1,5 @@
+import HomePage from "@/components/home-page";
 import { getGuest } from "@/lib/db";
-import { HomePage } from "../page";
 import { redirect } from "next/navigation";
 
 interface HomePageProps {
