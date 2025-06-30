@@ -163,7 +163,7 @@ function HomePage({ guestId }: HomePageProps) {
             <h2 className="font-serif text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
               A LOVE THAT BLOOMED
             </h2>
-            <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-2 mb-4">
+            <p className="font-pinyon_script tracking-wider text-4xl md:text-6xl text-darkGrayBlue mt-2 mb-4">
               10 years forever to go
             </p>
           </motion.div>
@@ -182,10 +182,10 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1">
+                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1 uppercase">
                     First Met
                   </h3>
-                  <p className="font-cormorant text-2xl md:text-3xl text-darkGrayBlue">
+                  <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
                     September 26, 2014
                   </p>
                 </div>
@@ -200,10 +200,10 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1">
+                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1 uppercase">
                     Became a Couple
                   </h3>
-                  <p className="font-cormorant text-2xl md:text-3xl text-darkGrayBlue">
+                  <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
                     March 14, 2015
                   </p>
                 </div>
@@ -218,14 +218,55 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1">
+                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1 uppercase">
                     It's a Yes
                   </h3>
-                  <p className="font-cormorant text-2xl md:text-3xl text-darkGrayBlue">
+                  <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
                     January 14, 2024
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Our Story Narrative Section */}
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
+            {/* Image Left - Only One Image */}
+            <div className="bg-linen flex flex-row w-full h-auto md:h-auto">
+              <div
+                className="relative w-full aspect-[3/4] md:aspect-auto md:w-full overflow-hidden flex-1"
+                style={{ minHeight: "400px", height: "100%" }}
+              >
+                <Image
+                  src="/images/story-4.png"
+                  alt="Our Story"
+                  fill
+                  className="object-contain object-center"
+                  priority={false}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </div>
+            {/* Text Right */}
+            <div
+              className="flex flex-col justify-center h-full text-left min-h-[340px]"
+              style={{ height: "100%" }}
+            >
+              <h3 className="font-serif text-4xl md:text-5xl text-darkGrayBlue mb-6 text-center">
+                Our Story
+              </h3>
+              <p className="font-montserrat text-lg md:text-xl text-darkGrayBlue whitespace-pre-line text-justify">
+                We met in high school back in 2014. What started as a simple
+                friendship soon grew into something neither of us expected—a
+                love that has lasted and blossomed over the years.
+                <br />
+                Together, we’ve shared laughter, challenges, and countless
+                memories that have shaped who we are today. Through every
+                chapter of our lives, our love has grown stronger, and now we’re
+                ready to start the next one as husband and wife. Thank you for
+                being part of our journey. We can’t wait to celebrate this
+                special day with all of you!
+              </p>
             </div>
           </div>
         </div>
