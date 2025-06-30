@@ -481,12 +481,12 @@ function HomePage({ guestId }: HomePageProps) {
                   Valley Golf Hills, Don Celso S. Tuason Ave, Cainta, 1870 Rizal
                 </p>
                 <p
-                  className="font-montserrat text-[16px] text-darkGrayBlue text-center mt-1 w-full uppercase"
+                  className="font-montserrat text-[16px] text-darkGrayBlue text-center w-full uppercase"
                   aria-hidden="true"
                 >
                   &nbsp;
                 </p>
-                <p className="font-montserrat text-[18px] text-darkGrayBlue text-center mt-4 w-full uppercase">
+                <p className="font-montserrat text-[18px] text-darkGrayBlue text-center w-full uppercase">
                   Reception follows at 6:00 PM
                 </p>
                 <button
