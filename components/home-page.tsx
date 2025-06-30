@@ -601,7 +601,7 @@ function HomePage({ guestId }: HomePageProps) {
       </section>
 
       {/* Gallery Preview Section */}
-      <section hidden id="gallery" className="py-8 bg-linen">
+      <section id="gallery" className="py-8 bg-linen">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -613,9 +613,9 @@ function HomePage({ guestId }: HomePageProps) {
             <h2 className="font-serif text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
               WEDDING GALLERY
             </h2>
-            <p className="font-montserrat text-base md:text-lg text-darkGrayBlue max-w-2xl mx-auto uppercase">
+            {/* <p className="font-montserrat text-base md:text-lg text-darkGrayBlue max-w-2xl mx-auto uppercase">
               Beautiful moments from our special day
-            </p>
+            </p> */}
           </motion.div>
 
           {/* Gallery Preview */}

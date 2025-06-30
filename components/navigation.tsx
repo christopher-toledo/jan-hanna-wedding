@@ -18,7 +18,7 @@ export function Navigation() {
     "ATTIRE",
     // "TIMELINE",
     // "FAQ",
-    // "GALLERY",
+    "GALLERY",
     ...(hasGuestId ? ["RSVP"] : []),
   ];
 
