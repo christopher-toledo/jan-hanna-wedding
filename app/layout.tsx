@@ -93,6 +93,24 @@ const theSeasons = localFont({
   fallback: ["serif"],
 });
 
+const westoniaFont = localFont({
+  src: [
+    {
+      path: "../public/fonts/Westonia-7BGMl.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Westonia-mL7Mx.ttf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-westonia",
+  display: "swap",
+  fallback: ["cursive"],
+});
+
 export const metadata: Metadata = {
   title: "Jan & Hanna - Wedding",
   description: "Join us for our special day",
@@ -107,7 +125,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${pinyon.variable} ${cormorant.variable} ${leagueSpartan.variable} ${brittanyFont.variable} ${altaFont.variable} ${theSeasons.variable}`}
+      className={`${montserrat.variable} ${pinyon.variable} ${cormorant.variable} ${leagueSpartan.variable} ${brittanyFont.variable} ${altaFont.variable} ${theSeasons.variable} ${westoniaFont.variable}`}
     >
       <body className="font-sans antialiased">
         <Navigation />
