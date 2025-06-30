@@ -611,7 +611,7 @@ function HomePage({ guestId }: HomePageProps) {
             className="text-center mb-8"
           >
             <h2 className="font-serif text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
-              WEDDING GALLERY
+              OUR PRE-WEDDING PHOTOS
             </h2>
             {/* <p className="font-montserrat text-base md:text-lg text-darkGrayBlue max-w-2xl mx-auto uppercase">
               Beautiful moments from our special day

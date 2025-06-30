@@ -51,12 +51,12 @@ export default function GalleryPage() {
       {/* Hero Section */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0">
-          <Image
+          {/* <Image
             src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
             alt="Wedding gallery background"
             fill
             className="object-cover"
-          />
+          /> */}
           <div className="absolute inset-0 bg-white/90"></div>
         </div>
 

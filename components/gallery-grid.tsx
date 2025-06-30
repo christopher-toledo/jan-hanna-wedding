@@ -255,7 +255,7 @@ export function GalleryGrid({
                   className="w-full h-auto object-cover"
                   style={{ aspectRatio: "auto" }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                   <div className="flex items-center gap-2 text-xs sm:text-sm">
                     <User className="h-3 w-3" />
@@ -266,7 +266,7 @@ export function GalleryGrid({
                       {image.caption}
                     </p>
                   )}
-                </div>
+                </div> */}
               </div>
             </motion.div>
           ))}
@@ -355,7 +355,7 @@ export function GalleryGrid({
                 {/* Mobile-Optimized Image Details Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 sm:p-6">
                   <div className="flex items-start justify-between gap-2 sm:gap-4">
-                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    {/* <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                         <User className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
@@ -381,18 +381,18 @@ export function GalleryGrid({
                           </span>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Swipe Hint for Mobile */}
-                    <div className="block sm:hidden text-xs text-white/60 text-right flex-shrink-0">
+                    {/* <div className="block sm:hidden text-xs text-white/60 text-right flex-shrink-0">
                       <div>← Swipe →</div>
-                    </div>
+                    </div> */}
 
                     {/* Keyboard Shortcuts Hint for Desktop */}
-                    <div className="hidden sm:block text-xs text-white/60 text-right flex-shrink-0">
+                    {/* <div className="hidden sm:block text-xs text-white/60 text-right flex-shrink-0">
                       <div>← → Navigate</div>
                       <div>ESC Close</div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {selectedImage.caption && (
