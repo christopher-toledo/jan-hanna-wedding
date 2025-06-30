@@ -434,7 +434,7 @@ export function GuestManager() {
   };
 
   const copyRSVPLink = async (guestId: string) => {
-    const link = `${window.location.origin}/${guestId}/rsvp`;
+    const link = `${window.location.origin}/${guestId}`;
     await navigator.clipboard.writeText(link);
     setCopiedLink(guestId);
     setTimeout(() => setCopiedLink(null), 2000);

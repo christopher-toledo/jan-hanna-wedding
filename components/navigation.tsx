@@ -29,6 +29,7 @@ export function Navigation() {
         <div className="flex items-center justify-between h-12">
           <div className="hidden md:flex items-center space-x-8 ml-auto">
             {[
+              "HOME",
               "SAVE THE DATE",
               "OUR STORY",
               "DETAILS",

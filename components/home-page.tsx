@@ -15,7 +15,7 @@ function HomePage({ guestId }: HomePageProps) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => setScrollY(window.scrollY - 40);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -23,7 +23,10 @@ function HomePage({ guestId }: HomePageProps) {
   return (
     <div className="flex flex-col overflow-hidden">
       {/* Hero Section with Parallax */}
-      <section className="relative min-h-[60vh] md:min-h-screen flex items-center justify-center overflow-hidden">
+      <section
+        id="home"
+        className="relative min-h-[60vh] md:min-h-screen flex items-center justify-center overflow-hidden"
+      >
         {/* Background Image with Parallax */}
         <div
           className="absolute inset-0 z-0"
@@ -230,15 +233,12 @@ function HomePage({ guestId }: HomePageProps) {
           </div>
 
           {/* Our Story Narrative Section */}
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
+          <div className="mt-12 md:mt-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
             {/* Image Left - Only One Image */}
             <div className="bg-linen flex flex-row w-full h-auto md:h-auto">
-              <div
-                className="relative w-full aspect-[3/4] md:aspect-auto md:w-full overflow-hidden flex-1"
-                style={{ minHeight: "400px", height: "100%" }}
-              >
+              <div className="relative w-full aspect-square mb-0 md:mb-4">
                 <Image
-                  src="/images/story-4.png"
+                  src="/images/story-5.png"
                   alt="Our Story"
                   fill
                   className="object-contain object-center"
