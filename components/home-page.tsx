@@ -299,6 +299,113 @@ function HomePage({ guestId }: HomePageProps) {
           </div>
         </div>
       </section>
+
+      {/* Wedding Day Timeline Section */}
+      <section className="py-8 bg-linen relative overflow-hidden">
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="font-serif text-4xl md:text-6xl text-darkGrayBlue tracking-widest mb-2">
+              THE CELEBRATION
+            </h2>
+            <p className="font-montserrat text-lg md:text-xl text-darkGrayBlue mb-2">
+              A day full of love, laughter, and memories
+            </p>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {/* WE DO */}
+            <div className="flex flex-col items-center text-center">
+              <div className="relative w-40 h-40 mb-3">
+                <Image
+                  src="/images/details-1.png"
+                  alt="Wedding Ceremony"
+                  fill
+                  className="object-contain object-center"
+                  priority={false}
+                />
+              </div>
+              <h3 className="font-cormorant font-bold text-2xl text-darkGrayBlue mb-1 uppercase">
+                WE DO
+              </h3>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                Wedding Ceremony
+              </p>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                3:00 PM
+              </p>
+            </div>
+            {/* WE DRINK */}
+            <div className="flex flex-col items-center text-center">
+              <div className="relative w-40 h-40 mb-3">
+                <Image
+                  src="/images/details-2.png"
+                  alt="Cocktail Hour"
+                  fill
+                  className="object-contain object-center"
+                  priority={false}
+                />
+              </div>
+              <h3 className="font-cormorant font-bold text-2xl text-darkGrayBlue mb-1 uppercase">
+                WE DRINK
+              </h3>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                Cocktail Hour
+              </p>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                5:00 PM
+              </p>
+            </div>
+            {/* WE DINE */}
+            <div className="flex flex-col items-center text-center">
+              <div className="relative w-40 h-40 mb-3">
+                <Image
+                  src="/images/details-3.png"
+                  alt="Dinner"
+                  fill
+                  className="object-contain object-center"
+                  priority={false}
+                />
+              </div>
+              <h3 className="font-cormorant font-bold text-2xl text-darkGrayBlue mb-1 uppercase">
+                WE DINE
+              </h3>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                Dinner
+              </p>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                7:00 PM
+              </p>
+            </div>
+            {/* WE DANCE */}
+            <div className="flex flex-col items-center text-center">
+              <div className="relative w-40 h-40 mb-3">
+                <Image
+                  src="/images/details-4.png"
+                  alt="Party"
+                  fill
+                  className="object-contain object-center"
+                  priority={false}
+                />
+              </div>
+              <h3 className="font-cormorant font-bold text-2xl text-darkGrayBlue mb-1 uppercase">
+                WE DANCE
+              </h3>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                Party
+              </p>
+              <p className="font-montserrat text-base text-darkGrayBlue">
+                10:00 PM
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Wedding Details - Venue */}
       <section className="pb-8 bg-linen relative overflow-hidden">
         <motion.div
