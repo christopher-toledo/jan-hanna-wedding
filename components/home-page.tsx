@@ -176,7 +176,7 @@ function HomePage({ guestId }: HomePageProps) {
               <div className="md:mx-24 grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* First Met */}
                 <div className="flex flex-col items-center text-center">
-                  <div className="relative w-full aspect-square mb-4">
+                  <div className="relative w-40 h-40 mb-4">
                     <Image
                       src="/images/story-1.png"
                       alt="First Met"
@@ -185,16 +185,16 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-2xl md:text-3xl text-darkGrayBlue mb-1 uppercase">
+                  <h3 className="font-cormorant font-bold text-xl md:text-2xl text-darkGrayBlue mb-1 uppercase">
                     First Met
                   </h3>
-                  <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
+                  <p className="font-montserrat text-base md:text-lg text-darkGrayBlue">
                     September 26, 2014
                   </p>
                 </div>
                 {/* Became a Couple */}
                 <div className="flex flex-col items-center text-center">
-                  <div className="relative w-full aspect-square mb-4">
+                  <div className="relative w-40 h-40 mb-4">
                     <Image
                       src="/images/story-2.png"
                       alt="Became a Couple"
@@ -203,16 +203,16 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-2xl md:text-3xl text-darkGrayBlue mb-1 uppercase">
+                  <h3 className="font-cormorant font-bold text-xl md:text-2xl text-darkGrayBlue mb-1 uppercase">
                     Became a Couple
                   </h3>
-                  <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
+                  <p className="font-montserrat text-base md:text-lg text-darkGrayBlue">
                     March 14, 2015
                   </p>
                 </div>
                 {/* It's a Yes */}
                 <div className="flex flex-col items-center text-center">
-                  <div className="relative w-full aspect-square mb-4">
+                  <div className="relative w-40 h-40 mb-4">
                     <Image
                       src="/images/story-3.png"
                       alt="It's a Yes"
@@ -221,10 +221,10 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-2xl md:text-3xl text-darkGrayBlue mb-1 uppercase">
+                  <h3 className="font-cormorant font-bold text-xl md:text-2xl text-darkGrayBlue mb-1 uppercase">
                     It's a Yes
                   </h3>
-                  <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
+                  <p className="font-montserrat text-base md:text-lg text-darkGrayBlue">
                     January 14, 2024
                   </p>
                 </div>
@@ -407,7 +407,7 @@ function HomePage({ guestId }: HomePageProps) {
       </section>
 
       {/* Wedding Details - Venue */}
-      <section className="pb-8 bg-linen relative overflow-hidden">
+      <section className="py-8 bg-linen relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
