@@ -160,74 +160,73 @@ function HomePage({ guestId }: HomePageProps) {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-the-seasons text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
-              OUR STORY
+            <h2 className="font-serif text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
+              A LOVE THAT BLOOMED
             </h2>
             <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-2 mb-4">
               10 years forever to go
             </p>
           </motion.div>
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <h3 className="font-serif text-3xl text-primary">How We Met</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Our paths crossed on a beautiful spring day in 2021 at a local
-                bookstore café. What started as a chance encounter over a shared
-                love for literature turned into hours of conversation, laughter,
-                and the beginning of our beautiful love story.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                From that moment, we knew we had found something special.
-                Through adventures, challenges, and countless memories, our love
-                has grown stronger each day. Now, we're ready to take the next
-                step in our journey together.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <Image
-                  src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                  alt="Couple portrait"
-                  width={600}
-                  height={400}
-                  className="object-cover w-full h-[400px]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            {/* Our Story Milestones Section */}
+            <div className="w-full col-span-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* First Met */}
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative w-full aspect-square mb-4">
+                    <Image
+                      src="/images/story-1.png"
+                      alt="First Met"
+                      fill
+                      className="object-contain object-center"
+                      priority={false}
+                    />
+                  </div>
+                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1">
+                    First Met
+                  </h3>
+                  <p className="font-cormorant text-2xl md:text-3xl text-darkGrayBlue">
+                    September 26, 2014
+                  </p>
+                </div>
+                {/* Became a Couple */}
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative w-full aspect-square mb-4">
+                    <Image
+                      src="/images/story-2.png"
+                      alt="Became a Couple"
+                      fill
+                      className="object-contain object-center"
+                      priority={false}
+                    />
+                  </div>
+                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1">
+                    Became a Couple
+                  </h3>
+                  <p className="font-cormorant text-2xl md:text-3xl text-darkGrayBlue">
+                    March 14, 2015
+                  </p>
+                </div>
+                {/* It's a Yes */}
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative w-full aspect-square mb-4">
+                    <Image
+                      src="/images/story-3.png"
+                      alt="It's a Yes"
+                      fill
+                      className="object-contain object-center"
+                      priority={false}
+                    />
+                  </div>
+                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1">
+                    It's a Yes
+                  </h3>
+                  <p className="font-cormorant text-2xl md:text-3xl text-darkGrayBlue">
+                    January 14, 2024
+                  </p>
+                </div>
               </div>
-
-              {/* Decorative Elements */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 20,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "linear",
-                }}
-                className="absolute -top-4 -right-4 w-8 h-8 border-2 border-primary/30 rounded-full"
-              />
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{
-                  duration: 15,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "linear",
-                }}
-                className="absolute -bottom-4 -left-4 w-6 h-6 border-2 border-primary/20 rounded-full"
-              />
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -242,7 +241,7 @@ function HomePage({ guestId }: HomePageProps) {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="font-the-seasons text-4xl md:text-7xl text-darkGrayBlue tracking-widest mb-4">
+            <h2 className="font-serif text-4xl md:text-7xl text-darkGrayBlue tracking-widest mb-4">
               THE WEDDING DETAILS
             </h2>
           </motion.div>
@@ -268,7 +267,7 @@ function HomePage({ guestId }: HomePageProps) {
           viewport={{ once: true }}
           className="text-center"
         >
-          <h2 className="font-the-seasons text-5xl md:text-8xl text-darkGrayBlue tracking-widest">
+          <h2 className="font-serif text-5xl md:text-8xl text-darkGrayBlue tracking-widest">
             VENUE
           </h2>
           <div className="flex flex-col md:flex-row gap-8 justify-center items-center mt-10">
@@ -368,7 +367,7 @@ function HomePage({ guestId }: HomePageProps) {
           viewport={{ once: true }}
           className="text-center"
         >
-          <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
+          <h2 className="font-serif text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
             ATTIRE INSPIRATION
           </h2>
           <p className="font-pinyon_script text-3xl md:text-5xl text-darkGrayBlue mt-8 mb-4">
@@ -463,7 +462,7 @@ function HomePage({ guestId }: HomePageProps) {
             viewport={{ once: true }}
             className="text-center mb-8"
           >
-            <h2 className="font-the-seasons text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
+            <h2 className="font-serif text-4xl md:text-6xl text-darkGrayBlue tracking-widest">
               WEDDING GALLERY
             </h2>
             <p className="font-montserrat text-base md:text-lg text-darkGrayBlue max-w-2xl mx-auto uppercase">
@@ -514,7 +513,7 @@ function HomePage({ guestId }: HomePageProps) {
               viewport={{ once: true }}
               className="text-center mb-4"
             >
-              <h2 className="font-the-seasons text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
+              <h2 className="font-serif text-5xl md:text-7xl text-darkGrayBlue tracking-widest">
                 RSVP
               </h2>
               <p className="font-brittany text-3xl md:text-5xl text-darkGrayBlue mt-4 mb-4">
