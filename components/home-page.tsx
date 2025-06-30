@@ -374,9 +374,9 @@ function HomePage({ guestId }: HomePageProps) {
           <p className="font-pinyon_script text-3xl md:text-5xl text-darkGrayBlue mt-8 mb-4">
             For Our Guests
           </p>
-          <p className="font-montserrat text-base md:text-lg text-darkGrayBlue mb-4 max-w-2xl mx-auto uppercase">
-            We kindly encourage our guests to wear formal or semi-formal attire
-            with these colors on our special day.
+          <p className="font-montserrat text-base md:text-lg text-darkGrayBlue mb-4 max-w-3xl mx-auto uppercase">
+            We kindly invite our guests to wear formal or semi-formal attire in
+            the following colors to celebrate with us on our special day.
           </p>
           <p className="font-montserrat font-bold text-xl md:text-2xl text-darkGrayBlue uppercase text-center mt-8 mb-2">
             The Colours
@@ -415,8 +415,9 @@ function HomePage({ guestId }: HomePageProps) {
                 <p className="font-montserrat text-[14px] md:text-[15px] text-darkGrayBlue text-center mt-1 w-full uppercase">
                   keep it cool and classy.
                   <br />
-                  light colored coat, long sleeve and trousers in soft natural
-                  shades. just skip black, gray, white and denim.
+                  Light-colored coats, long sleeves, and trousers in soft,
+                  natural shades are perfect. Just skip black, gray, white, and
+                  denim for the day.
                 </p>
               </div>
             </motion.div>
@@ -442,8 +443,9 @@ function HomePage({ guestId }: HomePageProps) {
                 <p className="font-montserrat text-[14px] md:text-[15px] text-darkGrayBlue text-center mt-1 w-full uppercase">
                   go for light and airy look!
                   <br />
-                  Long dress, Summer dress, jumpsuit or trouser in soft pastel
-                  color. gentle florals or any happy spring like colors.
+                  long dresses, summer dresses, jumpsuits, or trousers in soft
+                  pastel shades, gentle florals, or any cheerful spring-inspired
+                  colors.
                 </p>
               </div>
             </motion.div>
