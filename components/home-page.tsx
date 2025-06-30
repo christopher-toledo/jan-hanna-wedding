@@ -98,18 +98,18 @@ function HomePage({ guestId }: HomePageProps) {
           </motion.div>
         </div>
       </section>
-      <section id="save-the-date">
-        <div className="pb-2 bg-linen"></div>
-      </section>
       {/* Countdown Timer Section */}
-      <section className="pb-4 bg-linen relative overflow-hidden">
+      <section
+        id="save-the-date"
+        className="py-4 bg-linen relative overflow-hidden"
+      >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <div className="container mx-auto px-6 flex flex-col items-center justify-center text-center">
+          <div className="container mx-auto mb-4 px-6 flex flex-col items-center justify-center text-center">
             <CountdownTimer />
           </div>
           <div className="container mx-auto px-6 sm:px-6">
@@ -150,7 +150,7 @@ function HomePage({ guestId }: HomePageProps) {
       {/* Our Story Section */}
       <section
         id="our-story"
-        className="py-12 bg-linen relative overflow-hidden"
+        className="py-8 bg-linen relative overflow-hidden"
       >
         <div className="container mx-auto px-6">
           <motion.div
@@ -287,7 +287,7 @@ function HomePage({ guestId }: HomePageProps) {
                 className="object-cover w-full h-[250px] md:h-[350px]"
                 priority={false}
               />
-              <div className="flex-1 flex flex-col justify-end items-center w-full">
+              <div className="flex-1 flex flex-col justify-end items-center w-full px-4">
                 <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
                   Diocesan Shrine and Parish of Saint Pio of Pietrelcina Church
                 </p>
@@ -326,7 +326,7 @@ function HomePage({ guestId }: HomePageProps) {
                 className="object-cover w-full h-[250px] md:h-[350px]"
                 priority={false}
               />
-              <div className="flex-1 flex flex-col justify-end items-center w-full">
+              <div className="flex-1 flex flex-col justify-end items-center w-full px-4">
                 <p className="font-montserrat font-bold text-[18px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
                   Villa Ardin Events Place
                 </p>
@@ -374,7 +374,7 @@ function HomePage({ guestId }: HomePageProps) {
           <p className="font-pinyon_script text-3xl md:text-5xl text-darkGrayBlue mt-8 mb-4">
             For Our Guests
           </p>
-          <p className="font-montserrat text-base md:text-lg text-darkGrayBlue mb-4 max-w-3xl mx-auto uppercase">
+          <p className="font-montserrat text-base md:text-lg text-darkGrayBlue mb-4 max-w-3xl px-4 mx-auto uppercase">
             We kindly invite our guests to wear formal or semi-formal attire in
             the following colors to celebrate with us on our special day.
           </p>
@@ -408,7 +408,7 @@ function HomePage({ guestId }: HomePageProps) {
                 className="object-cover w-full h-[250px] md:h-[350px]"
                 priority={false}
               />
-              <div className="flex-1 flex flex-col justify-end items-center w-full">
+              <div className="flex-1 flex flex-col justify-end items-center w-full px-4">
                 <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
                   For the Gentlemen
                 </p>
@@ -436,7 +436,7 @@ function HomePage({ guestId }: HomePageProps) {
                 className="object-cover w-full h-[250px] md:h-[350px]"
                 priority={false}
               />
-              <div className="flex-1 flex flex-col justify-end items-center w-full">
+              <div className="flex-1 flex flex-col justify-end items-center w-full px-4">
                 <p className="font-montserrat font-bold text-[16px] md:text-[20px] text-darkGrayBlue uppercase text-center mt-2 w-full">
                   For the Ladies
                 </p>

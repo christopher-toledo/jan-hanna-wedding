@@ -6,10 +6,13 @@ import { usePathname, useParams } from "next/navigation";
 export function Navigation() {
   // Helper to scroll to section by elementId derived from button text
   const scrollToSection = (section: string) => {
+    const yOffset = -40;
     const elementId = section.toLowerCase().replace(/ /g, "-");
     const sectionElement = document.getElementById(elementId);
     if (sectionElement) {
-      sectionElement.scrollIntoView({ behavior: "smooth" });
+      const y =
+        sectionElement.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
     } else {
       // If not on home page, navigate to home then scroll
       window.location.href = `/#${elementId}`;
