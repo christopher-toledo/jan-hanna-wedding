@@ -4,6 +4,11 @@ import { Button } from "@/components/ui/button";
 import { usePathname, useParams } from "next/navigation";
 
 export function Navigation() {
+  const params = useParams();
+  const guestId = params.guestId as string;
+  const pathname = usePathname();
+  const hasGuestId = guestId && !pathname.includes("/rsvp");
+
   // Helper to scroll to section by elementId derived from button text
   const scrollToSection = (section: string) => {
     const yOffset = -40;
@@ -15,13 +20,9 @@ export function Navigation() {
       window.scrollTo({ top: y, behavior: "smooth" });
     } else {
       // If not on home page, navigate to home then scroll
-      window.location.href = `/#${elementId}`;
+      window.location.href = `/${guestId}#${elementId}`;
     }
   };
-  const params = useParams();
-  const guestId = params.guestId as string;
-  const pathname = usePathname();
-  const hasGuestId = guestId && !pathname.includes("/rsvp");
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-linen backdrop-blur-sm border-b border-primary/10">

@@ -15,7 +15,7 @@ function HomePage({ guestId }: HomePageProps) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY - 40);
+    const handleScroll = () => setScrollY(window.scrollY - 60);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -45,7 +45,7 @@ function HomePage({ guestId }: HomePageProps) {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-2 md:-mt-64">
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto -mt-4 md:-mt-64">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -167,13 +167,13 @@ function HomePage({ guestId }: HomePageProps) {
               A LOVE THAT BLOOMED
             </h2>
             <p className="font-pinyon_script tracking-wider text-4xl md:text-6xl text-darkGrayBlue mt-2 mb-4">
-              10 years forever to go
+              10 years, forever to go
             </p>
           </motion.div>
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             {/* Our Story Milestones Section */}
             <div className="w-full col-span-2">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="md:mx-24 grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* First Met */}
                 <div className="flex flex-col items-center text-center">
                   <div className="relative w-full aspect-square mb-4">
@@ -185,7 +185,7 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1 uppercase">
+                  <h3 className="font-cormorant font-bold text-2xl md:text-3xl text-darkGrayBlue mb-1 uppercase">
                     First Met
                   </h3>
                   <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
@@ -203,7 +203,7 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1 uppercase">
+                  <h3 className="font-cormorant font-bold text-2xl md:text-3xl text-darkGrayBlue mb-1 uppercase">
                     Became a Couple
                   </h3>
                   <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
@@ -221,7 +221,7 @@ function HomePage({ guestId }: HomePageProps) {
                       priority={false}
                     />
                   </div>
-                  <h3 className="font-cormorant font-bold text-3xl md:text-4xl text-darkGrayBlue mb-1 uppercase">
+                  <h3 className="font-cormorant font-bold text-2xl md:text-3xl text-darkGrayBlue mb-1 uppercase">
                     It's a Yes
                   </h3>
                   <p className="font-montserrat text-xl md:text-2xl text-darkGrayBlue">
@@ -233,7 +233,7 @@ function HomePage({ guestId }: HomePageProps) {
           </div>
 
           {/* Our Story Narrative Section */}
-          <div className="mt-12 md:mt-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
+          <div className="mt-24 md:mt-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
             {/* Image Left - Only One Image */}
             <div className="bg-linen flex flex-row w-full h-auto md:h-auto">
               <div className="relative w-full aspect-square mb-0 md:mb-4">
@@ -598,7 +598,7 @@ function HomePage({ guestId }: HomePageProps) {
                     className="mt-4 px-8 py-4 border-2 border-darkGrayBlue rounded-[12px] font-montserrat text-base md:text-lg text-darkGrayBlue uppercase text-center transition-colors hover:bg-darkGrayBlue hover:text-white elegant-shadow inline-flex items-center gap-2"
                     onClick={() => window.open(`/${guestId}/rsvp`, "_self")}
                   >
-                    Go to RSVP Form
+                    RSVP Form
                   </button>
                 </motion.div>
               </div>
