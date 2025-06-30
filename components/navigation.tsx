@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 
 export function Navigation() {
   // Helper to scroll to section by elementId derived from button text
@@ -15,10 +15,10 @@ export function Navigation() {
       window.location.href = `/#${elementId}`;
     }
   };
-
+  const params = useParams();
+  const guestId = params.guestId as string;
   const pathname = usePathname();
-  const hasGuestId =
-    /\/[\w-]+$/.test(pathname) && !pathname.startsWith("/rsvp");
+  const hasGuestId = guestId && !pathname.includes("/rsvp");
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-linen backdrop-blur-sm border-b border-primary/10">
@@ -27,11 +27,12 @@ export function Navigation() {
           <div className="hidden md:flex items-center space-x-8 ml-auto">
             {[
               "SAVE THE DATE",
+              "OUR STORY",
               "DETAILS",
               "ATTIRE",
-              "TIMELINE",
-              "FAQ",
-              "GALLERY",
+              // "TIMELINE",
+              // "FAQ",
+              // "GALLERY",
               ...(hasGuestId ? ["RSVP"] : []),
             ].map((label) => (
               <button

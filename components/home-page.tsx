@@ -2,13 +2,10 @@
 
 import CountdownTimer from "@/components/countdown-timer";
 import { GalleryGrid } from "@/components/gallery-grid";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Camera } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { RSVPForm } from "@/components/rsvp-form";
 
 export interface HomePageProps {
   guestId: string;
@@ -151,7 +148,10 @@ function HomePage({ guestId }: HomePageProps) {
       </section>
 
       {/* Our Story Section */}
-      <section className="py-12 bg-linen relative overflow-hidden">
+      <section
+        id="our-story"
+        className="py-12 bg-linen relative overflow-hidden"
+      >
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -452,7 +452,7 @@ function HomePage({ guestId }: HomePageProps) {
       </section>
 
       {/* Gallery Preview Section */}
-      <section id="gallery" className="py-8 bg-linen">
+      <section hidden id="gallery" className="py-8 bg-linen">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 50 }}

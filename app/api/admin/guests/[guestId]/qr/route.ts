@@ -7,7 +7,7 @@ export async function GET(request: Request, { params }: { params: { guestId: str
     const { searchParams } = new URL(request.url)
     const baseUrl = searchParams.get("baseUrl") || "http://localhost:3000"
 
-    const rsvpUrl = `${baseUrl}/rsvp/${guestId}`
+    const rsvpUrl = `${baseUrl}/${guestId}/rsvp`
 
     // Generate QR code using a simple QR code API service
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(rsvpUrl)}`
