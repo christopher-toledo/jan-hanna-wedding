@@ -113,9 +113,15 @@ function HomePage({ guestId }: HomePageProps) {
           viewport={{ once: true }}
         >
           <div className="container mx-auto mb-4 px-6 flex flex-col items-center justify-center text-center">
-            <CountdownTimer />
+            <p className="block my-6 font-montserrat text-xl md:text-3xl text-darkGrayBlue max-w-2xl mx-auto uppercase">
+              Together with our families we,
+              <br />
+              <span className="font-bold block my-4 md:my-6">Hanna & Jan</span>
+              request the honor of your presence at our wedding
+            </p>
+            {/* <hr className="w-64 border-t-2 border-darkGrayBlue mx-auto mb-8" /> */}
           </div>
-          <div className="container mx-auto px-6 sm:px-6">
+          <div className="container mx-auto px-6 sm:px-6 mb-6">
             {/* Countdown Gallery */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
               <div className="aspect-square w-full relative overflow-hidden shadow-lg">
@@ -147,6 +153,7 @@ function HomePage({ guestId }: HomePageProps) {
               </div>
             </div>
           </div>
+          <CountdownTimer />
         </motion.div>
       </section>
 
@@ -252,7 +259,7 @@ function HomePage({ guestId }: HomePageProps) {
               className="flex flex-col justify-center h-full text-left min-h-[340px]"
               style={{ height: "100%" }}
             >
-              <h3 className="font-serif text-4xl md:text-5xl text-darkGrayBlue mb-6 text-center">
+              <h3 className="font-serif text-4xl md:text-5xl text-darkGrayBlue mb-6 text-center uppercase">
                 Our Story
               </h3>
               <p className="font-montserrat text-lg md:text-xl text-darkGrayBlue whitespace-pre-line text-justify">
